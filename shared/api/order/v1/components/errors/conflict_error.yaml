@@ -1,0 +1,13 @@
+type: object
+required:
+  - code
+  - message
+properties:
+  code:
+    type: integer
+    description: HTTP-код ошибки
+    example: 409
+  message:
+    type: string
+    description: Описание ошибки
+    example: "Order UUID {1hdbd-3jsla-sd212} already paid and cannot be canceled"
