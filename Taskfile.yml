@@ -179,6 +179,9 @@ tasks:
       - |
         [ -f {{.REDOCLY}} ] || {
           npm ci
+        } || {
+          echo "📦 Устанавливаем redocly-cli..."
+          npm install
         }
 
   redocly-cli:order-v1-bundle:
@@ -237,7 +240,7 @@ tasks:
         for mod in {{.MODULES}}; do
           if [ -d "$mod" ]; then
             echo "🔄 Обновление зависимостей в $mod"
-            (cd "$mod" && go mod tidy -compat=1.24) || exit 1
+            (cd "$mod" && go mod tidy -compat=1.24.2) || exit 1
           fi
         done
 
