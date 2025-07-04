@@ -1,3 +1,3 @@
 module github.com/dfg007star/go_rocket_course/order
 
-go 1.24.2
+go 1.24.4

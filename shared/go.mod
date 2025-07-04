@@ -1,6 +1,6 @@
 module github.com/dfg007star/go_rocket_course/shared
 
-go 1.24.2
+go 1.24.4
 
 require (
 	github.com/go-faster/errors v0.7.1
