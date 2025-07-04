@@ -2,7 +2,6 @@ package main
 
 import (
 	orderv1 "github.com/dfg007star/go_rocket_course/shared/pkg/openapi/order/v1"
-	"github.com/google/uuid"
 	"sync"
 	"time"
 )
@@ -87,17 +86,17 @@ func NewOrderHandler(service *OrderService) *OrderHandler {
 	}
 }
 
-func (h *OrderHandler) OrderByUuid(_ context.Context, params orderv1.OrderByUuidParams) (orderv1.OrderByUuidRes, error) {
-	order := h.service.OrderByUuid(params.OrderUUID)
-	if order == nil {
-		return &orderv1.NotFoundError{
-			Code:    404,
-			Message: "Order with UUID <'" + params.OrderUUID + "'> not found",
-		}, nil
-	}
-
-	return order, nil
-}
+//func (h *OrderHandler) OrderByUuid(_ context.Context, params orderv1.OrderByUuidParams) (orderv1.OrderByUuidRes, error) {
+//	order := h.service.OrderByUuid(params.OrderUUID)
+//	if order == nil {
+//		return &orderv1.NotFoundError{
+//			Code:    404,
+//			Message: "Order with UUID <'" + params.OrderUUID + "'> not found",
+//		}, nil
+//	}
+//
+//	return order, nil
+//}
 
 //func (h *OrderHandler) CreateOrder(_ context.Context, req *order_v1.CreateOrderRequest) (order_v1.CreateOrderResponse, error) {}
 
