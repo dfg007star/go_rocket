@@ -1,7 +1,7 @@
 package main
 
 import (
-	order_v1 "github.com/dfg007star/go_rocket_course/shared/pkg/openapi/order/v1"
+	orderv1 "github.com/dfg007star/go_rocket_course/shared/pkg/openapi/order/v1"
 	"github.com/google/uuid"
 	"sync"
 	"time"
@@ -17,17 +17,17 @@ const (
 // OrderService provides thread-safe storage and management of orders
 type OrderService struct {
 	mu     sync.RWMutex
-	orders map[string]*order_v1.OrderDto
+	orders map[string]*orderv1.OrderDto
 }
 
 // NewOrderService creates and returns a new initialized OrderService instance
 func NewOrderService() *OrderService {
 	return &OrderService{
-		orders: make(map[string]*order_v1.OrderDto),
+		orders: make(map[string]*orderv1.OrderDto),
 	}
 }
 
-func (s *OrderService) OrderByUuid(order_uuid string) *order_v1.OrderDto {
+func (s *OrderService) OrderByUuid(order_uuid string) *orderv1.OrderDto {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -39,7 +39,7 @@ func (s *OrderService) OrderByUuid(order_uuid string) *order_v1.OrderDto {
 	return order
 }
 
-func (s *OrderService) CreateOrder(order_uuid string) *order_v1.OrderDto {
+func (s *OrderService) CreateOrder(order_uuid string) *orderv1.OrderDto {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -51,7 +51,7 @@ func (s *OrderService) CreateOrder(order_uuid string) *order_v1.OrderDto {
 	return order
 }
 
-func (s *OrderService) PayOrder(order_uuid string) *order_v1.OrderDto {
+func (s *OrderService) PayOrder(order_uuid string) *orderv1.OrderDto {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -63,7 +63,7 @@ func (s *OrderService) PayOrder(order_uuid string) *order_v1.OrderDto {
 	return order
 }
 
-func (s *OrderService) CancelOrderByUuid(order_uuid string) *order_v1.OrderDto {
+func (s *OrderService) CancelOrderByUuid(order_uuid string) *orderv1.OrderDto {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -87,10 +87,10 @@ func NewOrderHandler(service *OrderService) *OrderHandler {
 	}
 }
 
-func (h *OrderHandler) OrderByUuid(_ context.Context, params order_v1.OrderByUuidParams) (order_v1.OrderByUuidRes, error) {
+func (h *OrderHandler) OrderByUuid(_ context.Context, params orderv1.OrderByUuidParams) (orderv1.OrderByUuidRes, error) {
 	order := h.service.OrderByUuid(params.OrderUUID)
 	if order == nil {
-		return &order_v1.NotFoundError{
+		return &orderv1.NotFoundError{
 			Code:    404,
 			Message: "Order with UUID <'" + params.OrderUUID + "'> not found",
 		}, nil
@@ -99,17 +99,13 @@ func (h *OrderHandler) OrderByUuid(_ context.Context, params order_v1.OrderByUui
 	return order, nil
 }
 
-func (h *OrderHandler) CreateOrder(_ context.Context, req *order_v1.CreateOrderRequest) (order_v1.CreateOrderResponse, error) {
-	return &order_v1.OrderDto{
-		OrderUUID: make(uuid.UUID, 0),
-	}, nil
-}
+//func (h *OrderHandler) CreateOrder(_ context.Context, req *order_v1.CreateOrderRequest) (order_v1.CreateOrderResponse, error) {}
 
 func main() {
-	service := NewOrderService()
+	//service := NewOrderService()
 
-	orderHandler := NewOrderHandler(service)
+	//orderHandler := NewOrderHandler(service)
 
 	// need all interface 5 :)
-	orderServer, err := order_v1.NewServer(orderHandler)
+	//orderServer, err := order_v1.NewServer(orderHandler)
 }
