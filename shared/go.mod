@@ -1,4 +1,4 @@
-module github.com/dfg007star/go_rocket_course/shared
+module github.com/dfg007star/go_rocket/shared
 
 go 1.24.4
 
