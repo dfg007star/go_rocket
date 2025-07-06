@@ -48,7 +48,6 @@ func (s *OrderService) OrderByUuid(orderUuid string) *orderV1.OrderDto {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	fmt.Println(s.orders)
 	order, ok := s.orders[orderUuid]
 	if !ok {
 		return nil
@@ -175,7 +174,6 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 
 func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
 	order := h.service.OrderByUuid(params.OrderUUID)
-	fmt.Println("URRRAA", order.Status)
 	if order == nil {
 		return &orderV1.NotFoundError{
 			Code:    404,
@@ -184,7 +182,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 	}
 
 	l, err := convertPaymentMethod(req.PaymentMethod)
-	fmt.Println("convert PARAMS", err)
 	if err != nil {
 		return &orderV1.NotFoundError{
 			Code:    400,
@@ -194,7 +191,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 
 	paymentReq := paymentV1.PayOrderRequest{UserUuid: order.UserUUID, OrderUuid: order.OrderUUID, PaymentMethod: l}
 	payment, err := h.paymentService.PayOrder(context.Background(), &paymentReq)
-	fmt.Println(err)
 	if err != nil {
 		return &orderV1.NotFoundError{
 			Code:    400,
@@ -211,8 +207,6 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 		Value: orderV1.OrderDtoPaymentMethod(req.PaymentMethod),
 	})
 	order.SetStatus(orderV1.OrderDtoStatusPAID)
-
-	fmt.Println(order.Status)
 
 	return &orderV1.PayOrderResponse{
 		TransactionUUID: payment.TransactionUuid,
