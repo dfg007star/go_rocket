@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	partV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/part/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -44,6 +46,13 @@ func (s *OrderService) OrderByUuid(orderUuid string) *orderV1.OrderDto {
 	}
 
 	return order
+}
+
+func (s *OrderService) OrderUpdate(orderUuid string, order *orderV1.OrderDto) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	s.orders[orderUuid] = order
 }
 
 func (s *OrderService) CreateOrder(userUuid string, parts []*partV1.Part) *orderV1.OrderDto {
@@ -164,10 +173,30 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 		}, nil
 	}
 
-	pm := req.UnmarshalJSON()
-	//paymentMethod int32
-	paymentReq := paymentV1.PayOrderRequest{UserUuid: order.UserUUID, OrderUuid: order.OrderUUID, PaymentMethod: paymentV1.PaymentMethod(req.PaymentMethod)}
-	//payment := h.paymentService.PayOrder(context.Background())
+	l, err := convertPaymentMethod(req.PaymentMethod)
+	if err != nil {
+		return &orderV1.NotFoundError{
+			Code:    400,
+			Message: "Payment method not found",
+		}, nil
+	}
+
+	paymentReq := paymentV1.PayOrderRequest{UserUuid: order.UserUUID, OrderUuid: order.OrderUUID, PaymentMethod: l}
+	payment, err := h.paymentService.PayOrder(context.Background(), &paymentReq)
+	if err != nil {
+		return &orderV1.NotFoundError{
+			Code:    400,
+			Message: "Payment processing failed: " + err.Error(),
+		}, nil
+	}
+
+	order.SetTransactionUUID(orderV1.OptString{Set: true, Value: payment.TransactionUuid})
+	order.SetPaymentMethod(orderV1.OptOrderDtoPaymentMethod{Set: true, Value: req.GetPaymentMethod()})
+	order.Status = orderV1.OrderDtoStatusPAID
+
+	return &orderV1.PayOrderResponse{
+		TransactionUUID: payment.TransactionUuid,
+	}, nil
 }
 
 func main() {
@@ -192,4 +221,28 @@ func main() {
 	orderHandler := NewOrderHandler(service, grpcConn)
 
 	orderServer, err := orderV1.NewServer(orderHandler)
+
+	if err != nil {
+		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
+	}
+
+	// Инициализируем роутер Chi
+	r := chi.NewRouter()
+}
+
+func convertPaymentMethod(method orderV1.PayOrderRequestPaymentMethod) (paymentV1.PaymentMethod, error) {
+	switch method {
+	case orderV1.PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED:
+		return paymentV1.PaymentMethod_PAYMENT_METHOD_CARD, nil
+	case orderV1.PayOrderRequestPaymentMethodPAYMENTMETHODSBP:
+		return paymentV1.PaymentMethod_PAYMENT_METHOD_SBP, nil
+	case orderV1.PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD:
+		return paymentV1.PaymentMethod_PAYMENT_METHOD_CREDIT_CARD, nil
+	case orderV1.PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY:
+		return paymentV1.PaymentMethod_PAYMENT_METHOD_INVESTOR_MONEY, nil
+	default:
+		return paymentV1.PaymentMethod_PAYMENT_METHOD_UNSPECIFIED,
+			fmt.Errorf("unknown payment method: %v", method)
+
+	}
 }
