@@ -1127,14 +1127,14 @@ func (s *OrderDtoPaymentMethod) Decode(d *jx.Decoder) error {
 	}
 	// Try to use constant string.
 	switch OrderDtoPaymentMethod(v) {
-	case OrderDtoPaymentMethodCARD:
-		*s = OrderDtoPaymentMethodCARD
-	case OrderDtoPaymentMethodSBP:
-		*s = OrderDtoPaymentMethodSBP
-	case OrderDtoPaymentMethodCREDITCARD:
-		*s = OrderDtoPaymentMethodCREDITCARD
-	case OrderDtoPaymentMethodINVESTORMONEY:
-		*s = OrderDtoPaymentMethodINVESTORMONEY
+	case OrderDtoPaymentMethodPAYMENTMETHODCARD:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODCARD
+	case OrderDtoPaymentMethodPAYMENTMETHODSBP:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODSBP
+	case OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD
+	case OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY
 	default:
 		*s = OrderDtoPaymentMethod(v)
 	}

@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	partV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/part/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
-	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -190,13 +189,50 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 		}, nil
 	}
 
-	order.SetTransactionUUID(orderV1.OptString{Set: true, Value: payment.TransactionUuid})
-	order.SetPaymentMethod(orderV1.OptOrderDtoPaymentMethod{Set: true, Value: req.GetPaymentMethod()})
-	order.Status = orderV1.OrderDtoStatusPAID
+	order.SetTransactionUUID(orderV1.OptString{
+		Set:   true,
+		Value: payment.TransactionUuid,
+	})
+	order.SetPaymentMethod(orderV1.OptOrderDtoPaymentMethod{
+		Set:   true,
+		Value: orderV1.OrderDtoPaymentMethod(req.PaymentMethod),
+	})
+	order.SetStatus(orderV1.OrderDtoStatusPAID)
 
 	return &orderV1.PayOrderResponse{
 		TransactionUUID: payment.TransactionUuid,
 	}, nil
+}
+
+func (h *OrderHandler) CancelOrderByUuid(_ context.Context, params *orderV1.CancelOrderByUuidParams) (orderV1.CancelOrderByUuidRes, error) {
+	order := h.service.OrderByUuid(params.OrderUUID)
+	if order == nil {
+		return &orderV1.NotFoundError{
+			Code:    404,
+			Message: "Order with UUID <'" + params.OrderUUID + "'> not found",
+		}, nil
+	}
+
+	if order.Status == orderV1.OrderDtoStatusPAID {
+		return &orderV1.ConflictError{
+			Code:    409,
+			Message: "Order with UUID <'" + params.OrderUUID + "'> already paid and cannot be cancelled",
+		}, nil
+	}
+
+	order.SetStatus(orderV1.OrderDtoStatusCANCELED)
+
+	return &orderV1.CancelOrderByUuidNoContent{}, nil
+}
+
+func (h *OrderHandler) NewError(_ context.Context, err error) *orderV1.GenericErrorStatusCode {
+	return &orderV1.GenericErrorStatusCode{
+		StatusCode: http.StatusInternalServerError,
+		Response: orderV1.GenericError{
+			Code:    orderV1.NewOptInt(http.StatusInternalServerError),
+			Message: orderV1.NewOptString(err.Error()),
+		},
+	}
 }
 
 func main() {
@@ -226,8 +262,10 @@ func main() {
 		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
 	}
 
+	fmt.Println(orderServer)
+
 	// Инициализируем роутер Chi
-	r := chi.NewRouter()
+	//r := chi.NewRouter()
 }
 
 func convertPaymentMethod(method orderV1.PayOrderRequestPaymentMethod) (paymentV1.PaymentMethod, error) {

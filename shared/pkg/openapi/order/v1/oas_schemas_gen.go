@@ -493,32 +493,32 @@ func (*OrderDto) orderByUuidRes() {}
 type OrderDtoPaymentMethod string
 
 const (
-	OrderDtoPaymentMethodCARD          OrderDtoPaymentMethod = "CARD"
-	OrderDtoPaymentMethodSBP           OrderDtoPaymentMethod = "SBP"
-	OrderDtoPaymentMethodCREDITCARD    OrderDtoPaymentMethod = "CREDIT_CARD"
-	OrderDtoPaymentMethodINVESTORMONEY OrderDtoPaymentMethod = "INVESTOR_MONEY"
+	OrderDtoPaymentMethodPAYMENTMETHODCARD          OrderDtoPaymentMethod = "PAYMENT_METHOD_CARD"
+	OrderDtoPaymentMethodPAYMENTMETHODSBP           OrderDtoPaymentMethod = "PAYMENT_METHOD_SBP"
+	OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD    OrderDtoPaymentMethod = "PAYMENT_METHOD_CREDIT_CARD"
+	OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY OrderDtoPaymentMethod = "PAYMENT_METHOD_INVESTOR_MONEY"
 )
 
 // AllValues returns all OrderDtoPaymentMethod values.
 func (OrderDtoPaymentMethod) AllValues() []OrderDtoPaymentMethod {
 	return []OrderDtoPaymentMethod{
-		OrderDtoPaymentMethodCARD,
-		OrderDtoPaymentMethodSBP,
-		OrderDtoPaymentMethodCREDITCARD,
-		OrderDtoPaymentMethodINVESTORMONEY,
+		OrderDtoPaymentMethodPAYMENTMETHODCARD,
+		OrderDtoPaymentMethodPAYMENTMETHODSBP,
+		OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD,
+		OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY,
 	}
 }
 
 // MarshalText implements encoding.TextMarshaler.
 func (s OrderDtoPaymentMethod) MarshalText() ([]byte, error) {
 	switch s {
-	case OrderDtoPaymentMethodCARD:
+	case OrderDtoPaymentMethodPAYMENTMETHODCARD:
 		return []byte(s), nil
-	case OrderDtoPaymentMethodSBP:
+	case OrderDtoPaymentMethodPAYMENTMETHODSBP:
 		return []byte(s), nil
-	case OrderDtoPaymentMethodCREDITCARD:
+	case OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD:
 		return []byte(s), nil
-	case OrderDtoPaymentMethodINVESTORMONEY:
+	case OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -528,17 +528,17 @@ func (s OrderDtoPaymentMethod) MarshalText() ([]byte, error) {
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (s *OrderDtoPaymentMethod) UnmarshalText(data []byte) error {
 	switch OrderDtoPaymentMethod(data) {
-	case OrderDtoPaymentMethodCARD:
-		*s = OrderDtoPaymentMethodCARD
+	case OrderDtoPaymentMethodPAYMENTMETHODCARD:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODCARD
 		return nil
-	case OrderDtoPaymentMethodSBP:
-		*s = OrderDtoPaymentMethodSBP
+	case OrderDtoPaymentMethodPAYMENTMETHODSBP:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODSBP
 		return nil
-	case OrderDtoPaymentMethodCREDITCARD:
-		*s = OrderDtoPaymentMethodCREDITCARD
+	case OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD
 		return nil
-	case OrderDtoPaymentMethodINVESTORMONEY:
-		*s = OrderDtoPaymentMethodINVESTORMONEY
+	case OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
