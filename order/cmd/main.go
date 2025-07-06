@@ -2,24 +2,33 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
-	partV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/part/v1"
+	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 )
 
 const (
 	httpPort = "8080"
 	// Таймауты для HTTP-сервера
-	readHeaderTimeout = 5 * time.Second
-	shutdownTimeout   = 10 * time.Second
-	grpcAddress       = "localhost:50051"
+	readHeaderTimeout    = 5 * time.Second
+	shutdownTimeout      = 10 * time.Second
+	grpcInventoryAddress = "localhost:50051"
+	grpcPaymentAddress   = "localhost:50052"
 )
 
 // OrderService provides thread-safe storage and management of orders
@@ -39,6 +48,7 @@ func (s *OrderService) OrderByUuid(orderUuid string) *orderV1.OrderDto {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
+	fmt.Println(s.orders)
 	order, ok := s.orders[orderUuid]
 	if !ok {
 		return nil
@@ -54,7 +64,7 @@ func (s *OrderService) OrderUpdate(orderUuid string, order *orderV1.OrderDto) {
 	s.orders[orderUuid] = order
 }
 
-func (s *OrderService) CreateOrder(userUuid string, parts []*partV1.Part) *orderV1.OrderDto {
+func (s *OrderService) CreateOrder(userUuid string, parts []*inventoryV1.Part) *orderV1.OrderDto {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -107,16 +117,16 @@ func (s *OrderService) CancelOrderByUuid(order_uuid string) *orderV1.OrderDto {
 // OrderHandler provides HTTP handlers for order operations
 type OrderHandler struct {
 	service          *OrderService
-	inventoryService partV1.PartServiceClient
+	inventoryService inventoryV1.InventoryServiceClient
 	paymentService   paymentV1.PaymentServiceClient
 }
 
 // NewOrderHandler creates a new OrderHandler instance with the given OrderService
-func NewOrderHandler(service *OrderService, grpcConn *grpc.ClientConn) *OrderHandler {
+func NewOrderHandler(service *OrderService, grpcInventoryConn *grpc.ClientConn, grpcPaymentConn *grpc.ClientConn) *OrderHandler {
 	return &OrderHandler{
 		service:          service,
-		inventoryService: partV1.NewPartServiceClient(grpcConn),
-		paymentService:   paymentV1.NewPaymentServiceClient(grpcConn),
+		inventoryService: inventoryV1.NewInventoryServiceClient(grpcInventoryConn),
+		paymentService:   paymentV1.NewPaymentServiceClient(grpcPaymentConn),
 	}
 }
 
@@ -133,7 +143,7 @@ func (h *OrderHandler) OrderByUuid(_ context.Context, params orderV1.OrderByUuid
 }
 
 func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRequest) (orderV1.CreateOrderRes, error) {
-	partsReq := partV1.ListPartsRequest{Filter: &partV1.PartsFilter{Uuids: req.PartUuids}}
+	partsReq := inventoryV1.ListPartsRequest{Filter: &inventoryV1.PartsFilter{Uuids: req.PartUuids}}
 	parts, err := h.inventoryService.ListParts(context.Background(), &partsReq)
 	if err != nil {
 		return &orderV1.BadRequestError{
@@ -163,8 +173,9 @@ func (h *OrderHandler) CreateOrder(_ context.Context, req *orderV1.CreateOrderRe
 	}, nil
 }
 
-func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest, params *orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
+func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
 	order := h.service.OrderByUuid(params.OrderUUID)
+	fmt.Println("URRRAA", order.Status)
 	if order == nil {
 		return &orderV1.NotFoundError{
 			Code:    404,
@@ -173,6 +184,7 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 	}
 
 	l, err := convertPaymentMethod(req.PaymentMethod)
+	fmt.Println("convert PARAMS", err)
 	if err != nil {
 		return &orderV1.NotFoundError{
 			Code:    400,
@@ -182,6 +194,7 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 
 	paymentReq := paymentV1.PayOrderRequest{UserUuid: order.UserUUID, OrderUuid: order.OrderUUID, PaymentMethod: l}
 	payment, err := h.paymentService.PayOrder(context.Background(), &paymentReq)
+	fmt.Println(err)
 	if err != nil {
 		return &orderV1.NotFoundError{
 			Code:    400,
@@ -199,12 +212,14 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 	})
 	order.SetStatus(orderV1.OrderDtoStatusPAID)
 
+	fmt.Println(order.Status)
+
 	return &orderV1.PayOrderResponse{
 		TransactionUUID: payment.TransactionUuid,
 	}, nil
 }
 
-func (h *OrderHandler) CancelOrderByUuid(_ context.Context, params *orderV1.CancelOrderByUuidParams) (orderV1.CancelOrderByUuidRes, error) {
+func (h *OrderHandler) CancelOrderByUuid(_ context.Context, params orderV1.CancelOrderByUuidParams) (orderV1.CancelOrderByUuidRes, error) {
 	order := h.service.OrderByUuid(params.OrderUUID)
 	if order == nil {
 		return &orderV1.NotFoundError{
@@ -220,7 +235,7 @@ func (h *OrderHandler) CancelOrderByUuid(_ context.Context, params *orderV1.Canc
 		}, nil
 	}
 
-	order.SetStatus(orderV1.OrderDtoStatusCANCELED)
+	order.SetStatus(orderV1.OrderDtoStatusCANCELLED)
 
 	return &orderV1.CancelOrderByUuidNoContent{}, nil
 }
@@ -236,11 +251,9 @@ func (h *OrderHandler) NewError(_ context.Context, err error) *orderV1.GenericEr
 }
 
 func main() {
-	ctx := context.Background()
-
-	// grpcConn настройка gRPC клиента
-	grpcConn, err := grpc.NewClient(
-		grpcAddress,
+	// grpcConn настройка gRPC клиента Inventory
+	grpcInventoryConn, err := grpc.NewClient(
+		grpcInventoryAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -248,13 +261,28 @@ func main() {
 		return
 	}
 	defer func() {
-		if cerr := grpcConn.Close(); cerr != nil {
+		if cerr := grpcInventoryConn.Close(); cerr != nil {
+			log.Printf("failed to close connect: %v", cerr)
+		}
+	}()
+
+	// grpcConn настройка gRPC клиента Payment
+	grpcPaymentConn, err := grpc.NewClient(
+		grpcPaymentAddress,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Printf("failed to connect: %v\n", err)
+		return
+	}
+	defer func() {
+		if cerr := grpcPaymentConn.Close(); cerr != nil {
 			log.Printf("failed to close connect: %v", cerr)
 		}
 	}()
 
 	service := NewOrderService()
-	orderHandler := NewOrderHandler(service, grpcConn)
+	orderHandler := NewOrderHandler(service, grpcInventoryConn, grpcPaymentConn)
 
 	orderServer, err := orderV1.NewServer(orderHandler)
 
@@ -262,15 +290,54 @@ func main() {
 		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
 	}
 
-	fmt.Println(orderServer)
-
 	// Инициализируем роутер Chi
-	//r := chi.NewRouter()
+	r := chi.NewRouter()
+
+	// Добавляем middleware
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(10 * time.Second))
+
+	// Монтируем обработчики OpenAPI
+	r.Mount("/", orderServer)
+
+	server := &http.Server{
+		Addr:              net.JoinHostPort("localhost", httpPort),
+		Handler:           r,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+
+	go func() {
+		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", httpPort)
+		err = server.ListenAndServe()
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("🛑 Завершение работы сервера...")
+
+	// Создаем контекст с таймаутом для остановки сервера
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+
+	err = server.Shutdown(ctx)
+	if err != nil {
+		log.Printf("❌ Ошибка при остановке сервера: %v\n", err)
+	}
+
+	log.Println("✅ Сервер остановлен")
 }
 
 func convertPaymentMethod(method orderV1.PayOrderRequestPaymentMethod) (paymentV1.PaymentMethod, error) {
 	switch method {
 	case orderV1.PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED:
+		return paymentV1.PaymentMethod_PAYMENT_METHOD_UNSPECIFIED, nil
+	case orderV1.PayOrderRequestPaymentMethodPAYMENTMETHODCARD:
 		return paymentV1.PaymentMethod_PAYMENT_METHOD_CARD, nil
 	case orderV1.PayOrderRequestPaymentMethodPAYMENTMETHODSBP:
 		return paymentV1.PaymentMethod_PAYMENT_METHOD_SBP, nil

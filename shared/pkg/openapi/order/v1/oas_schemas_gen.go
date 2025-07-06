@@ -550,7 +550,7 @@ type OrderDtoStatus string
 const (
 	OrderDtoStatusPENDINGPAYMENT OrderDtoStatus = "PENDING_PAYMENT"
 	OrderDtoStatusPAID           OrderDtoStatus = "PAID"
-	OrderDtoStatusCANCELED       OrderDtoStatus = "CANCELED"
+	OrderDtoStatusCANCELLED      OrderDtoStatus = "CANCELLED"
 )
 
 // AllValues returns all OrderDtoStatus values.
@@ -558,7 +558,7 @@ func (OrderDtoStatus) AllValues() []OrderDtoStatus {
 	return []OrderDtoStatus{
 		OrderDtoStatusPENDINGPAYMENT,
 		OrderDtoStatusPAID,
-		OrderDtoStatusCANCELED,
+		OrderDtoStatusCANCELLED,
 	}
 }
 
@@ -569,7 +569,7 @@ func (s OrderDtoStatus) MarshalText() ([]byte, error) {
 		return []byte(s), nil
 	case OrderDtoStatusPAID:
 		return []byte(s), nil
-	case OrderDtoStatusCANCELED:
+	case OrderDtoStatusCANCELLED:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -585,8 +585,8 @@ func (s *OrderDtoStatus) UnmarshalText(data []byte) error {
 	case OrderDtoStatusPAID:
 		*s = OrderDtoStatusPAID
 		return nil
-	case OrderDtoStatusCANCELED:
-		*s = OrderDtoStatusCANCELED
+	case OrderDtoStatusCANCELLED:
+		*s = OrderDtoStatusCANCELLED
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
