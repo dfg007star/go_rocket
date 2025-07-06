@@ -3,7 +3,7 @@ module github.com/dfg007star/go_rocket/inventory
 go 1.24.4
 
 require (
-	github.com/dfg007star/go_rocket/shared v0.0.0-20250705191319-51dbdd67cdbd
+	github.com/dfg007star/go_rocket/shared v0.0.0-20250706140514-704dbb3e659c
 	google.golang.org/grpc v1.73.0
 )
 

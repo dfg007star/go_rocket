@@ -1,5 +1,5 @@
-github.com/dfg007star/go_rocket/shared v0.0.0-20250705191319-51dbdd67cdbd h1:Y0y9o4aannXZmH+PDGtVeoAYVnkk/TTN+SG+NW9yO+M=
-github.com/dfg007star/go_rocket/shared v0.0.0-20250705191319-51dbdd67cdbd/go.mod h1:VRyLTpyQNzQhIMtoFLr1Mxq4Zw66jNlEB1jM3Az5APc=
+github.com/dfg007star/go_rocket/shared v0.0.0-20250706140514-704dbb3e659c h1:Ajf4yI3BkERg5RLURoeiD0gUPuB3goZ+f4WZgkmV75Q=
+github.com/dfg007star/go_rocket/shared v0.0.0-20250706140514-704dbb3e659c/go.mod h1:VRyLTpyQNzQhIMtoFLr1Mxq4Zw66jNlEB1jM3Az5APc=
 github.com/go-logr/logr v1.4.3 h1:CjnDlHq8ikf6E492q6eKboGOC0T8CDaOvkHCIg8idEI=
 github.com/go-logr/logr v1.4.3/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
 github.com/go-logr/stdr v1.2.2 h1:hSWxHoqTgW2S2qGc0LTAI563KZ5YKYRhT3MFKZMbjag=
