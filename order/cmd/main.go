@@ -163,9 +163,11 @@ func (h *OrderHandler) PayOrder(_ context.Context, req *orderV1.PayOrderRequest,
 			Message: "Order with UUID <'" + params.OrderUUID + "'> not found",
 		}, nil
 	}
-	paymentReq := paymentV1.PayOrderRequest{UserUuid: order.UserUUID, OrderUuid: order.OrderUUID, PaymentMethod: }
-	payment := h.paymentService.PayOrder(context.Background())
 
+	pm := req.UnmarshalJSON()
+	//paymentMethod int32
+	paymentReq := paymentV1.PayOrderRequest{UserUuid: order.UserUUID, OrderUuid: order.OrderUUID, PaymentMethod: paymentV1.PaymentMethod(req.PaymentMethod)}
+	//payment := h.paymentService.PayOrder(context.Background())
 }
 
 func main() {

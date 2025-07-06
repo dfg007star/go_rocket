@@ -1308,16 +1308,16 @@ func (s *PayOrderRequestPaymentMethod) Decode(d *jx.Decoder) error {
 	}
 	// Try to use constant string.
 	switch PayOrderRequestPaymentMethod(v) {
-	case PayOrderRequestPaymentMethodUNKNOWN:
-		*s = PayOrderRequestPaymentMethodUNKNOWN
-	case PayOrderRequestPaymentMethodCARD:
-		*s = PayOrderRequestPaymentMethodCARD
-	case PayOrderRequestPaymentMethodSBP:
-		*s = PayOrderRequestPaymentMethodSBP
-	case PayOrderRequestPaymentMethodCREDITCARD:
-		*s = PayOrderRequestPaymentMethodCREDITCARD
-	case PayOrderRequestPaymentMethodINVESTORMONEY:
-		*s = PayOrderRequestPaymentMethodINVESTORMONEY
+	case PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED
+	case PayOrderRequestPaymentMethodPAYMENTMETHODCARD:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODCARD
+	case PayOrderRequestPaymentMethodPAYMENTMETHODSBP:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODSBP
+	case PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD
+	case PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY
 	default:
 		*s = PayOrderRequestPaymentMethod(v)
 	}

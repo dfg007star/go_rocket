@@ -4,12 +4,12 @@ required:
 properties:
   payment_method:
     type: string
-    enum: ["UNKNOWN", "CARD", "SBP", "CREDIT_CARD", "INVESTOR_MONEY"]
-    example: "CARD"
+    enum: ["PAYMENT_METHOD_UNSPECIFIED", "PAYMENT_METHOD_CARD", "PAYMENT_METHOD_SBP", "PAYMENT_METHOD_CREDIT_CARD", "PAYMENT_METHOD_INVESTOR_MONEY"]
+    example: "PAYMENT_METHOD_CARD"
     description: |
-      - UNKNOWN - Неизвестный способ
-      - CARD - Банковская карта
-      - SBP - Система быстрых платежей
-      - CREDIT_CARD - Кредитная карта
-      - INVESTOR_MONEY - Деньги инвестора
-    default: "UNKNOWN"
+      - PAYMENT_METHOD_UNSPECIFIED - Неизвестный способ
+      - PAYMENT_METHOD_CARD - Банковская карта
+      - PAYMENT_METHOD_SBP - Система быстрых платежей
+      - PAYMENT_METHOD_CREDIT_CARD - Кредитная карта
+      - PAYMENT_METHOD_INVESTOR_MONEY - Деньги инвестора
+    default: "PAYMENT_METHOD_UNSPECIFIED"
