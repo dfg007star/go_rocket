@@ -2,6 +2,7 @@ module github.com/dfg007star/go_rocket/order
 
 go 1.24.4
 
+require github.com/dfg007star/go_rocket/shared v0.0.0-20250705191319-51dbdd67cdbd
 
 require (
 	github.com/dlclark/regexp2 v1.11.5 // indirect

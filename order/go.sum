@@ -1,7 +1,7 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dfg007star/go_rocket_course/shared v0.0.0-20250704170049-73dcb29566f2 h1:6WLsb1fp/Iu5dB9CJZ1uwBp6F2dakz+8tA82VAJwOMY=
-github.com/dfg007star/go_rocket_course/shared v0.0.0-20250704170049-73dcb29566f2/go.mod h1:w4HYjAgHbb4CSWsvqAP76+xsdyc8z3647oGU+PkilyQ=
+github.com/dfg007star/go_rocket/shared v0.0.0-20250705191319-51dbdd67cdbd h1:Y0y9o4aannXZmH+PDGtVeoAYVnkk/TTN+SG+NW9yO+M=
+github.com/dfg007star/go_rocket/shared v0.0.0-20250705191319-51dbdd67cdbd/go.mod h1:VRyLTpyQNzQhIMtoFLr1Mxq4Zw66jNlEB1jM3Az5APc=
 github.com/dlclark/regexp2 v1.11.5 h1:Q/sSnsKerHeCkc/jSTNq1oCm7KiVgUMZRDUoRu0JQZQ=
 github.com/dlclark/regexp2 v1.11.5/go.mod h1:DHkYz0B9wPfa6wondMfaivmHpzrQ3v9q8cnmRbL6yW8=
 github.com/fatih/color v1.18.0 h1:S8gINlzdQ840/4pfAwic/ZE0djQEH3wM94VfqLTZcOM=

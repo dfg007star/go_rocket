@@ -1,7 +1,7 @@
 package main
 
 import (
-	orderv1 "github.com/dfg007star/go_rocket_course/shared/pkg/openapi/order/v1"
+	orderv1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	"sync"
 	"time"
 )
