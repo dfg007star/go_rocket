@@ -1,3 +1,3 @@
-module github.com/dfg007star/go_rocket_course
+module github.com/dfg007star/go_rocket
 
 go 1.24.4

@@ -1,8 +1,13 @@
-module github.com/dfg007star/go_rocket_course/order
+module github.com/dfg007star/go_rocket/order
 
 go 1.24.4
 
-require github.com/dfg007star/go_rocket_course/shared v0.0.0-20250704170049-73dcb29566f2
+require (
+	github.com/dfg007star/go_rocket/shared v0.0.0-20250706162841-51d96bf7cfc4
+	github.com/go-chi/chi/v5 v5.2.2
+	github.com/google/uuid v1.6.0
+	google.golang.org/grpc v1.73.0
+)
 
 require (
 	github.com/dlclark/regexp2 v1.11.5 // indirect
@@ -13,7 +18,6 @@ require (
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/ogen-go/ogen v1.14.0 // indirect
@@ -29,5 +33,7 @@ require (
 	golang.org/x/sync v0.14.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
+	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

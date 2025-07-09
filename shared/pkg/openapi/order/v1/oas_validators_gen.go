@@ -127,13 +127,13 @@ func (s *OrderDto) Validate() error {
 
 func (s OrderDtoPaymentMethod) Validate() error {
 	switch s {
-	case "CARD":
+	case "PAYMENT_METHOD_CARD":
 		return nil
-	case "SBP":
+	case "PAYMENT_METHOD_SBP":
 		return nil
-	case "CREDIT_CARD":
+	case "PAYMENT_METHOD_CREDIT_CARD":
 		return nil
-	case "INVESTOR_MONEY":
+	case "PAYMENT_METHOD_INVESTOR_MONEY":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
@@ -146,7 +146,7 @@ func (s OrderDtoStatus) Validate() error {
 		return nil
 	case "PAID":
 		return nil
-	case "CANCELED":
+	case "CANCELLED":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
@@ -178,15 +178,15 @@ func (s *PayOrderRequest) Validate() error {
 
 func (s PayOrderRequestPaymentMethod) Validate() error {
 	switch s {
-	case "UNKNOWN":
+	case "PAYMENT_METHOD_UNSPECIFIED":
 		return nil
-	case "CARD":
+	case "PAYMENT_METHOD_CARD":
 		return nil
-	case "SBP":
+	case "PAYMENT_METHOD_SBP":
 		return nil
-	case "CREDIT_CARD":
+	case "PAYMENT_METHOD_CREDIT_CARD":
 		return nil
-	case "INVESTOR_MONEY":
+	case "PAYMENT_METHOD_INVESTOR_MONEY":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)

@@ -5,7 +5,7 @@ package order_v1
 // setDefaults set default value of fields.
 func (s *PayOrderRequest) setDefaults() {
 	{
-		val := PayOrderRequestPaymentMethod("UNKNOWN")
+		val := PayOrderRequestPaymentMethod("PAYMENT_METHOD_UNSPECIFIED")
 		s.PaymentMethod = val
 	}
 }

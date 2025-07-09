@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
-	"github.com/google/uuid"
 
 	"github.com/ogen-go/ogen/json"
 	"github.com/ogen-go/ogen/validate"
@@ -251,13 +250,13 @@ func (s *CreateOrderRequest) Encode(e *jx.Encoder) {
 func (s *CreateOrderRequest) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("user_uuid")
-		json.EncodeUUID(e, s.UserUUID)
+		e.Str(s.UserUUID)
 	}
 	{
 		e.FieldStart("part_uuids")
 		e.ArrStart()
 		for _, elem := range s.PartUuids {
-			json.EncodeUUID(e, elem)
+			e.Str(elem)
 		}
 		e.ArrEnd()
 	}
@@ -280,8 +279,8 @@ func (s *CreateOrderRequest) Decode(d *jx.Decoder) error {
 		case "user_uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := json.DecodeUUID(d)
-				s.UserUUID = v
+				v, err := d.Str()
+				s.UserUUID = string(v)
 				if err != nil {
 					return err
 				}
@@ -292,11 +291,11 @@ func (s *CreateOrderRequest) Decode(d *jx.Decoder) error {
 		case "part_uuids":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				s.PartUuids = make([]uuid.UUID, 0)
+				s.PartUuids = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem uuid.UUID
-					v, err := json.DecodeUUID(d)
-					elem = v
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
 					if err != nil {
 						return err
 					}
@@ -376,7 +375,7 @@ func (s *CreateOrderResponse) Encode(e *jx.Encoder) {
 func (s *CreateOrderResponse) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("order_uuid")
-		json.EncodeUUID(e, s.OrderUUID)
+		e.Str(s.OrderUUID)
 	}
 	{
 		e.FieldStart("total_price")
@@ -401,8 +400,8 @@ func (s *CreateOrderResponse) Decode(d *jx.Decoder) error {
 		case "order_uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := json.DecodeUUID(d)
-				s.OrderUUID = v
+				v, err := d.Str()
+				s.OrderUUID = string(v)
 				if err != nil {
 					return err
 				}
@@ -887,41 +886,6 @@ func (s *OptString) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes uuid.UUID as json.
-func (o OptUUID) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	json.EncodeUUID(e, o.Value)
-}
-
-// Decode decodes uuid.UUID from json.
-func (o *OptUUID) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptUUID to nil")
-	}
-	o.Set = true
-	v, err := json.DecodeUUID(d)
-	if err != nil {
-		return err
-	}
-	o.Value = v
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptUUID) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptUUID) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode implements json.Marshaler.
 func (s *OrderDto) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -933,17 +897,17 @@ func (s *OrderDto) Encode(e *jx.Encoder) {
 func (s *OrderDto) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("order_uuid")
-		json.EncodeUUID(e, s.OrderUUID)
+		e.Str(s.OrderUUID)
 	}
 	{
 		e.FieldStart("user_uuid")
-		json.EncodeUUID(e, s.UserUUID)
+		e.Str(s.UserUUID)
 	}
 	{
 		e.FieldStart("part_uuids")
 		e.ArrStart()
 		for _, elem := range s.PartUuids {
-			json.EncodeUUID(e, elem)
+			e.Str(elem)
 		}
 		e.ArrEnd()
 	}
@@ -996,8 +960,8 @@ func (s *OrderDto) Decode(d *jx.Decoder) error {
 		case "order_uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := json.DecodeUUID(d)
-				s.OrderUUID = v
+				v, err := d.Str()
+				s.OrderUUID = string(v)
 				if err != nil {
 					return err
 				}
@@ -1008,8 +972,8 @@ func (s *OrderDto) Decode(d *jx.Decoder) error {
 		case "user_uuid":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := json.DecodeUUID(d)
-				s.UserUUID = v
+				v, err := d.Str()
+				s.UserUUID = string(v)
 				if err != nil {
 					return err
 				}
@@ -1020,11 +984,11 @@ func (s *OrderDto) Decode(d *jx.Decoder) error {
 		case "part_uuids":
 			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				s.PartUuids = make([]uuid.UUID, 0)
+				s.PartUuids = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem uuid.UUID
-					v, err := json.DecodeUUID(d)
-					elem = v
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
 					if err != nil {
 						return err
 					}
@@ -1163,14 +1127,14 @@ func (s *OrderDtoPaymentMethod) Decode(d *jx.Decoder) error {
 	}
 	// Try to use constant string.
 	switch OrderDtoPaymentMethod(v) {
-	case OrderDtoPaymentMethodCARD:
-		*s = OrderDtoPaymentMethodCARD
-	case OrderDtoPaymentMethodSBP:
-		*s = OrderDtoPaymentMethodSBP
-	case OrderDtoPaymentMethodCREDITCARD:
-		*s = OrderDtoPaymentMethodCREDITCARD
-	case OrderDtoPaymentMethodINVESTORMONEY:
-		*s = OrderDtoPaymentMethodINVESTORMONEY
+	case OrderDtoPaymentMethodPAYMENTMETHODCARD:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODCARD
+	case OrderDtoPaymentMethodPAYMENTMETHODSBP:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODSBP
+	case OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD
+	case OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY
 	default:
 		*s = OrderDtoPaymentMethod(v)
 	}
@@ -1211,8 +1175,8 @@ func (s *OrderDtoStatus) Decode(d *jx.Decoder) error {
 		*s = OrderDtoStatusPENDINGPAYMENT
 	case OrderDtoStatusPAID:
 		*s = OrderDtoStatusPAID
-	case OrderDtoStatusCANCELED:
-		*s = OrderDtoStatusCANCELED
+	case OrderDtoStatusCANCELLED:
+		*s = OrderDtoStatusCANCELLED
 	default:
 		*s = OrderDtoStatus(v)
 	}
@@ -1344,16 +1308,16 @@ func (s *PayOrderRequestPaymentMethod) Decode(d *jx.Decoder) error {
 	}
 	// Try to use constant string.
 	switch PayOrderRequestPaymentMethod(v) {
-	case PayOrderRequestPaymentMethodUNKNOWN:
-		*s = PayOrderRequestPaymentMethodUNKNOWN
-	case PayOrderRequestPaymentMethodCARD:
-		*s = PayOrderRequestPaymentMethodCARD
-	case PayOrderRequestPaymentMethodSBP:
-		*s = PayOrderRequestPaymentMethodSBP
-	case PayOrderRequestPaymentMethodCREDITCARD:
-		*s = PayOrderRequestPaymentMethodCREDITCARD
-	case PayOrderRequestPaymentMethodINVESTORMONEY:
-		*s = PayOrderRequestPaymentMethodINVESTORMONEY
+	case PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED
+	case PayOrderRequestPaymentMethodPAYMENTMETHODCARD:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODCARD
+	case PayOrderRequestPaymentMethodPAYMENTMETHODSBP:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODSBP
+	case PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD
+	case PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY
 	default:
 		*s = PayOrderRequestPaymentMethod(v)
 	}
@@ -1385,7 +1349,7 @@ func (s *PayOrderResponse) Encode(e *jx.Encoder) {
 func (s *PayOrderResponse) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("transaction_uuid")
-		json.EncodeUUID(e, s.TransactionUUID)
+		e.Str(s.TransactionUUID)
 	}
 }
 
@@ -1405,8 +1369,8 @@ func (s *PayOrderResponse) Decode(d *jx.Decoder) error {
 		case "transaction_uuid":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := json.DecodeUUID(d)
-				s.TransactionUUID = v
+				v, err := d.Str()
+				s.TransactionUUID = string(v)
 				if err != nil {
 					return err
 				}

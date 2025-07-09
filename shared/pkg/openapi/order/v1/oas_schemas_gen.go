@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/go-faster/errors"
-	"github.com/google/uuid"
 )
 
 func (s *GenericErrorStatusCode) Error() string {
@@ -85,41 +84,41 @@ func (*ConflictError) cancelOrderByUuidRes() {}
 // Ref: #/components/schemas/create_order_request
 type CreateOrderRequest struct {
 	// User uuid.
-	UserUUID uuid.UUID `json:"user_uuid"`
+	UserUUID string `json:"user_uuid"`
 	// Parts uuids.
-	PartUuids []uuid.UUID `json:"part_uuids"`
+	PartUuids []string `json:"part_uuids"`
 }
 
 // GetUserUUID returns the value of UserUUID.
-func (s *CreateOrderRequest) GetUserUUID() uuid.UUID {
+func (s *CreateOrderRequest) GetUserUUID() string {
 	return s.UserUUID
 }
 
 // GetPartUuids returns the value of PartUuids.
-func (s *CreateOrderRequest) GetPartUuids() []uuid.UUID {
+func (s *CreateOrderRequest) GetPartUuids() []string {
 	return s.PartUuids
 }
 
 // SetUserUUID sets the value of UserUUID.
-func (s *CreateOrderRequest) SetUserUUID(val uuid.UUID) {
+func (s *CreateOrderRequest) SetUserUUID(val string) {
 	s.UserUUID = val
 }
 
 // SetPartUuids sets the value of PartUuids.
-func (s *CreateOrderRequest) SetPartUuids(val []uuid.UUID) {
+func (s *CreateOrderRequest) SetPartUuids(val []string) {
 	s.PartUuids = val
 }
 
 // Ref: #/components/schemas/create_order_response
 type CreateOrderResponse struct {
 	// Order uuid.
-	OrderUUID uuid.UUID `json:"order_uuid"`
+	OrderUUID string `json:"order_uuid"`
 	// Total price.
 	TotalPrice float32 `json:"total_price"`
 }
 
 // GetOrderUUID returns the value of OrderUUID.
-func (s *CreateOrderResponse) GetOrderUUID() uuid.UUID {
+func (s *CreateOrderResponse) GetOrderUUID() string {
 	return s.OrderUUID
 }
 
@@ -129,7 +128,7 @@ func (s *CreateOrderResponse) GetTotalPrice() float32 {
 }
 
 // SetOrderUUID sets the value of OrderUUID.
-func (s *CreateOrderResponse) SetOrderUUID(val uuid.UUID) {
+func (s *CreateOrderResponse) SetOrderUUID(val string) {
 	s.OrderUUID = val
 }
 
@@ -397,76 +396,30 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-// NewOptUUID returns new OptUUID with value set to v.
-func NewOptUUID(v uuid.UUID) OptUUID {
-	return OptUUID{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptUUID is optional uuid.UUID.
-type OptUUID struct {
-	Value uuid.UUID
-	Set   bool
-}
-
-// IsSet returns true if OptUUID was set.
-func (o OptUUID) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptUUID) Reset() {
-	var v uuid.UUID
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptUUID) SetTo(v uuid.UUID) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptUUID) Get() (v uuid.UUID, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptUUID) Or(d uuid.UUID) uuid.UUID {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // Ref: #/components/schemas/order_dto
 type OrderDto struct {
-	OrderUUID       uuid.UUID                `json:"order_uuid"`
-	UserUUID        uuid.UUID                `json:"user_uuid"`
-	PartUuids       []uuid.UUID              `json:"part_uuids"`
+	OrderUUID       string                   `json:"order_uuid"`
+	UserUUID        string                   `json:"user_uuid"`
+	PartUuids       []string                 `json:"part_uuids"`
 	TotalPrice      float32                  `json:"total_price"`
-	TransactionUUID OptUUID                  `json:"transaction_uuid"`
+	TransactionUUID OptString                `json:"transaction_uuid"`
 	PaymentMethod   OptOrderDtoPaymentMethod `json:"payment_method"`
 	Status          OrderDtoStatus           `json:"status"`
 	CreatedAt       time.Time                `json:"created_at"`
 }
 
 // GetOrderUUID returns the value of OrderUUID.
-func (s *OrderDto) GetOrderUUID() uuid.UUID {
+func (s *OrderDto) GetOrderUUID() string {
 	return s.OrderUUID
 }
 
 // GetUserUUID returns the value of UserUUID.
-func (s *OrderDto) GetUserUUID() uuid.UUID {
+func (s *OrderDto) GetUserUUID() string {
 	return s.UserUUID
 }
 
 // GetPartUuids returns the value of PartUuids.
-func (s *OrderDto) GetPartUuids() []uuid.UUID {
+func (s *OrderDto) GetPartUuids() []string {
 	return s.PartUuids
 }
 
@@ -476,7 +429,7 @@ func (s *OrderDto) GetTotalPrice() float32 {
 }
 
 // GetTransactionUUID returns the value of TransactionUUID.
-func (s *OrderDto) GetTransactionUUID() OptUUID {
+func (s *OrderDto) GetTransactionUUID() OptString {
 	return s.TransactionUUID
 }
 
@@ -496,17 +449,17 @@ func (s *OrderDto) GetCreatedAt() time.Time {
 }
 
 // SetOrderUUID sets the value of OrderUUID.
-func (s *OrderDto) SetOrderUUID(val uuid.UUID) {
+func (s *OrderDto) SetOrderUUID(val string) {
 	s.OrderUUID = val
 }
 
 // SetUserUUID sets the value of UserUUID.
-func (s *OrderDto) SetUserUUID(val uuid.UUID) {
+func (s *OrderDto) SetUserUUID(val string) {
 	s.UserUUID = val
 }
 
 // SetPartUuids sets the value of PartUuids.
-func (s *OrderDto) SetPartUuids(val []uuid.UUID) {
+func (s *OrderDto) SetPartUuids(val []string) {
 	s.PartUuids = val
 }
 
@@ -516,7 +469,7 @@ func (s *OrderDto) SetTotalPrice(val float32) {
 }
 
 // SetTransactionUUID sets the value of TransactionUUID.
-func (s *OrderDto) SetTransactionUUID(val OptUUID) {
+func (s *OrderDto) SetTransactionUUID(val OptString) {
 	s.TransactionUUID = val
 }
 
@@ -540,32 +493,32 @@ func (*OrderDto) orderByUuidRes() {}
 type OrderDtoPaymentMethod string
 
 const (
-	OrderDtoPaymentMethodCARD          OrderDtoPaymentMethod = "CARD"
-	OrderDtoPaymentMethodSBP           OrderDtoPaymentMethod = "SBP"
-	OrderDtoPaymentMethodCREDITCARD    OrderDtoPaymentMethod = "CREDIT_CARD"
-	OrderDtoPaymentMethodINVESTORMONEY OrderDtoPaymentMethod = "INVESTOR_MONEY"
+	OrderDtoPaymentMethodPAYMENTMETHODCARD          OrderDtoPaymentMethod = "PAYMENT_METHOD_CARD"
+	OrderDtoPaymentMethodPAYMENTMETHODSBP           OrderDtoPaymentMethod = "PAYMENT_METHOD_SBP"
+	OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD    OrderDtoPaymentMethod = "PAYMENT_METHOD_CREDIT_CARD"
+	OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY OrderDtoPaymentMethod = "PAYMENT_METHOD_INVESTOR_MONEY"
 )
 
 // AllValues returns all OrderDtoPaymentMethod values.
 func (OrderDtoPaymentMethod) AllValues() []OrderDtoPaymentMethod {
 	return []OrderDtoPaymentMethod{
-		OrderDtoPaymentMethodCARD,
-		OrderDtoPaymentMethodSBP,
-		OrderDtoPaymentMethodCREDITCARD,
-		OrderDtoPaymentMethodINVESTORMONEY,
+		OrderDtoPaymentMethodPAYMENTMETHODCARD,
+		OrderDtoPaymentMethodPAYMENTMETHODSBP,
+		OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD,
+		OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY,
 	}
 }
 
 // MarshalText implements encoding.TextMarshaler.
 func (s OrderDtoPaymentMethod) MarshalText() ([]byte, error) {
 	switch s {
-	case OrderDtoPaymentMethodCARD:
+	case OrderDtoPaymentMethodPAYMENTMETHODCARD:
 		return []byte(s), nil
-	case OrderDtoPaymentMethodSBP:
+	case OrderDtoPaymentMethodPAYMENTMETHODSBP:
 		return []byte(s), nil
-	case OrderDtoPaymentMethodCREDITCARD:
+	case OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD:
 		return []byte(s), nil
-	case OrderDtoPaymentMethodINVESTORMONEY:
+	case OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -575,17 +528,17 @@ func (s OrderDtoPaymentMethod) MarshalText() ([]byte, error) {
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (s *OrderDtoPaymentMethod) UnmarshalText(data []byte) error {
 	switch OrderDtoPaymentMethod(data) {
-	case OrderDtoPaymentMethodCARD:
-		*s = OrderDtoPaymentMethodCARD
+	case OrderDtoPaymentMethodPAYMENTMETHODCARD:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODCARD
 		return nil
-	case OrderDtoPaymentMethodSBP:
-		*s = OrderDtoPaymentMethodSBP
+	case OrderDtoPaymentMethodPAYMENTMETHODSBP:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODSBP
 		return nil
-	case OrderDtoPaymentMethodCREDITCARD:
-		*s = OrderDtoPaymentMethodCREDITCARD
+	case OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODCREDITCARD
 		return nil
-	case OrderDtoPaymentMethodINVESTORMONEY:
-		*s = OrderDtoPaymentMethodINVESTORMONEY
+	case OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY:
+		*s = OrderDtoPaymentMethodPAYMENTMETHODINVESTORMONEY
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -597,7 +550,7 @@ type OrderDtoStatus string
 const (
 	OrderDtoStatusPENDINGPAYMENT OrderDtoStatus = "PENDING_PAYMENT"
 	OrderDtoStatusPAID           OrderDtoStatus = "PAID"
-	OrderDtoStatusCANCELED       OrderDtoStatus = "CANCELED"
+	OrderDtoStatusCANCELLED      OrderDtoStatus = "CANCELLED"
 )
 
 // AllValues returns all OrderDtoStatus values.
@@ -605,7 +558,7 @@ func (OrderDtoStatus) AllValues() []OrderDtoStatus {
 	return []OrderDtoStatus{
 		OrderDtoStatusPENDINGPAYMENT,
 		OrderDtoStatusPAID,
-		OrderDtoStatusCANCELED,
+		OrderDtoStatusCANCELLED,
 	}
 }
 
@@ -616,7 +569,7 @@ func (s OrderDtoStatus) MarshalText() ([]byte, error) {
 		return []byte(s), nil
 	case OrderDtoStatusPAID:
 		return []byte(s), nil
-	case OrderDtoStatusCANCELED:
+	case OrderDtoStatusCANCELLED:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -632,8 +585,8 @@ func (s *OrderDtoStatus) UnmarshalText(data []byte) error {
 	case OrderDtoStatusPAID:
 		*s = OrderDtoStatusPAID
 		return nil
-	case OrderDtoStatusCANCELED:
-		*s = OrderDtoStatusCANCELED
+	case OrderDtoStatusCANCELLED:
+		*s = OrderDtoStatusCANCELLED
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -642,11 +595,11 @@ func (s *OrderDtoStatus) UnmarshalText(data []byte) error {
 
 // Ref: #/components/schemas/pay_order_request
 type PayOrderRequest struct {
-	// - UNKNOWN - Неизвестный способ
-	// - CARD - Банковская карта
-	// - SBP - Система быстрых платежей
-	// - CREDIT_CARD - Кредитная карта
-	// - INVESTOR_MONEY - Деньги инвестора.
+	// - PAYMENT_METHOD_UNSPECIFIED - Неизвестный способ
+	// - PAYMENT_METHOD_CARD - Банковская карта
+	// - PAYMENT_METHOD_SBP - Система быстрых платежей
+	// - PAYMENT_METHOD_CREDIT_CARD - Кредитная карта
+	// - PAYMENT_METHOD_INVESTOR_MONEY - Деньги инвестора.
 	PaymentMethod PayOrderRequestPaymentMethod `json:"payment_method"`
 }
 
@@ -660,44 +613,44 @@ func (s *PayOrderRequest) SetPaymentMethod(val PayOrderRequestPaymentMethod) {
 	s.PaymentMethod = val
 }
 
-// - UNKNOWN - Неизвестный способ
-// - CARD - Банковская карта
-// - SBP - Система быстрых платежей
-// - CREDIT_CARD - Кредитная карта
-// - INVESTOR_MONEY - Деньги инвестора.
+// - PAYMENT_METHOD_UNSPECIFIED - Неизвестный способ
+// - PAYMENT_METHOD_CARD - Банковская карта
+// - PAYMENT_METHOD_SBP - Система быстрых платежей
+// - PAYMENT_METHOD_CREDIT_CARD - Кредитная карта
+// - PAYMENT_METHOD_INVESTOR_MONEY - Деньги инвестора.
 type PayOrderRequestPaymentMethod string
 
 const (
-	PayOrderRequestPaymentMethodUNKNOWN       PayOrderRequestPaymentMethod = "UNKNOWN"
-	PayOrderRequestPaymentMethodCARD          PayOrderRequestPaymentMethod = "CARD"
-	PayOrderRequestPaymentMethodSBP           PayOrderRequestPaymentMethod = "SBP"
-	PayOrderRequestPaymentMethodCREDITCARD    PayOrderRequestPaymentMethod = "CREDIT_CARD"
-	PayOrderRequestPaymentMethodINVESTORMONEY PayOrderRequestPaymentMethod = "INVESTOR_MONEY"
+	PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED   PayOrderRequestPaymentMethod = "PAYMENT_METHOD_UNSPECIFIED"
+	PayOrderRequestPaymentMethodPAYMENTMETHODCARD          PayOrderRequestPaymentMethod = "PAYMENT_METHOD_CARD"
+	PayOrderRequestPaymentMethodPAYMENTMETHODSBP           PayOrderRequestPaymentMethod = "PAYMENT_METHOD_SBP"
+	PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD    PayOrderRequestPaymentMethod = "PAYMENT_METHOD_CREDIT_CARD"
+	PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY PayOrderRequestPaymentMethod = "PAYMENT_METHOD_INVESTOR_MONEY"
 )
 
 // AllValues returns all PayOrderRequestPaymentMethod values.
 func (PayOrderRequestPaymentMethod) AllValues() []PayOrderRequestPaymentMethod {
 	return []PayOrderRequestPaymentMethod{
-		PayOrderRequestPaymentMethodUNKNOWN,
-		PayOrderRequestPaymentMethodCARD,
-		PayOrderRequestPaymentMethodSBP,
-		PayOrderRequestPaymentMethodCREDITCARD,
-		PayOrderRequestPaymentMethodINVESTORMONEY,
+		PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED,
+		PayOrderRequestPaymentMethodPAYMENTMETHODCARD,
+		PayOrderRequestPaymentMethodPAYMENTMETHODSBP,
+		PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD,
+		PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY,
 	}
 }
 
 // MarshalText implements encoding.TextMarshaler.
 func (s PayOrderRequestPaymentMethod) MarshalText() ([]byte, error) {
 	switch s {
-	case PayOrderRequestPaymentMethodUNKNOWN:
+	case PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED:
 		return []byte(s), nil
-	case PayOrderRequestPaymentMethodCARD:
+	case PayOrderRequestPaymentMethodPAYMENTMETHODCARD:
 		return []byte(s), nil
-	case PayOrderRequestPaymentMethodSBP:
+	case PayOrderRequestPaymentMethodPAYMENTMETHODSBP:
 		return []byte(s), nil
-	case PayOrderRequestPaymentMethodCREDITCARD:
+	case PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD:
 		return []byte(s), nil
-	case PayOrderRequestPaymentMethodINVESTORMONEY:
+	case PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -707,20 +660,20 @@ func (s PayOrderRequestPaymentMethod) MarshalText() ([]byte, error) {
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (s *PayOrderRequestPaymentMethod) UnmarshalText(data []byte) error {
 	switch PayOrderRequestPaymentMethod(data) {
-	case PayOrderRequestPaymentMethodUNKNOWN:
-		*s = PayOrderRequestPaymentMethodUNKNOWN
+	case PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODUNSPECIFIED
 		return nil
-	case PayOrderRequestPaymentMethodCARD:
-		*s = PayOrderRequestPaymentMethodCARD
+	case PayOrderRequestPaymentMethodPAYMENTMETHODCARD:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODCARD
 		return nil
-	case PayOrderRequestPaymentMethodSBP:
-		*s = PayOrderRequestPaymentMethodSBP
+	case PayOrderRequestPaymentMethodPAYMENTMETHODSBP:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODSBP
 		return nil
-	case PayOrderRequestPaymentMethodCREDITCARD:
-		*s = PayOrderRequestPaymentMethodCREDITCARD
+	case PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODCREDITCARD
 		return nil
-	case PayOrderRequestPaymentMethodINVESTORMONEY:
-		*s = PayOrderRequestPaymentMethodINVESTORMONEY
+	case PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY:
+		*s = PayOrderRequestPaymentMethodPAYMENTMETHODINVESTORMONEY
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -730,16 +683,16 @@ func (s *PayOrderRequestPaymentMethod) UnmarshalText(data []byte) error {
 // Ref: #/components/schemas/pay_order_response
 type PayOrderResponse struct {
 	// Transaction uuid.
-	TransactionUUID uuid.UUID `json:"transaction_uuid"`
+	TransactionUUID string `json:"transaction_uuid"`
 }
 
 // GetTransactionUUID returns the value of TransactionUUID.
-func (s *PayOrderResponse) GetTransactionUUID() uuid.UUID {
+func (s *PayOrderResponse) GetTransactionUUID() string {
 	return s.TransactionUUID
 }
 
 // SetTransactionUUID sets the value of TransactionUUID.
-func (s *PayOrderResponse) SetTransactionUUID(val uuid.UUID) {
+func (s *PayOrderResponse) SetTransactionUUID(val string) {
 	s.TransactionUUID = val
 }
 
