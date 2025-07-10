@@ -1,10 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	paymentAPI "github.com/dfg007star/go_rocket/payment/internal/api/payment/v1"
+	paymentRepository "github.com/dfg007star/go_rocket/payment/internal/repository/payment"
+	paymentService "github.com/dfg007star/go_rocket/payment/internal/service/payment"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
-	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -34,9 +35,10 @@ func main() {
 	s := grpc.NewServer()
 
 	// Регистрируем наш сервис
-	service := &PaymentService{}
-
-	paymentV1.RegisterPaymentServiceServer(s, service)
+	repo := paymentRepository.NewRepository()
+	service := paymentService.NewService(repo)
+	api := paymentAPI.NewAPI(service)
+	paymentV1.RegisterPaymentServiceServer(s, api)
 
 	// Включаем рефлексию для отладки
 	reflection.Register(s)
@@ -57,18 +59,4 @@ func main() {
 	log.Println("🛑 Shutting down gRPC server...")
 	s.GracefulStop()
 	log.Println("✅ Server stopped")
-}
-
-// PaymentService реализует gRPC сервис для работы с оплатой заказов
-type PaymentService struct {
-	paymentV1.UnimplementedPaymentServiceServer
-}
-
-func (s *PaymentService) PayOrder(_ context.Context, req *paymentV1.PayOrderRequest) (*paymentV1.PayOrderResponse, error) {
-	transactionUUID := uuid.New().String()
-	log.Printf("Оплата прошла успешно, transaction_uuid: %s\n", transactionUUID)
-
-	return &paymentV1.PayOrderResponse{
-		TransactionUuid: transactionUUID,
-	}, nil
 }
