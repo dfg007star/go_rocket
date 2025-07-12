@@ -14,7 +14,7 @@ type Order struct {
 	OrderUuid       string
 	UserUuid        string
 	PartUuids       []string
-	TotalPrice      float64
+	TotalPrice      float32
 	TransactionUuid *string
 	PaymentMethod   *PaymentMethod
 	Status          string

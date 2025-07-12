@@ -44,5 +44,13 @@ type Part struct {
 	Tags          []string
 	Metadata      map[string]Value
 	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	UpdatedAt     *time.Time
+}
+
+type PartsFilter struct {
+	Uuids                 []string
+	Names                 []string
+	Categories            []Category
+	ManufacturerCountries []string
+	Tags                  []string
 }
