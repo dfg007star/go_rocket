@@ -8,15 +8,17 @@ import (
 	"strings"
 )
 
-func (r *repository) List(ctx context.Context, filter repoModel.PartsFilter) ([]*model.Part, error) {
+func (r *repository) List(ctx context.Context, f model.PartsFilter) ([]model.Part, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	parts := make([]*model.Part, 0, len(r.data))
+	filter := converter.PartsFilterModelToPartsFilterRepoModel(f)
+
+	parts := make([]model.Part, 0, len(r.data))
 
 	if isEmptyFilter(&filter) {
 		for _, part := range r.data {
-			convertedPart := converter.RepoModelToPart(&part)
+			convertedPart := converter.RepoModelToPartModel(&part)
 			parts = append(parts, convertedPart)
 		}
 		return parts, nil
@@ -31,7 +33,7 @@ func (r *repository) List(ctx context.Context, filter repoModel.PartsFilter) ([]
 
 	for _, part := range r.data {
 		if isMatchAnyFilter(&part, uuidSet, nameSet, categorySet, countrySet, tagSet) {
-			parts = append(parts, converter.RepoModelToPart(&part))
+			parts = append(parts, converter.RepoModelToPartModel(&part))
 		}
 	}
 

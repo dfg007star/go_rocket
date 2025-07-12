@@ -5,10 +5,10 @@ import (
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 )
 
-func (s *service) Get(ctx context.Context, uuid string) (*model.Part, error) {
+func (s *service) Get(ctx context.Context, uuid string) (model.Part, error) {
 	part, err := s.inventoryRepository.Get(ctx, uuid)
 	if err != nil {
-		return nil, err
+		return model.Part{}, err
 	}
 
 	return part, nil
