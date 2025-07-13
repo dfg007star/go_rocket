@@ -13,6 +13,6 @@ func RepoModelToOrder(order repoModel.Order) model.Order {
 		TotalPrice:      order.TotalPrice,
 		TransactionUuid: order.TransactionUuid,
 		PaymentMethod:   (*model.PaymentMethod)(order.PaymentMethod),
-		Status:          order.Status,
+		Status:          (model.Status)(order.Status),
 	}
 }

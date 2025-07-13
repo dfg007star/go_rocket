@@ -5,7 +5,7 @@ import (
 	"github.com/dfg007star/go_rocket/order/internal/model"
 )
 
-func (s *service) Pay(ctx context.Context, orderUuid string) (model.Order, error) {
+func (s *service) Pay(ctx context.Context, orderUuid string, method model.PaymentMethod) (model.Order, error) {
 	order, err := s.orderRepository.Get(ctx, orderUuid)
 	if err != nil {
 		return model.Order{}, err
@@ -15,7 +15,7 @@ func (s *service) Pay(ctx context.Context, orderUuid string) (model.Order, error
 		return model.Order{}, model.ErrOrderAlreadyPaid
 	}
 
-	paymentMethod := model.CARD
+	paymentMethod := method
 	if order.PaymentMethod != nil {
 		paymentMethod = *order.PaymentMethod
 	}
