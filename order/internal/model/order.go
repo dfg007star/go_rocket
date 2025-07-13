@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type PaymentMethod int
 
 const (
@@ -10,6 +12,14 @@ const (
 	INVESTOR_MONEY
 )
 
+type Status int
+
+const (
+	PENDING_PAYMENT Status = iota
+	PAID
+	CANCELLED
+)
+
 type Order struct {
 	OrderUuid       string
 	UserUuid        string
@@ -17,7 +27,8 @@ type Order struct {
 	TotalPrice      float32
 	TransactionUuid *string
 	PaymentMethod   *PaymentMethod
-	Status          string
+	Status          Status
+	CreatedAt       time.Time
 }
 
 type OrderCreate struct {
@@ -26,7 +37,8 @@ type OrderCreate struct {
 }
 
 type OrderUpdate struct {
+	OrderUuid       string
 	TransactionUuid *string
 	PaymentMethod   *PaymentMethod
-	Status          *string
+	Status          *Status
 }

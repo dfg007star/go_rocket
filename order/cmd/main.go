@@ -4,6 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
+	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
+	paymentServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/payment/v1"
+	orderRepository "github.com/dfg007star/go_rocket/order/internal/repository/order"
+	orderService "github.com/dfg007star/go_rocket/order/internal/service/order"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
@@ -244,41 +249,51 @@ func (h *OrderHandler) NewError(_ context.Context, err error) *orderV1.GenericEr
 	}
 }
 
-func main() {
-	// grpcConn настройка gRPC клиента Inventory
-	grpcInventoryConn, err := grpc.NewClient(
+func newInventoryClient() (inventoryV1.InventoryServiceClient, *grpc.ClientConn, error) {
+	conn, err := grpc.NewClient(
 		grpcInventoryAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Printf("failed to connect: %v\n", err)
-		return
+		return nil, nil, err
 	}
-	defer func() {
-		if cerr := grpcInventoryConn.Close(); cerr != nil {
-			log.Printf("failed to close connect: %v", cerr)
-		}
-	}()
 
-	// grpcConn настройка gRPC клиента Payment
-	grpcPaymentConn, err := grpc.NewClient(
+	client := inventoryV1.NewInventoryServiceClient(conn)
+	return client, conn, nil
+}
+
+func newPaymentClient() (paymentV1.PaymentServiceClient, *grpc.ClientConn, error) {
+	conn, err := grpc.NewClient(
 		grpcPaymentAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Printf("failed to connect: %v\n", err)
-		return
+		return nil, nil, err
 	}
-	defer func() {
-		if cerr := grpcPaymentConn.Close(); cerr != nil {
-			log.Printf("failed to close connect: %v", cerr)
-		}
-	}()
 
-	service := NewOrderService()
-	orderHandler := NewOrderHandler(service, grpcInventoryConn, grpcPaymentConn)
+	client := paymentV1.NewPaymentServiceClient(conn)
+	return client, conn, nil
+}
 
-	orderServer, err := orderV1.NewServer(orderHandler)
+func main() {
+	inventoryClient, _, err := newInventoryClient()
+	if err != nil {
+		panic(err)
+	}
+	paymentClient, _, err := newPaymentClient()
+	if err != nil {
+		panic(err)
+	}
+
+	repo := orderRepository.NewRepository()
+	service := orderService.NewOrderService(
+		repo,
+		inventoryServiceClient.NewClient(inventoryClient),
+		paymentServiceClient.NewClient(paymentClient),
+	)
+	api := orderAPI.NewApi(service)
+
+	orderServer, err := orderV1.NewServer(api)
 
 	if err != nil {
 		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
