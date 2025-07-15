@@ -1,0 +1,2 @@
+// Code generated for dosin service
+// © dosin 2025.

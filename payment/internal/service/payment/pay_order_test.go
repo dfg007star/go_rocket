@@ -1,0 +1,32 @@
+package payment
+
+import (
+	"github.com/brianvoe/gofakeit/v7"
+	"github.com/dfg007star/go_rocket/payment/internal/model"
+	"github.com/dfg007star/go_rocket/payment/internal/repository/converter"
+	"github.com/stretchr/testify/mock"
+)
+
+func (s *ServiceSuite) TestPayOrder() {
+	var (
+		orderUuid       = gofakeit.UUID()
+		userUuid        = gofakeit.UUID()
+		transactionUuid = gofakeit.UUID()
+		paymentMethod   = model.PAYMENT_METHOD_CARD
+
+		payment = model.Payment{
+			OrderUuid:     orderUuid,
+			UserUuid:      userUuid,
+			PaymentMethod: paymentMethod,
+		}
+
+		repoPayment = converter.PaymentToRepoModel(payment)
+	)
+
+	s.paymentRepository.On("PayOrder", mock.Anything, repoPayment).Return(transactionUuid, nil)
+
+	resultUuid, err := s.service.PayOrder(s.ctx, payment)
+	s.Require().NoError(err)
+	s.Require().Equal(transactionUuid, resultUuid)
+	s.paymentRepository.AssertExpectations(s.T())
+}
