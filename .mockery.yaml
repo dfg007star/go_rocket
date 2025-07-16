@@ -15,3 +15,11 @@ packages:
   github.com/dfg007star/go_rocket/payment/internal/repository:
     config:
       include-regex: ".*Repository"
+
+  github.com/dfg007star/go_rocket/inventory/internal/service:
+    config:
+      include-regex: ".*Service"
+
+  github.com/dfg007star/go_rocket/inventory/internal/repository:
+    config:
+      include-regex: ".*Repository"
