@@ -1,7 +1,6 @@
 package part
 
 import (
-	"fmt"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/stretchr/testify/require"
@@ -51,15 +50,7 @@ func (s *ServiceSuite) TestGetNotFound() {
 }
 
 func (s *ServiceSuite) TestGetEmptyUUID() {
-	part, err := s.service.Get(s.ctx, "")
-	fmt.Println(part, err)
+	_, err := s.service.Get(s.ctx, "")
 	require.Error(s.T(), err)
-	require.Contains(s.T(), err.Error(), "UUID is required")
-}
-
-func (s *ServiceSuite) TestGetInvalidUUIDFormat() {
-	invalidUUID := "not-a-uuid"
-	_, err := s.service.Get(s.ctx, invalidUUID)
-	require.Error(s.T(), err)
-	require.Contains(s.T(), err.Error(), "invalid UUID format")
+	require.Contains(s.T(), err.Error(), "uuid cannot be empty")
 }

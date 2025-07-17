@@ -25,6 +25,63 @@ func (_m *InventoryService) EXPECT() *InventoryService_Expecter {
 	return &InventoryService_Expecter{mock: &_m.Mock}
 }
 
+// Create provides a mock function with given fields: ctx, part
+func (_m *InventoryService) Create(ctx context.Context, part model.Part) (model.Part, error) {
+	ret := _m.Called(ctx, part)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Create")
+	}
+
+	var r0 model.Part
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, model.Part) (model.Part, error)); ok {
+		return rf(ctx, part)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, model.Part) model.Part); ok {
+		r0 = rf(ctx, part)
+	} else {
+		r0 = ret.Get(0).(model.Part)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, model.Part) error); ok {
+		r1 = rf(ctx, part)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// InventoryService_Create_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Create'
+type InventoryService_Create_Call struct {
+	*mock.Call
+}
+
+// Create is a helper method to define mock.On call
+//   - ctx context.Context
+//   - part model.Part
+func (_e *InventoryService_Expecter) Create(ctx interface{}, part interface{}) *InventoryService_Create_Call {
+	return &InventoryService_Create_Call{Call: _e.mock.On("Create", ctx, part)}
+}
+
+func (_c *InventoryService_Create_Call) Run(run func(ctx context.Context, part model.Part)) *InventoryService_Create_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(model.Part))
+	})
+	return _c
+}
+
+func (_c *InventoryService_Create_Call) Return(_a0 model.Part, _a1 error) *InventoryService_Create_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *InventoryService_Create_Call) RunAndReturn(run func(context.Context, model.Part) (model.Part, error)) *InventoryService_Create_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Get provides a mock function with given fields: ctx, uuid
 func (_m *InventoryService) Get(ctx context.Context, uuid string) (model.Part, error) {
 	ret := _m.Called(ctx, uuid)
