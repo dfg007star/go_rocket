@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/dfg007star/go_rocket/order/internal/converter"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
