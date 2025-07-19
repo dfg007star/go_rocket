@@ -4,6 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
+
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
 	paymentServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/payment/v1"
@@ -17,14 +26,6 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
-	"net"
-	"net/http"
-	"os"
-	"os/signal"
-	"sync"
-	"syscall"
-	"time"
 )
 
 const (
@@ -126,7 +127,7 @@ type OrderHandler struct {
 }
 
 // NewOrderHandler creates a new OrderHandler instance with the given OrderService
-func NewOrderHandler(service *OrderService, grpcInventoryConn *grpc.ClientConn, grpcPaymentConn *grpc.ClientConn) *OrderHandler {
+func NewOrderHandler(service *OrderService, grpcInventoryConn, grpcPaymentConn *grpc.ClientConn) *OrderHandler {
 	return &OrderHandler{
 		service:          service,
 		inventoryService: inventoryV1.NewInventoryServiceClient(grpcInventoryConn),
@@ -294,7 +295,6 @@ func main() {
 	api := orderAPI.NewApi(service)
 
 	orderServer, err := orderV1.NewServer(api)
-
 	if err != nil {
 		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
 	}

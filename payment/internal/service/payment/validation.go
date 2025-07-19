@@ -2,6 +2,7 @@ package payment
 
 import (
 	"errors"
+
 	"github.com/dfg007star/go_rocket/payment/internal/model"
 )
 

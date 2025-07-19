@@ -2,17 +2,16 @@ package part
 
 import (
 	"context"
+	"testing"
+
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/mocks"
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type ServiceSuite struct {
 	suite.Suite
-
-	ctx context.Context
 
 	partRepository *mocks.PartRepository
 
@@ -20,7 +19,7 @@ type ServiceSuite struct {
 }
 
 func (s *ServiceSuite) SetupTest() {
-	s.ctx = context.Background()
+	ctx := context.Background()
 
 	s.partRepository = mocks.NewPartRepository(s.T())
 
@@ -71,7 +70,7 @@ func (s *ServiceSuite) SetupTest() {
 	}
 
 	for _, part := range data {
-		_, err := s.service.Create(s.ctx, converter.RepoModelToPartModel(&part))
+		_, err := s.service.Create(ctx, converter.RepoModelToPartModel(&part))
 		if err != nil {
 			continue
 		}

@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+
 	"github.com/dfg007star/go_rocket/order/internal/converter"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 )
@@ -12,7 +13,5 @@ func (a *api) OrderByUuid(ctx context.Context, params orderV1.OrderByUuidParams)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%#v", order)
-	fmt.Println(order.Status)
 	return converter.OrderModelToOrderDto(order), nil
 }

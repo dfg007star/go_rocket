@@ -10,8 +10,7 @@ func (s *service) Create(ctx context.Context, orderCreate *model.OrderCreate) (m
 	if err != nil {
 		return model.Order{}, err
 	}
-
-	if len(orderCreate.PartUuids) > len(parts) {
+	if len(orderCreate.PartUuids) != len(parts) {
 		return model.Order{}, model.ErrNotAllPartsMatched
 	}
 

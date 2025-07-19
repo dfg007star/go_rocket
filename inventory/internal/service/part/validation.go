@@ -2,6 +2,7 @@ package part
 
 import (
 	"errors"
+
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 )
 

@@ -2,10 +2,11 @@ package order
 
 import (
 	"context"
+	"testing"
+
 	client "github.com/dfg007star/go_rocket/order/internal/client/grpc/mocks"
 	"github.com/dfg007star/go_rocket/order/internal/repository/mocks"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type ServiceSuite struct {

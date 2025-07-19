@@ -95,19 +95,20 @@ func convertMetadata(metadata map[string]model.Value) map[string]*inventoryV1.Va
 func convertValue(value model.Value) *inventoryV1.Value {
 	result := &inventoryV1.Value{}
 
-	if value.StringValue != nil {
+	switch {
+	case value.StringValue != nil:
 		result.Value = &inventoryV1.Value_StringValue{
 			StringValue: *value.StringValue,
 		}
-	} else if value.Int64Value != nil {
+	case value.Int64Value != nil:
 		result.Value = &inventoryV1.Value_Int64Value{
 			Int64Value: *value.Int64Value,
 		}
-	} else if value.DoubleValue != nil {
+	case value.DoubleValue != nil:
 		result.Value = &inventoryV1.Value_DoubleValue{
 			DoubleValue: *value.DoubleValue,
 		}
-	} else if value.BoolValue != nil {
+	case value.BoolValue != nil:
 		result.Value = &inventoryV1.Value_BoolValue{
 			BoolValue: *value.BoolValue,
 		}

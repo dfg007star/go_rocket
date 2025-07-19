@@ -1,9 +1,10 @@
 package order
 
 import (
+	"sync"
+
 	def "github.com/dfg007star/go_rocket/order/internal/repository"
 	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
-	"sync"
 )
 
 var _ def.OrderRepository = (*repository)(nil)

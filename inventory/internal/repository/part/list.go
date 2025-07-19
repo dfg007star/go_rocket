@@ -2,10 +2,11 @@ package part
 
 import (
 	"context"
+	"strings"
+
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
-	"strings"
 )
 
 func (r *repository) List(ctx context.Context, f model.PartsFilter) ([]model.Part, error) {
@@ -45,8 +46,8 @@ func isMatchAnyFilter(part *repoModel.Part,
 	nameSet map[string]struct{},
 	categorySet map[repoModel.Category]struct{},
 	countrySet map[string]struct{},
-	tagSet map[string]struct{}) bool {
-
+	tagSet map[string]struct{},
+) bool {
 	if len(uuidSet) > 0 {
 		if _, exists := uuidSet[part.Uuid]; !exists {
 			return false

@@ -1,13 +1,14 @@
 package converter
 
 import (
+	"time"
+
 	"github.com/dfg007star/go_rocket/order/internal/model"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
-	"time"
 )
 
 func PartsListToModel(parts []*inventoryV1.Part) []model.Part {
-	result := make([]model.Part, len(parts))
+	result := make([]model.Part, 0, len(parts))
 	for _, part := range parts {
 		result = append(result, PartToModel(part))
 	}
@@ -106,7 +107,6 @@ func ValueToModel(value *inventoryV1.Value) model.Value {
 }
 
 func PartsFilterToProto(filter model.PartsFilter) *inventoryV1.PartsFilter {
-	// Check if filter is empty
 	if len(filter.Uuids) == 0 && len(filter.Names) == 0 && len(filter.Categories) == 0 &&
 		len(filter.ManufacturerCountries) == 0 && len(filter.Tags) == 0 {
 		return nil

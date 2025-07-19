@@ -1,10 +1,11 @@
 package part
 
 import (
+	"time"
+
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/stretchr/testify/require"
-	"time"
 )
 
 func (s *ServiceSuite) TestGet() {

@@ -1,9 +1,10 @@
 package payment
 
 import (
+	"sync"
+
 	def "github.com/dfg007star/go_rocket/payment/internal/repository"
 	repoModel "github.com/dfg007star/go_rocket/payment/internal/repository/model"
-	"sync"
 )
 
 var _ def.PaymentRepository = (*repository)(nil)

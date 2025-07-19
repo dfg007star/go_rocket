@@ -2,24 +2,24 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+
 	inventoryAPI "github.com/dfg007star/go_rocket/inventory/internal/api/inventory/v1"
 	inventoryRepository "github.com/dfg007star/go_rocket/inventory/internal/repository/part"
 	inventoryService "github.com/dfg007star/go_rocket/inventory/internal/service/part"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 const grpcPort = 50051
 
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
-
 	if err != nil {
 		log.Printf("failed to listen: %v\n", err)
 		return

@@ -2,24 +2,24 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+
 	paymentAPI "github.com/dfg007star/go_rocket/payment/internal/api/payment/v1"
 	paymentRepository "github.com/dfg007star/go_rocket/payment/internal/repository/payment"
 	paymentService "github.com/dfg007star/go_rocket/payment/internal/service/payment"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 const grpcPort = 50052
 
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
-
 	if err != nil {
 		log.Printf("failed to listen: %v\n", err)
 		return

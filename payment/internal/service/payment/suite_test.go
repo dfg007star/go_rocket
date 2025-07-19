@@ -2,9 +2,10 @@ package payment
 
 import (
 	"context"
+	"testing"
+
 	"github.com/dfg007star/go_rocket/payment/internal/repository/mocks"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type ServiceSuite struct {

@@ -1,9 +1,10 @@
 package order
 
 import (
+	"time"
+
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/dfg007star/go_rocket/order/internal/model"
-	"time"
 )
 
 func (s *ServiceSuite) TestCreateOrderSuccess() {
@@ -87,4 +88,121 @@ func (s *ServiceSuite) TestCreateOrderListPartsError() {
 	s.Error(err)
 	s.Empty(resp)
 	s.Equal(err, expectedListPartsError)
+}
+
+func (s *ServiceSuite) TestCreateOrderError() {
+	userUuid := gofakeit.UUID()
+	orderUuid := gofakeit.UUID()
+	partUuids := []string{gofakeit.UUID()}
+
+	var (
+		name          = gofakeit.Name()
+		description   = gofakeit.Paragraph(3, 5, 5, " ")
+		price         = gofakeit.Price(100, 1000)
+		stockQuantity = gofakeit.Int64()
+		category      = model.WING
+		dimensions    = model.Dimensions{
+			Height: gofakeit.Float64Range(1.0, 10.0),
+			Width:  gofakeit.Float64Range(1.0, 10.0),
+			Length: gofakeit.Float64Range(1.0, 10.0),
+			Weight: gofakeit.Float64Range(0.1, 5.0),
+		}
+		manufacturer = model.Manufacturer{
+			Name:    gofakeit.Company(),
+			Country: gofakeit.Country(),
+			Website: gofakeit.URL(),
+		}
+		createdAt = time.Now()
+	)
+
+	part := model.Part{
+		Uuid:          orderUuid,
+		Name:          name,
+		Description:   description,
+		Price:         price,
+		StockQuantity: stockQuantity,
+		Category:      category,
+		Dimensions:    dimensions,
+		Manufacturer:  manufacturer,
+		CreatedAt:     createdAt,
+	}
+
+	part2 := model.Part{
+		Uuid:          orderUuid,
+		Name:          name,
+		Description:   description,
+		Price:         price,
+		StockQuantity: stockQuantity,
+		Category:      category,
+		Dimensions:    dimensions,
+		Manufacturer:  manufacturer,
+		CreatedAt:     createdAt,
+	}
+
+	filter := model.PartsFilter{
+		Uuids: partUuids,
+	}
+
+	listParts := []model.Part{part, part2}
+	expectedErr := model.ErrNotAllPartsMatched
+
+	s.inventoryClient.On("ListParts", s.ctx, filter).Return(listParts, nil).Once()
+	resp, err := s.service.Create(s.ctx, &model.OrderCreate{UserUuid: userUuid, PartUuids: partUuids})
+
+	s.Error(err)
+	s.Empty(resp)
+	s.Equal(err, expectedErr)
+}
+
+func (s *ServiceSuite) TestCreateOrderRepoErr() {
+	userUuid := gofakeit.UUID()
+	orderUuid := gofakeit.UUID()
+	partUuids := []string{gofakeit.UUID()}
+
+	var (
+		name          = gofakeit.Name()
+		description   = gofakeit.Paragraph(3, 5, 5, " ")
+		price         = gofakeit.Price(100, 1000)
+		stockQuantity = gofakeit.Int64()
+		category      = model.FUEL
+		dimensions    = model.Dimensions{
+			Height: gofakeit.Float64Range(1.0, 10.0),
+			Width:  gofakeit.Float64Range(1.0, 10.0),
+			Length: gofakeit.Float64Range(1.0, 10.0),
+			Weight: gofakeit.Float64Range(0.1, 5.0),
+		}
+		manufacturer = model.Manufacturer{
+			Name:    gofakeit.Company(),
+			Country: gofakeit.Country(),
+			Website: gofakeit.URL(),
+		}
+		createdAt = time.Now()
+	)
+
+	part := model.Part{
+		Uuid:          orderUuid,
+		Name:          name,
+		Description:   description,
+		Price:         price,
+		StockQuantity: stockQuantity,
+		Category:      category,
+		Dimensions:    dimensions,
+		Manufacturer:  manufacturer,
+		CreatedAt:     createdAt,
+	}
+
+	filter := model.PartsFilter{
+		Uuids: partUuids,
+	}
+
+	listParts := []model.Part{part}
+	expectedErr := gofakeit.Error()
+
+	s.inventoryClient.On("ListParts", s.ctx, filter).Return(listParts, nil).Once()
+	s.orderRepository.On("Create", s.ctx, userUuid, []model.Part{part}).Return(model.Order{}, expectedErr).Once()
+	resp, err := s.service.Create(s.ctx, &model.OrderCreate{UserUuid: userUuid, PartUuids: partUuids})
+
+	s.Error(err)
+	s.Empty(resp)
+	s.Equal(err, expectedErr)
 }

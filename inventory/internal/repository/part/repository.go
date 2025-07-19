@@ -1,14 +1,14 @@
 package part
 
 import (
-	"math/rand"
+	"crypto/rand"
+	"math/big"
+	"sync"
 	"time"
-
-	"github.com/google/uuid"
 
 	def "github.com/dfg007star/go_rocket/inventory/internal/repository"
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
-	"sync"
+	"github.com/google/uuid"
 )
 
 var _ def.PartRepository = (*repository)(nil)
@@ -19,8 +19,6 @@ type repository struct {
 }
 
 func NewRepository() *repository {
-	rand.Seed(time.Now().UnixNano())
-
 	parts := []repoModel.Part{
 		generateRandomPart("Engine XJ-2000", "High-performance rocket engine", repoModel.ENGINE),
 		generateRandomPart("Fuel Tank T-500", "Large capacity fuel tank", repoModel.FUEL),
@@ -37,10 +35,10 @@ func generateRandomPart(name, description string, category repoModel.Category) r
 	now := time.Now()
 
 	dimensions := repoModel.Dimensions{
-		Length: 10.0 + rand.Float64()*90.0,
-		Width:  5.0 + rand.Float64()*45.0,
-		Height: 5.0 + rand.Float64()*45.0,
-		Weight: 50.0 + rand.Float64()*950.0,
+		Length: float64(randomInt(10, 100)),
+		Width:  float64(randomInt(5, 50)),
+		Height: float64(randomInt(5, 50)),
+		Weight: float64(randomInt(50, 1000)),
 	}
 
 	manufacturer := repoModel.Manufacturer{
@@ -61,13 +59,13 @@ func generateRandomPart(name, description string, category repoModel.Category) r
 			StringValue: stringPtr(randomMaterial()),
 		},
 		"durability": {
-			Int64Value: int64Ptr(rand.Int63n(10) + 1),
+			Int64Value: int64Ptr(int64(randomInt(1, 11))),
 		},
 		"efficiency": {
-			DoubleValue: float64Ptr(0.1 + rand.Float64()*0.9),
+			DoubleValue: float64Ptr(float64(randomInt(1, 10)) / 10),
 		},
 		"certified": {
-			BoolValue: boolPtr(rand.Intn(2) == 1),
+			BoolValue: boolPtr(randomInt(0, 2) == 1),
 		},
 	}
 
@@ -75,8 +73,8 @@ func generateRandomPart(name, description string, category repoModel.Category) r
 		Uuid:          uuid.New().String(),
 		Name:          name,
 		Description:   description,
-		Price:         1000.0 + rand.Float64()*9000.0,
-		StockQuantity: rand.Int63n(100) + 1,
+		Price:         float64(randomInt(1000, 10000)),
+		StockQuantity: int64(randomInt(1, 101)),
 		Category:      category,
 		Dimensions:    dimensions,
 		Manufacturer:  manufacturer,
@@ -89,17 +87,25 @@ func generateRandomPart(name, description string, category repoModel.Category) r
 
 func randomCountry() string {
 	countries := []string{"USA", "Russia", "China", "Japan", "Germany", "France", "UK", "Canada"}
-	return countries[rand.Intn(len(countries))]
+	return countries[randomInt(0, len(countries))]
 }
 
 func randomTag() string {
 	tags := []string{"reliable", "durable", "efficient", "lightweight", "heavy-duty", "advanced", "next-gen"}
-	return tags[rand.Intn(len(tags))]
+	return tags[randomInt(0, len(tags))]
 }
 
 func randomMaterial() string {
 	materials := []string{"aluminum", "titanium", "carbon fiber", "steel", "composite", "ceramic"}
-	return materials[rand.Intn(len(materials))]
+	return materials[randomInt(0, len(materials))]
+}
+
+func randomInt(min, max int) int {
+	n, err := rand.Int(rand.Reader, big.NewInt(int64(max-min)))
+	if err != nil {
+		return min
+	}
+	return int(n.Int64()) + min
 }
 
 func stringPtr(s string) *string {
