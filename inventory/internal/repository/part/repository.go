@@ -6,9 +6,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
+
 	def "github.com/dfg007star/go_rocket/inventory/internal/repository"
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
-	"github.com/google/uuid"
 )
 
 var _ def.PartRepository = (*repository)(nil)
