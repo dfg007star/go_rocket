@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dfg007star/go_rocket/payment/internal/repository/mocks"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/dfg007star/go_rocket/payment/internal/repository/mocks"
 )
 
 type ServiceSuite struct {
@@ -19,8 +20,6 @@ type ServiceSuite struct {
 }
 
 func (s *ServiceSuite) SetupTest() {
-	s.ctx = context.Background()
-
 	s.paymentRepository = mocks.NewPaymentRepository(s.T())
 
 	s.service = NewService(
