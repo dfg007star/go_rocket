@@ -36,6 +36,11 @@ type OrderCreate struct {
 	PartUuids []string
 }
 
+type OrderCreateInfo struct {
+	OrderUuid  string
+	TotalPrice float32
+}
+
 type OrderUpdate struct {
 	OrderUuid       string
 	TransactionUuid *string
