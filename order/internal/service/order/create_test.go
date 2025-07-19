@@ -72,7 +72,7 @@ func (s *ServiceSuite) TestCreateOrderSuccess() {
 	s.Equal(orderResp, resp)
 }
 
-func (s *ServiceSuite) TestCreateOrderListPartsError() {
+func (s *ServiceSuite) TestCreateOrderListPartsErr() {
 	userUuid := gofakeit.UUID()
 	partUuids := []string{gofakeit.UUID()}
 
@@ -90,7 +90,7 @@ func (s *ServiceSuite) TestCreateOrderListPartsError() {
 	s.Equal(err, expectedListPartsError)
 }
 
-func (s *ServiceSuite) TestCreateOrderError() {
+func (s *ServiceSuite) TestCreateOrderErr() {
 	userUuid := gofakeit.UUID()
 	orderUuid := gofakeit.UUID()
 	partUuids := []string{gofakeit.UUID()}

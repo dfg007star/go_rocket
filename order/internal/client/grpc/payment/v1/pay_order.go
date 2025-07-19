@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/dfg007star/go_rocket/order/internal/client/converter"
 	"github.com/dfg007star/go_rocket/order/internal/model"
@@ -14,6 +15,7 @@ func (c *client) PayOrder(ctx context.Context, paymentMethod model.PaymentMethod
 		UserUuid:      userUuid,
 		PaymentMethod: converter.PaymentMethodToProto(paymentMethod),
 	})
+	fmt.Println("pay order client", err)
 	if err != nil {
 		return "", err
 	}
