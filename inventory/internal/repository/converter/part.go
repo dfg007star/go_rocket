@@ -5,20 +5,20 @@ import (
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
 )
 
-func PartsFilterModelToPartsFilterRepoModel(filter *model.PartsFilter) *repoModel.PartsFilter {
-	categories := make([]repoModel.Category, 0, len(filter.Categories))
-	for _, category := range filter.Categories {
-		categories = append(categories, modelCategoryToRepoCategory(category))
-	}
-
-	return &repoModel.PartsFilter{
-		Uuids:                 filter.Uuids,
-		Names:                 filter.Names,
-		Categories:            categories,
-		ManufacturerCountries: filter.ManufacturerCountries,
-		Tags:                  filter.Tags,
-	}
-}
+//func PartsFilterModelToPartsFilterRepoModel(filter *model.PartsFilter) *repoModel.PartsFilter {
+//	categories := make([]repoModel.Category, 0, len(filter.Categories))
+//	for _, category := range filter.Categories {
+//		categories = append(categories, modelCategoryToRepoCategory(category))
+//	}
+//
+//	return &repoModel.PartsFilter{
+//		Uuids:                 filter.Uuids,
+//		Names:                 filter.Names,
+//		Categories:            categories,
+//		ManufacturerCountries: filter.ManufacturerCountries,
+//		Tags:                  filter.Tags,
+//	}
+//}
 
 func modelCategoryToRepoCategory(category model.Category) repoModel.Category {
 	switch category {
@@ -110,8 +110,8 @@ func modelMetadataToRepoMetadata(metadata map[string]model.Value) map[string]rep
 	return result
 }
 
-func PartModelToRepoModel(part *model.Part) repoModel.Part {
-	return repoModel.Part{
+func PartModelToRepoModel(part *model.Part) *repoModel.Part {
+	return &repoModel.Part{
 		Uuid:          part.Uuid,
 		Name:          part.Name,
 		Description:   part.Description,
