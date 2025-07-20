@@ -4,6 +4,7 @@ go 1.24.4
 
 require (
 	github.com/dfg007star/go_rocket/shared v0.0.0-20250706162841-51d96bf7cfc4
+	github.com/google/uuid v1.6.0
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
 )
