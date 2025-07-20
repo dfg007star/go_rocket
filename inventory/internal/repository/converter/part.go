@@ -5,13 +5,13 @@ import (
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
 )
 
-func PartsFilterModelToPartsFilterRepoModel(filter model.PartsFilter) repoModel.PartsFilter {
+func PartsFilterModelToPartsFilterRepoModel(filter *model.PartsFilter) *repoModel.PartsFilter {
 	categories := make([]repoModel.Category, 0, len(filter.Categories))
 	for _, category := range filter.Categories {
 		categories = append(categories, modelCategoryToRepoCategory(category))
 	}
 
-	return repoModel.PartsFilter{
+	return &repoModel.PartsFilter{
 		Uuids:                 filter.Uuids,
 		Names:                 filter.Names,
 		Categories:            categories,
@@ -127,8 +127,8 @@ func PartModelToRepoModel(part *model.Part) repoModel.Part {
 	}
 }
 
-func RepoModelToPartModel(repo *repoModel.Part) model.Part {
-	return model.Part{
+func RepoModelToPartModel(repo *repoModel.Part) *model.Part {
+	return &model.Part{
 		Uuid:          repo.Uuid,
 		Name:          repo.Name,
 		Description:   repo.Description,

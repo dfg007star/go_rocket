@@ -9,15 +9,15 @@ import (
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
 )
 
-func (r *repository) List(ctx context.Context, f model.PartsFilter) ([]model.Part, error) {
+func (r *repository) List(ctx context.Context, f *model.PartsFilter) ([]*model.Part, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
 	filter := converter.PartsFilterModelToPartsFilterRepoModel(f)
 
-	parts := make([]model.Part, 0, len(r.data))
+	parts := make([]*model.Part, 0, len(r.data))
 
-	if isEmptyFilter(&filter) {
+	if isEmptyFilter(filter) {
 		for _, part := range r.data {
 			convertedPart := converter.RepoModelToPartModel(&part)
 			parts = append(parts, convertedPart)

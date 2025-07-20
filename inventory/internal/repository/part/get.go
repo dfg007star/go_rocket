@@ -7,7 +7,7 @@ import (
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
 )
 
-func (r *repository) Get(ctx context.Context, uuid string) (model.Part, error) {
+func (r *repository) Get(ctx context.Context, uuid string) (*model.Part, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -17,5 +17,5 @@ func (r *repository) Get(ctx context.Context, uuid string) (model.Part, error) {
 		}
 	}
 
-	return model.Part{}, model.ErrPartNotFound
+	return nil, model.ErrPartNotFound
 }

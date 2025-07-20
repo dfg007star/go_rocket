@@ -7,7 +7,7 @@ import (
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 )
 
-func PartsModelToGrpcResponse(models []model.Part) *inventoryV1.ListPartsResponse {
+func PartsModelToGrpcResponse(models []*model.Part) *inventoryV1.ListPartsResponse {
 	if models == nil {
 		return &inventoryV1.ListPartsResponse{
 			Parts: nil,
@@ -15,29 +15,29 @@ func PartsModelToGrpcResponse(models []model.Part) *inventoryV1.ListPartsRespons
 	}
 
 	parts := make([]*inventoryV1.Part, 0, len(models))
-	for _, model := range models {
+	for _, m := range models {
 		part := &inventoryV1.Part{
-			Uuid:          model.Uuid,
-			Name:          model.Name,
-			Description:   model.Description,
-			Price:         model.Price,
-			StockQuantity: model.StockQuantity,
-			Category:      inventoryV1.Category(model.Category),
+			Uuid:          m.Uuid,
+			Name:          m.Name,
+			Description:   m.Description,
+			Price:         m.Price,
+			StockQuantity: m.StockQuantity,
+			Category:      inventoryV1.Category(m.Category),
 			Dimensions: &inventoryV1.Dimensions{
-				Length: model.Dimensions.Length,
-				Width:  model.Dimensions.Width,
-				Height: model.Dimensions.Height,
-				Weight: model.Dimensions.Weight,
+				Length: m.Dimensions.Length,
+				Width:  m.Dimensions.Width,
+				Height: m.Dimensions.Height,
+				Weight: m.Dimensions.Weight,
 			},
 			Manufacturer: &inventoryV1.Manufacturer{
-				Name:    model.Manufacturer.Name,
-				Country: model.Manufacturer.Country,
-				Website: model.Manufacturer.Website,
+				Name:    m.Manufacturer.Name,
+				Country: m.Manufacturer.Country,
+				Website: m.Manufacturer.Website,
 			},
-			Tags:      model.Tags,
-			Metadata:  convertMetadata(model.Metadata),
-			CreatedAt: timestamppb.New(model.CreatedAt),
-			UpdatedAt: timestamppb.New(model.UpdatedAt),
+			Tags:      m.Tags,
+			Metadata:  convertMetadata(m.Metadata),
+			CreatedAt: timestamppb.New(m.CreatedAt),
+			UpdatedAt: timestamppb.New(m.UpdatedAt),
 		}
 		parts = append(parts, part)
 	}
