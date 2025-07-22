@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
@@ -20,23 +18,14 @@ func (r *repository) Create(ctx context.Context, part *model.Part) (*model.Part,
 	if part.Uuid == "" {
 		part.CreatedAt = now
 		part.Uuid = uuid.New().String()
+	} else {
+		return &model.Part{}, fmt.Errorf("part already exists: %s", part.Uuid)
 	}
 	part.UpdatedAt = now
 
 	partMongo := converter.PartModelToRepoModel(part)
 
-	filter := bson.M{"uuid": part.Uuid}
-
-	opts := options.Update().SetUpsert(true)
-
-	update := bson.M{
-		"$set": partMongo,
-		"$setOnInsert": bson.M{
-			"created_at": now, // Only set on insert
-		},
-	}
-
-	_, err := r.data.UpdateOne(ctx, filter, update, opts)
+	_, err := r.data.InsertOne(ctx, partMongo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create or update part: %w", err)
 	}
