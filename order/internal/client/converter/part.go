@@ -7,8 +7,8 @@ import (
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 )
 
-func PartsListToModel(parts []*inventoryV1.Part) []model.Part {
-	result := make([]model.Part, 0, len(parts))
+func PartsListToModel(parts []*inventoryV1.Part) []*model.Part {
+	result := make([]*model.Part, 0, len(parts))
 	for _, part := range parts {
 		result = append(result, PartToModel(part))
 	}
@@ -16,14 +16,14 @@ func PartsListToModel(parts []*inventoryV1.Part) []model.Part {
 	return result
 }
 
-func PartToModel(part *inventoryV1.Part) model.Part {
+func PartToModel(part *inventoryV1.Part) *model.Part {
 	var updatedAt *time.Time
 	if part.UpdatedAt != nil {
 		tmp := part.UpdatedAt.AsTime()
 		updatedAt = &tmp
 	}
 
-	return model.Part{
+	return &model.Part{
 		Uuid:          part.Uuid,
 		Name:          part.Name,
 		Description:   part.Description,
@@ -106,7 +106,7 @@ func ValueToModel(value *inventoryV1.Value) model.Value {
 	return result
 }
 
-func PartsFilterToProto(filter model.PartsFilter) *inventoryV1.PartsFilter {
+func PartsFilterToProto(filter *model.PartsFilter) *inventoryV1.PartsFilter {
 	if len(filter.Uuids) == 0 && len(filter.Names) == 0 && len(filter.Categories) == 0 &&
 		len(filter.ManufacturerCountries) == 0 && len(filter.Tags) == 0 {
 		return nil

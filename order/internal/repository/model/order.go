@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type PaymentMethod int
 
@@ -29,4 +32,23 @@ type Order struct {
 	PaymentMethod   *PaymentMethod
 	Status          Status
 	CreatedAt       time.Time
+	UpdatedAt       sql.NullTime
+}
+
+func (pm PaymentMethod) String() string {
+	return [...]string{
+		"UNSPECIFIED",
+		"CARD",
+		"SBP",
+		"CREDIT_CARD",
+		"INVESTOR_MONEY",
+	}[pm]
+}
+
+func (s Status) String() string {
+	return [...]string{
+		"PENDING_PAYMENT",
+		"PAID",
+		"CANCELLED",
+	}[s]
 }

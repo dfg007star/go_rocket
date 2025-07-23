@@ -2,17 +2,43 @@ package order
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
+	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
+	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
 
 	"github.com/dfg007star/go_rocket/order/internal/model"
-	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
 )
 
-func (r *repository) Get(ctx context.Context, orderUuid string) (model.Order, error) {
-	for _, order := range r.data {
-		if order.OrderUuid == orderUuid {
-			return converter.RepoModelToOrder(order), nil
+func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, error) {
+	const query = `
+		SELECT *
+		FROM orders
+		WHERE order_uuid = $1
+	`
+
+	var dbOrder repoModel.Order
+
+	err := r.data.QueryRow(ctx, query, orderUuid).Scan(
+		&dbOrder.OrderUuid,
+		&dbOrder.UserUuid,
+		&dbOrder.PartUuids,
+		&dbOrder.TotalPrice,
+		&dbOrder.TransactionUuid,
+		&dbOrder.PaymentMethod,
+		&dbOrder.Status,
+		&dbOrder.CreatedAt,
+		&dbOrder.UpdatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, model.ErrOrderNotFound
 		}
+		return nil, fmt.Errorf("failed to get order: %w", err)
 	}
 
-	return model.Order{}, model.ErrOrderNotFound
+	fmt.Println("GET", dbOrder)
+
+	return converter.RepoModelToOrder(&dbOrder), nil
 }

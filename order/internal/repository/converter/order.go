@@ -5,8 +5,8 @@ import (
 	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
 )
 
-func RepoModelToOrder(order repoModel.Order) model.Order {
-	return model.Order{
+func RepoModelToOrder(order *repoModel.Order) *model.Order {
+	return &model.Order{
 		OrderUuid:       order.OrderUuid,
 		UserUuid:        order.UserUuid,
 		PartUuids:       order.PartUuids,

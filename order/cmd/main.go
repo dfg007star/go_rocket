@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"errors"
+	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 	"log"
 	"net"
 	"net/http"
@@ -35,6 +37,8 @@ const (
 )
 
 func main() {
+	ctx := context.Background()
+
 	inventoryClient, _, err := newInventoryClient()
 	if err != nil {
 		panic(err)
@@ -44,7 +48,33 @@ func main() {
 		panic(err)
 	}
 
-	repo := orderRepository.NewRepository()
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Printf("failed to load .env file: %v\n", err)
+		return
+	}
+
+	dbURI := os.Getenv("DB_URI")
+	con, err := pgx.Connect(ctx, dbURI)
+	if err != nil {
+		log.Printf("failed to connect to database: %v\n", err)
+		return
+	}
+	defer func() {
+		cerr := con.Close(ctx)
+		if cerr != nil {
+			log.Printf("failed to close connection: %v\n", cerr)
+		}
+	}()
+
+	err = con.Ping(ctx)
+	if err != nil {
+		log.Printf("База данных недоступна: %v\n", err)
+		return
+	}
+
+	// init app
+	repo := orderRepository.NewRepository(con)
 	service := orderService.NewOrderService(
 		repo,
 		inventoryServiceClient.NewClient(inventoryClient),
