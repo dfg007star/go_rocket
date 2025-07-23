@@ -2,36 +2,49 @@ package order
 
 import (
 	"context"
-
+	"fmt"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
-	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
+	"github.com/jackc/pgx/v5"
 )
 
-func (r *repository) Update(ctx context.Context, orderUpdate model.OrderUpdate) (model.Order, error) {
+func (r *repository) Update(ctx context.Context, orderUpdate *model.OrderUpdate) (*model.Order, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	for i, order := range r.data {
-		if order.OrderUuid == orderUpdate.OrderUuid {
-			if orderUpdate.TransactionUuid != nil {
-				order.TransactionUuid = orderUpdate.TransactionUuid
-			}
+	repoOrderUpdate := converter.OrderUpdateToRepoOrderUpdate(orderUpdate)
 
-			if orderUpdate.PaymentMethod != nil {
-				paymentMethod := (*repoModel.PaymentMethod)(orderUpdate.PaymentMethod)
-				order.PaymentMethod = paymentMethod
-			}
+	queryBuilder := sq.Update("orders").
+		Set("updated_at", sq.Expr("NOW()")).
+		Where(sq.Eq{"order_uuid": repoOrderUpdate.OrderUuid})
 
-			if orderUpdate.Status != nil {
-				order.Status = repoModel.Status(*orderUpdate.Status)
-			}
-
-			r.data[i] = order
-
-			return converter.RepoModelToOrder(order), nil
-		}
+	if repoOrderUpdate.TransactionUuid != nil {
+		queryBuilder = queryBuilder.Set("transaction_uuid", *repoOrderUpdate.TransactionUuid)
 	}
 
-	return model.Order{}, model.ErrOrderNotFound
+	if repoOrderUpdate.PaymentMethod != nil {
+		queryBuilder = queryBuilder.Set("payment_method", repoOrderUpdate.PaymentMethod.String())
+	}
+
+	if repoOrderUpdate.Status != nil {
+		queryBuilder = queryBuilder.Set("status", repoOrderUpdate.Status.String())
+	}
+
+	sql, args, err := queryBuilder.
+		PlaceholderFormat(sq.Dollar).
+		ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build update query: %w", err)
+	}
+
+	_, err = r.data.Exec(ctx, sql, args...)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, model.ErrOrderNotFound
+		}
+		return nil, fmt.Errorf("failed to execute order update: %w", err)
+	}
+
+	return r.Get(ctx, orderUpdate.OrderUuid)
 }

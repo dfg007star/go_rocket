@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/Masterminds/squirrel"
 	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
 	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
 
@@ -11,22 +12,42 @@ import (
 )
 
 func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, error) {
-	const query = `
-		SELECT *
-		FROM orders
-		WHERE order_uuid = $1
-	`
+	fmt.Println("GET", orderUuid)
+
+	// Build the query using Squirrel
+	query, args, err := squirrel.Select(
+		"order_uuid",
+		"user_uuid",
+		"part_uuids",
+		"total_price",
+		"transaction_uuid",
+		"payment_method",
+		"status",
+		"created_at",
+		"updated_at",
+	).
+		From("orders").
+		Where(squirrel.Eq{"order_uuid": orderUuid}).
+		PlaceholderFormat(squirrel.Dollar).
+		ToSql()
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to build query: %w", err)
+	}
+
+	fmt.Println("Generated SQL:", query)
+	fmt.Println("With args:", args)
 
 	var dbOrder repoModel.Order
-
-	err := r.data.QueryRow(ctx, query, orderUuid).Scan(
+	var statusStr string
+	err = r.data.QueryRow(ctx, query, args...).Scan(
 		&dbOrder.OrderUuid,
 		&dbOrder.UserUuid,
 		&dbOrder.PartUuids,
 		&dbOrder.TotalPrice,
 		&dbOrder.TransactionUuid,
 		&dbOrder.PaymentMethod,
-		&dbOrder.Status,
+		&statusStr,
 		&dbOrder.CreatedAt,
 		&dbOrder.UpdatedAt,
 	)
@@ -37,6 +58,8 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, e
 		}
 		return nil, fmt.Errorf("failed to get order: %w", err)
 	}
+
+	dbOrder.Status = repoModel.StatusFromString(statusStr)
 
 	fmt.Println("GET", dbOrder)
 

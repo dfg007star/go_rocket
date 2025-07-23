@@ -16,3 +16,12 @@ func RepoModelToOrder(order *repoModel.Order) *model.Order {
 		Status:          (model.Status)(order.Status),
 	}
 }
+
+func OrderUpdateToRepoOrderUpdate(order *model.OrderUpdate) *repoModel.OrderUpdate {
+	return &repoModel.OrderUpdate{
+		OrderUuid:       order.OrderUuid,
+		TransactionUuid: order.TransactionUuid,
+		PaymentMethod:   (*repoModel.PaymentMethod)(order.PaymentMethod),
+		Status:          (*repoModel.Status)(order.Status),
+	}
+}

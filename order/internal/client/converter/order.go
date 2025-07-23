@@ -5,9 +5,8 @@ import (
 	generatedPaymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 )
 
-// PaymentMethodToProto converts model.PaymentMethod to generatedPaymentV1.PaymentMethod
-func PaymentMethodToProto(paymentMethod model.PaymentMethod) generatedPaymentV1.PaymentMethod {
-	switch paymentMethod {
+func PaymentMethodToProto(paymentMethod *model.PaymentMethod) generatedPaymentV1.PaymentMethod {
+	switch *paymentMethod {
 	case model.UNSPECIFIED:
 		return generatedPaymentV1.PaymentMethod_PAYMENT_METHOD_UNSPECIFIED
 	case model.CARD:

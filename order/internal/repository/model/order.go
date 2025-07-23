@@ -35,6 +35,13 @@ type Order struct {
 	UpdatedAt       sql.NullTime
 }
 
+type OrderUpdate struct {
+	OrderUuid       string
+	TransactionUuid *string
+	PaymentMethod   *PaymentMethod
+	Status          *Status
+}
+
 func (pm PaymentMethod) String() string {
 	return [...]string{
 		"UNSPECIFIED",
@@ -51,4 +58,17 @@ func (s Status) String() string {
 		"PAID",
 		"CANCELLED",
 	}[s]
+}
+
+func StatusFromString(str string) Status {
+	switch str {
+	case "PENDING_PAYMENT":
+		return PENDING_PAYMENT
+	case "PAID":
+		return PAID
+	case "CANCELLED":
+		return CANCELLED
+	default:
+		return PENDING_PAYMENT
+	}
 }

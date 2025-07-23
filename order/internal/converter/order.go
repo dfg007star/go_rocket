@@ -5,7 +5,7 @@ import (
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 )
 
-func OrderModelToOrderDto(order model.Order) *orderV1.OrderDto {
+func OrderModelToOrderDto(order *model.Order) *orderV1.OrderDto {
 	var tu string
 	if order.TransactionUuid != nil {
 		tu = *order.TransactionUuid

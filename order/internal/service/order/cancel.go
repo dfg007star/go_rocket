@@ -21,7 +21,7 @@ func (s *service) Cancel(ctx context.Context, orderUuid string) error {
 	}
 
 	cancelledStatus := model.CANCELLED
-	_, err = s.orderRepository.Update(ctx, model.OrderUpdate{
+	_, err = s.orderRepository.Update(ctx, &model.OrderUpdate{
 		OrderUuid: orderUuid,
 		Status:    &cancelledStatus,
 	})
