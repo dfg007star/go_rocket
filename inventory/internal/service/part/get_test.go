@@ -12,7 +12,7 @@ import (
 func (s *ServiceSuite) TestGet() {
 	var (
 		partUUID     = gofakeit.UUID()
-		expectedPart = model.Part{
+		expectedPart = &model.Part{
 			Uuid:          partUUID,
 			Name:          "Engine Turbine",
 			Category:      model.ENGINE,
@@ -42,11 +42,11 @@ func (s *ServiceSuite) TestGetNotFound() {
 	partUUID := gofakeit.UUID()
 	expectedError := model.ErrPartNotFound
 
-	s.partRepository.On("Get", s.ctx, partUUID).Return(model.Part{}, expectedError)
+	s.partRepository.On("Get", s.ctx, partUUID).Return(&model.Part{}, expectedError)
 
 	result, err := s.service.Get(s.ctx, partUUID)
 	require.Error(s.T(), err)
-	require.Empty(s.T(), result.Uuid)
+	require.Empty(s.T(), result)
 	require.ErrorIs(s.T(), err, expectedError)
 	s.partRepository.AssertExpectations(s.T())
 }

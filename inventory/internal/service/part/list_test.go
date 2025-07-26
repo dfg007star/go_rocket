@@ -42,7 +42,7 @@ func (s *ServiceSuite) TestListSuccess() {
 		Tags:                  tags,
 	}
 
-	part := model.Part{
+	part := &model.Part{
 		Uuid:          uuid,
 		Name:          name,
 		Description:   description,
@@ -55,7 +55,7 @@ func (s *ServiceSuite) TestListSuccess() {
 		CreatedAt:     createdAt,
 	}
 
-	expectedParts := []model.Part{part}
+	expectedParts := []*model.Part{part}
 
 	s.partRepository.On("List", s.ctx, filter).Return(expectedParts, nil)
 
@@ -81,7 +81,7 @@ func (s *ServiceSuite) TestListPartsRepoError() {
 		Tags:                  tags,
 	}
 
-	s.partRepository.On("List", s.ctx, filter).Return([]model.Part{}, repoErr)
+	s.partRepository.On("List", s.ctx, filter).Return([]*model.Part{}, repoErr)
 
 	res, err := s.service.List(s.ctx, filter)
 	s.Error(err)
