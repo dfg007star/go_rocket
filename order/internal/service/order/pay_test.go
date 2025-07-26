@@ -2,7 +2,9 @@ package order
 
 import (
 	"errors"
+
 	"github.com/brianvoe/gofakeit/v7"
+
 	"github.com/dfg007star/go_rocket/order/internal/model"
 )
 
@@ -36,7 +38,7 @@ func (s *ServiceSuite) TestPayOrderSuccess() {
 	s.paymentClient.On("PayOrder", s.ctx, paymentMethod, order.OrderUuid, order.UserUuid).Return(transactionUuid, nil).Once()
 	s.orderRepository.On("Update", s.ctx, orderInfo).Return(updatedOrder, nil).Once()
 
-	resp, err := s.service.Pay(s.ctx, orderUuid, paymentMethod)
+	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.NoError(err)
 	s.Equal(transactionUuid, *resp.TransactionUuid)
 }
@@ -48,7 +50,7 @@ func (s *ServiceSuite) TestPayOrderErrGetOrder() {
 
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(model.Order{}, expectedErr).Once()
 
-	resp, err := s.service.Pay(s.ctx, orderUuid, paymentMethod)
+	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.Error(err)
 	s.Equal(err, expectedErr)
 	s.Empty(resp)
@@ -71,7 +73,7 @@ func (s *ServiceSuite) TestPayOrderErr() {
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(order, nil).Once()
 	s.paymentClient.On("PayOrder", s.ctx, paymentMethod, order.OrderUuid, order.UserUuid).Return("", gofakeit.Error()).Once()
 
-	resp, err := s.service.Pay(s.ctx, orderUuid, paymentMethod)
+	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.Error(err)
 	s.Empty(resp)
 }
@@ -94,7 +96,7 @@ func (s *ServiceSuite) TestPayOrderInternalErr() {
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(order, nil).Once()
 	s.paymentClient.On("PayOrder", s.ctx, paymentMethod, order.OrderUuid, order.UserUuid).Return("", expectedErr).Once()
 
-	resp, err := s.service.Pay(s.ctx, orderUuid, paymentMethod)
+	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.Error(err)
 	s.Equal(err, expectedErr)
 	s.Empty(resp)
@@ -117,7 +119,7 @@ func (s *ServiceSuite) TestPayOrderConflictOrderStatusPaidErr() {
 
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(order, nil).Once()
 
-	resp, err := s.service.Pay(s.ctx, orderUuid, paymentMethod)
+	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.Error(err)
 	s.Equal(err, expectedErr)
 	s.Empty(resp)
@@ -140,7 +142,7 @@ func (s *ServiceSuite) TestPayOrderConflictOrderStatusCanceledErr() {
 
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(order, nil).Once()
 
-	resp, err := s.service.Pay(s.ctx, orderUuid, paymentMethod)
+	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.Error(err)
 	s.Equal(err, expectedErr)
 	s.Empty(resp)

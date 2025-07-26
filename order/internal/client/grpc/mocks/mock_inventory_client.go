@@ -27,22 +27,24 @@ func (_m *InventoryClient) EXPECT() *InventoryClient_Expecter {
 }
 
 // GetPart provides a mock function with given fields: ctx, uuid
-func (_m *InventoryClient) GetPart(ctx context.Context, uuid string) (model.Part, error) {
+func (_m *InventoryClient) GetPart(ctx context.Context, uuid string) (*model.Part, error) {
 	ret := _m.Called(ctx, uuid)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetPart")
 	}
 
-	var r0 model.Part
+	var r0 *model.Part
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (model.Part, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*model.Part, error)); ok {
 		return rf(ctx, uuid)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) model.Part); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *model.Part); ok {
 		r0 = rf(ctx, uuid)
 	} else {
-		r0 = ret.Get(0).(model.Part)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Part)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
@@ -73,38 +75,38 @@ func (_c *InventoryClient_GetPart_Call) Run(run func(ctx context.Context, uuid s
 	return _c
 }
 
-func (_c *InventoryClient_GetPart_Call) Return(_a0 model.Part, _a1 error) *InventoryClient_GetPart_Call {
+func (_c *InventoryClient_GetPart_Call) Return(_a0 *model.Part, _a1 error) *InventoryClient_GetPart_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *InventoryClient_GetPart_Call) RunAndReturn(run func(context.Context, string) (model.Part, error)) *InventoryClient_GetPart_Call {
+func (_c *InventoryClient_GetPart_Call) RunAndReturn(run func(context.Context, string) (*model.Part, error)) *InventoryClient_GetPart_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // ListParts provides a mock function with given fields: ctx, filter
-func (_m *InventoryClient) ListParts(ctx context.Context, filter model.PartsFilter) ([]model.Part, error) {
+func (_m *InventoryClient) ListParts(ctx context.Context, filter *model.PartsFilter) ([]*model.Part, error) {
 	ret := _m.Called(ctx, filter)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListParts")
 	}
 
-	var r0 []model.Part
+	var r0 []*model.Part
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.PartsFilter) ([]model.Part, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.PartsFilter) ([]*model.Part, error)); ok {
 		return rf(ctx, filter)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, model.PartsFilter) []model.Part); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.PartsFilter) []*model.Part); ok {
 		r0 = rf(ctx, filter)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]model.Part)
+			r0 = ret.Get(0).([]*model.Part)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, model.PartsFilter) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *model.PartsFilter) error); ok {
 		r1 = rf(ctx, filter)
 	} else {
 		r1 = ret.Error(1)
@@ -120,24 +122,24 @@ type InventoryClient_ListParts_Call struct {
 
 // ListParts is a helper method to define mock.On call
 //   - ctx context.Context
-//   - filter model.PartsFilter
+//   - filter *model.PartsFilter
 func (_e *InventoryClient_Expecter) ListParts(ctx interface{}, filter interface{}) *InventoryClient_ListParts_Call {
 	return &InventoryClient_ListParts_Call{Call: _e.mock.On("ListParts", ctx, filter)}
 }
 
-func (_c *InventoryClient_ListParts_Call) Run(run func(ctx context.Context, filter model.PartsFilter)) *InventoryClient_ListParts_Call {
+func (_c *InventoryClient_ListParts_Call) Run(run func(ctx context.Context, filter *model.PartsFilter)) *InventoryClient_ListParts_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(model.PartsFilter))
+		run(args[0].(context.Context), args[1].(*model.PartsFilter))
 	})
 	return _c
 }
 
-func (_c *InventoryClient_ListParts_Call) Return(_a0 []model.Part, _a1 error) *InventoryClient_ListParts_Call {
+func (_c *InventoryClient_ListParts_Call) Return(_a0 []*model.Part, _a1 error) *InventoryClient_ListParts_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *InventoryClient_ListParts_Call) RunAndReturn(run func(context.Context, model.PartsFilter) ([]model.Part, error)) *InventoryClient_ListParts_Call {
+func (_c *InventoryClient_ListParts_Call) RunAndReturn(run func(context.Context, *model.PartsFilter) ([]*model.Part, error)) *InventoryClient_ListParts_Call {
 	_c.Call.Return(run)
 	return _c
 }

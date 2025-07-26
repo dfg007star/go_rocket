@@ -9,10 +9,10 @@ import (
 )
 
 func (a *api) ListParts(ctx context.Context, req *inventoryV1.ListPartsRequest) (*inventoryV1.ListPartsResponse, error) {
-	filter := model.PartsFilter{}
+	filter := &model.PartsFilter{}
 
 	if req.Filter != nil {
-		filter = model.PartsFilter{
+		filter = &model.PartsFilter{
 			Uuids:                 req.Filter.Uuids,
 			Names:                 req.Filter.Names,
 			Categories:            converter.ConvertCategories(req.Filter.Categories),

@@ -27,7 +27,7 @@ func (_m *PaymentClient) EXPECT() *PaymentClient_Expecter {
 }
 
 // PayOrder provides a mock function with given fields: ctx, paymentMethod, userUuid, orderUuid
-func (_m *PaymentClient) PayOrder(ctx context.Context, paymentMethod model.PaymentMethod, userUuid string, orderUuid string) (string, error) {
+func (_m *PaymentClient) PayOrder(ctx context.Context, paymentMethod *model.PaymentMethod, userUuid string, orderUuid string) (string, error) {
 	ret := _m.Called(ctx, paymentMethod, userUuid, orderUuid)
 
 	if len(ret) == 0 {
@@ -36,16 +36,16 @@ func (_m *PaymentClient) PayOrder(ctx context.Context, paymentMethod model.Payme
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, model.PaymentMethod, string, string) (string, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.PaymentMethod, string, string) (string, error)); ok {
 		return rf(ctx, paymentMethod, userUuid, orderUuid)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, model.PaymentMethod, string, string) string); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.PaymentMethod, string, string) string); ok {
 		r0 = rf(ctx, paymentMethod, userUuid, orderUuid)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, model.PaymentMethod, string, string) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *model.PaymentMethod, string, string) error); ok {
 		r1 = rf(ctx, paymentMethod, userUuid, orderUuid)
 	} else {
 		r1 = ret.Error(1)
@@ -61,16 +61,16 @@ type PaymentClient_PayOrder_Call struct {
 
 // PayOrder is a helper method to define mock.On call
 //   - ctx context.Context
-//   - paymentMethod model.PaymentMethod
+//   - paymentMethod *model.PaymentMethod
 //   - userUuid string
 //   - orderUuid string
 func (_e *PaymentClient_Expecter) PayOrder(ctx interface{}, paymentMethod interface{}, userUuid interface{}, orderUuid interface{}) *PaymentClient_PayOrder_Call {
 	return &PaymentClient_PayOrder_Call{Call: _e.mock.On("PayOrder", ctx, paymentMethod, userUuid, orderUuid)}
 }
 
-func (_c *PaymentClient_PayOrder_Call) Run(run func(ctx context.Context, paymentMethod model.PaymentMethod, userUuid string, orderUuid string)) *PaymentClient_PayOrder_Call {
+func (_c *PaymentClient_PayOrder_Call) Run(run func(ctx context.Context, paymentMethod *model.PaymentMethod, userUuid string, orderUuid string)) *PaymentClient_PayOrder_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(model.PaymentMethod), args[2].(string), args[3].(string))
+		run(args[0].(context.Context), args[1].(*model.PaymentMethod), args[2].(string), args[3].(string))
 	})
 	return _c
 }
@@ -80,7 +80,7 @@ func (_c *PaymentClient_PayOrder_Call) Return(_a0 string, _a1 error) *PaymentCli
 	return _c
 }
 
-func (_c *PaymentClient_PayOrder_Call) RunAndReturn(run func(context.Context, model.PaymentMethod, string, string) (string, error)) *PaymentClient_PayOrder_Call {
+func (_c *PaymentClient_PayOrder_Call) RunAndReturn(run func(context.Context, *model.PaymentMethod, string, string) (string, error)) *PaymentClient_PayOrder_Call {
 	_c.Call.Return(run)
 	return _c
 }

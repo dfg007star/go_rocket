@@ -35,7 +35,7 @@ func (s *ServiceSuite) TestListSuccess() {
 	manufactureCountries := []string{gofakeit.Country(), gofakeit.Country()}
 	tags := []string{gofakeit.Word(), gofakeit.Word()}
 
-	filter := model.PartsFilter{
+	filter := &model.PartsFilter{
 		Uuids:                 partsUUIDs,
 		Names:                 partsNames,
 		ManufacturerCountries: manufactureCountries,
@@ -73,7 +73,7 @@ func (s *ServiceSuite) TestListPartsRepoError() {
 	manufactureCountries := []string{gofakeit.Country(), gofakeit.Country()}
 	tags := []string{gofakeit.Word(), gofakeit.Word()}
 
-	filter := model.PartsFilter{
+	filter := &model.PartsFilter{
 		Uuids:                 partsUUIDs,
 		Names:                 partsNames,
 		Categories:            partsCategories,

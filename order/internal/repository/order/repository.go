@@ -1,21 +1,34 @@
 package order
 
 import (
+	"fmt"
+	"os"
 	"sync"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
+
+	"github.com/dfg007star/go_rocket/order/internal/migrator"
 	def "github.com/dfg007star/go_rocket/order/internal/repository"
-	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
 )
 
 var _ def.OrderRepository = (*repository)(nil)
 
 type repository struct {
 	mu   sync.RWMutex
-	data []repoModel.Order
+	data *pgx.Conn
 }
 
-func NewRepository() *repository {
+func NewRepository(clientPostgres *pgx.Conn) *repository {
+	migrationsDir := os.Getenv("MIGRATIONS_DIR")
+	migratorRunner := migrator.NewMigrator(stdlib.OpenDB(*clientPostgres.Config().Copy()), migrationsDir)
+
+	err := migratorRunner.Up()
+	if err != nil {
+		panic(fmt.Errorf("error while migration db: %w", err))
+	}
+
 	return &repository{
-		data: []repoModel.Order{},
+		data: clientPostgres,
 	}
 }

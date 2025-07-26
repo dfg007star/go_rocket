@@ -2,14 +2,16 @@ package order
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
 	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
-	"github.com/google/uuid"
 )
 
-func (r *repository) Create(ctx context.Context, userUuid string, parts []model.Part) (model.Order, error) {
+func (r *repository) Create(ctx context.Context, userUuid string, parts []*model.Part) (*model.Order, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -21,9 +23,8 @@ func (r *repository) Create(ctx context.Context, userUuid string, parts []model.
 		totalPrice += part.Price
 	}
 
-	orderUuid := uuid.New().String()
-	order := repoModel.Order{
-		OrderUuid:       orderUuid,
+	order := &repoModel.Order{
+		OrderUuid:       uuid.New().String(),
 		UserUuid:        userUuid,
 		PartUuids:       partUuids,
 		TotalPrice:      float32(totalPrice),
@@ -31,7 +32,26 @@ func (r *repository) Create(ctx context.Context, userUuid string, parts []model.
 		PaymentMethod:   nil,
 		Status:          repoModel.PENDING_PAYMENT,
 	}
-	r.data = append(r.data, order)
+
+	_, err := r.data.Exec(ctx, `
+		INSERT INTO orders (
+			order_uuid, 
+			user_uuid, 
+			part_uuids, 
+			total_price, 
+			status,
+			created_at
+		) VALUES ($1, $2, $3, $4, $5, $6)`,
+		order.OrderUuid,
+		order.UserUuid,
+		order.PartUuids,
+		order.TotalPrice,
+		order.Status.String(),
+		order.CreatedAt,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create order: %w", err)
+	}
 
 	return converter.RepoModelToOrder(order), nil
 }

@@ -14,5 +14,5 @@ func (a *api) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*in
 		return nil, model.ErrPartNotFound
 	}
 
-	return converter.PartModelToGrpcResponse(&part), nil
+	return converter.PartModelToGrpcResponse(part), nil
 }

@@ -3,19 +3,25 @@ package part
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
+	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
 )
 
-func (r *repository) Get(ctx context.Context, uuid string) (model.Part, error) {
+func (r *repository) Get(ctx context.Context, uuid string) (*model.Part, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	for _, part := range r.data {
-		if part.Uuid == uuid {
-			return converter.RepoModelToPartModel(&part), nil
-		}
+	var part repoModel.Part
+
+	err := r.data.FindOne(ctx, bson.M{"uuid": uuid}).Decode(&part)
+	if err != nil {
+		return nil, err
 	}
 
-	return model.Part{}, model.ErrPartNotFound
+	result := converter.RepoModelToPartModel(&part)
+
+	return result, nil
 }

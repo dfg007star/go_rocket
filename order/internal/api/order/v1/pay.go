@@ -9,7 +9,8 @@ import (
 
 func (a *api) PayOrder(ctx context.Context, req *orderV1.PayOrderRequest, params orderV1.PayOrderParams) (orderV1.PayOrderRes, error) {
 	pm := orderV1.OrderDtoPaymentMethod(req.PaymentMethod)
-	order, err := a.orderService.Pay(ctx, params.OrderUUID, converter.ConvertPaymentMethodToModel(&pm))
+	convertedPm := converter.ConvertPaymentMethodToModel(&pm)
+	order, err := a.orderService.Pay(ctx, params.OrderUUID, &convertedPm)
 	if err != nil {
 		return nil, err
 	}

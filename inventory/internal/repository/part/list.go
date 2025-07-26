@@ -2,114 +2,66 @@ package part
 
 import (
 	"context"
-	"strings"
+	"fmt"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
 )
 
-func (r *repository) List(ctx context.Context, f model.PartsFilter) ([]model.Part, error) {
+func (r *repository) List(ctx context.Context, f *model.PartsFilter) ([]*model.Part, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	filter := converter.PartsFilterModelToPartsFilterRepoModel(f)
+	filter := bson.M{}
 
-	parts := make([]model.Part, 0, len(r.data))
+	if len(f.Uuids) > 0 {
+		filter["uuid"] = bson.M{"$in": f.Uuids}
+	}
 
-	if isEmptyFilter(&filter) {
-		for _, part := range r.data {
-			convertedPart := converter.RepoModelToPartModel(&part)
-			parts = append(parts, convertedPart)
+	if len(f.Names) > 0 {
+		nameRegex := make([]bson.M, len(f.Names))
+		for i, name := range f.Names {
+			nameRegex[i] = bson.M{"name": primitive.Regex{Pattern: name, Options: "i"}}
 		}
-		return parts, nil
+		filter["$or"] = nameRegex
 	}
 
-	// создаем map для более быстрого поиска значения :)
-	uuidSet := makeStringSet(filter.Uuids)
-	nameSet := makeStringSet(filter.Names)
-	categorySet := makeCategorySet(filter.Categories)
-	countrySet := makeStringSet(filter.ManufacturerCountries)
-	tagSet := makeStringSet(filter.Tags)
+	if len(f.Categories) > 0 {
+		filter["category"] = bson.M{"$in": f.Categories}
+	}
 
-	for _, part := range r.data {
-		if isMatchAnyFilter(&part, uuidSet, nameSet, categorySet, countrySet, tagSet) {
-			parts = append(parts, converter.RepoModelToPartModel(&part))
+	if len(f.ManufacturerCountries) > 0 {
+		filter["manufacturer.country"] = bson.M{"$in": f.ManufacturerCountries}
+	}
+
+	if len(f.Tags) > 0 {
+		filter["tags"] = bson.M{"$in": f.Tags}
+	}
+
+	cursor, err := r.data.Find(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query parts: %w", err)
+	}
+	defer func() {
+		err = cursor.Close(ctx)
+		if err != nil {
+			panic(err)
 		}
+	}()
+
+	var parts []*repoModel.Part
+	if err := cursor.All(ctx, &parts); err != nil {
+		return nil, fmt.Errorf("failed to decode parts: %w", err)
 	}
 
-	return parts, nil
-}
-
-func isMatchAnyFilter(part *repoModel.Part,
-	uuidSet map[string]struct{},
-	nameSet map[string]struct{},
-	categorySet map[repoModel.Category]struct{},
-	countrySet map[string]struct{},
-	tagSet map[string]struct{},
-) bool {
-	if len(uuidSet) > 0 {
-		if _, exists := uuidSet[part.Uuid]; !exists {
-			return false
-		}
+	result := make([]*model.Part, 0, len(parts))
+	for _, part := range parts {
+		result = append(result, converter.RepoModelToPartModel(part))
 	}
 
-	if len(nameSet) > 0 {
-		if _, exists := nameSet[strings.ToLower(part.Name)]; !exists {
-			return false
-		}
-	}
-
-	if len(categorySet) > 0 {
-		if _, exists := categorySet[part.Category]; !exists {
-			return false
-		}
-	}
-
-	if len(countrySet) > 0 {
-		if _, exists := countrySet[strings.ToLower(part.Manufacturer.Country)]; !exists {
-			return false
-		}
-	}
-
-	if len(tagSet) > 0 {
-		hasMatchingTag := false
-		for _, tag := range part.Tags {
-			if _, exists := tagSet[strings.ToLower(tag)]; exists {
-				hasMatchingTag = true
-				break
-			}
-		}
-		if !hasMatchingTag {
-			return false
-		}
-	}
-
-	return true
-}
-
-func isEmptyFilter(filter *repoModel.PartsFilter) bool {
-	return len(filter.Uuids) == 0 &&
-		len(filter.Names) == 0 &&
-		len(filter.Categories) == 0 &&
-		len(filter.ManufacturerCountries) == 0 &&
-		len(filter.Tags) == 0
-}
-
-func makeStringSet(items []string) map[string]struct{} {
-	set := make(map[string]struct{})
-	for _, item := range items {
-		set[strings.ToLower(item)] = struct{}{}
-	}
-
-	return set
-}
-
-func makeCategorySet(categories []repoModel.Category) map[repoModel.Category]struct{} {
-	set := make(map[repoModel.Category]struct{})
-	for _, cat := range categories {
-		set[cat] = struct{}{}
-	}
-
-	return set
+	return result, nil
 }
