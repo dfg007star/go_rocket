@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dfg007star/go_rocket/inventory/internal/model"
-	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/dfg007star/go_rocket/inventory/internal/model"
+	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
 )
 
 func (r *repository) Update(ctx context.Context, part *model.Part) (*model.Part, error) {

@@ -10,16 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	inventoryAPI "github.com/dfg007star/go_rocket/inventory/internal/api/inventory/v1"
-	"github.com/dfg007star/go_rocket/inventory/internal/model"
-	inventoryRepository "github.com/dfg007star/go_rocket/inventory/internal/repository/part"
-	inventoryService "github.com/dfg007star/go_rocket/inventory/internal/service/part"
-	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	inventoryAPI "github.com/dfg007star/go_rocket/inventory/internal/api/inventory/v1"
+	"github.com/dfg007star/go_rocket/inventory/internal/model"
+	inventoryRepository "github.com/dfg007star/go_rocket/inventory/internal/repository/part"
+	inventoryService "github.com/dfg007star/go_rocket/inventory/internal/service/part"
+	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 )
 
 const grpcPort = 50051

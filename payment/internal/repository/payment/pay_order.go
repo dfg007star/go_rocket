@@ -4,8 +4,9 @@ import (
 	"context"
 	"log"
 
-	repoModel "github.com/dfg007star/go_rocket/payment/internal/repository/model"
 	"github.com/google/uuid"
+
+	repoModel "github.com/dfg007star/go_rocket/payment/internal/repository/model"
 )
 
 func (r *repository) PayOrder(ctx context.Context, payment repoModel.Payment) (string, error) {

@@ -5,7 +5,7 @@ import (
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
 )
 
-//func PartsFilterModelToPartsFilterRepoModel(filter *model.PartsFilter) *repoModel.PartsFilter {
+// func PartsFilterModelToPartsFilterRepoModel(filter *model.PartsFilter) *repoModel.PartsFilter {
 //	categories := make([]repoModel.Category, 0, len(filter.Categories))
 //	for _, category := range filter.Categories {
 //		categories = append(categories, modelCategoryToRepoCategory(category))
@@ -18,7 +18,7 @@ import (
 //		ManufacturerCountries: filter.ManufacturerCountries,
 //		Tags:                  filter.Tags,
 //	}
-//}
+// }
 
 func modelCategoryToRepoCategory(category model.Category) repoModel.Category {
 	switch category {

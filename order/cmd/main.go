@@ -11,6 +11,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
 	paymentServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/payment/v1"
@@ -19,12 +26,6 @@ import (
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -84,7 +85,7 @@ func main() {
 
 	orderServer, err := orderV1.NewServer(api)
 	if err != nil {
-		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
+		panic(err)
 	}
 
 	// Инициализируем роутер Chi

@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/suite"
+
 	client "github.com/dfg007star/go_rocket/order/internal/client/grpc/mocks"
 	"github.com/dfg007star/go_rocket/order/internal/repository/mocks"
-	"github.com/stretchr/testify/suite"
 )
 
 type ServiceSuite struct {

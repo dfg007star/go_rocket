@@ -3,9 +3,11 @@ package order
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
+
 	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
 	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
@@ -48,7 +50,7 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, e
 		&dbOrder.UpdatedAt,
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, model.ErrOrderNotFound
 		}
 		return nil, fmt.Errorf("failed to get order: %w", err)

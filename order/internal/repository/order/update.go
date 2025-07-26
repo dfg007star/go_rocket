@@ -2,12 +2,14 @@ package order
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5"
+
 	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
-	"github.com/jackc/pgx/v5"
 )
 
 func (r *repository) Update(ctx context.Context, orderUpdate *model.OrderUpdate) (*model.Order, error) {
@@ -41,7 +43,7 @@ func (r *repository) Update(ctx context.Context, orderUpdate *model.OrderUpdate)
 
 	_, err = r.data.Exec(ctx, sql, args...)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, model.ErrOrderNotFound
 		}
 		return nil, fmt.Errorf("failed to execute order update: %w", err)

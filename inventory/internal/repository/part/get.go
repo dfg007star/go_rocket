@@ -3,10 +3,11 @@ package part
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (r *repository) Get(ctx context.Context, uuid string) (*model.Part, error) {
