@@ -12,9 +12,9 @@ import (
 )
 
 func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, error) {
-	fmt.Println("GET", orderUuid)
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 
-	// Build the query using Squirrel
 	query, args, err := squirrel.Select(
 		"order_uuid",
 		"user_uuid",
@@ -34,9 +34,6 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, e
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %w", err)
 	}
-
-	fmt.Println("Generated SQL:", query)
-	fmt.Println("With args:", args)
 
 	var dbOrder repoModel.Order
 	var statusStr string
@@ -60,8 +57,6 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, e
 	}
 
 	dbOrder.Status = repoModel.StatusFromString(statusStr)
-
-	fmt.Println("GET", dbOrder)
 
 	return converter.RepoModelToOrder(&dbOrder), nil
 }
