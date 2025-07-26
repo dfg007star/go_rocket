@@ -4,11 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/suite"
-
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/mocks"
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
+	"github.com/stretchr/testify/suite"
 )
 
 type ServiceSuite struct {

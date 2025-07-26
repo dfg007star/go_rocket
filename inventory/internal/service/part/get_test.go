@@ -4,9 +4,8 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/stretchr/testify/require"
-
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
+	"github.com/stretchr/testify/require"
 )
 
 func (s *ServiceSuite) TestGet() {

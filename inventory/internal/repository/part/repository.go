@@ -2,15 +2,15 @@ package part
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"os"
 	"sync"
 	"time"
 
 	def "github.com/dfg007star/go_rocket/inventory/internal/repository"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var _ def.PartRepository = (*repository)(nil)

@@ -10,17 +10,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-
 	inventoryAPI "github.com/dfg007star/go_rocket/inventory/internal/api/inventory/v1"
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	inventoryRepository "github.com/dfg007star/go_rocket/inventory/internal/repository/part"
 	inventoryService "github.com/dfg007star/go_rocket/inventory/internal/service/part"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 const grpcPort = 50051
@@ -69,7 +68,7 @@ func main() {
 	repo := inventoryRepository.NewRepository(clientMongo)
 
 	temperature_data := "-30°C to 80°C"
-	var sampleParts = []model.Part{
+	sampleParts := []model.Part{
 		{
 			Uuid:          "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
 			Name:          "TurboJet X-200 Engine",
@@ -126,7 +125,10 @@ func main() {
 	api := inventoryAPI.NewApi(service)
 
 	for d := range sampleParts {
-		repo.Create(ctx, &sampleParts[d])
+		_, err := repo.Create(ctx, &sampleParts[d])
+		if err != nil {
+			continue
+		}
 	}
 
 	// Создаем gRPC сервер

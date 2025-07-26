@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 	"log"
 	"net"
 	"net/http"
@@ -23,6 +21,8 @@ import (
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

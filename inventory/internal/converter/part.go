@@ -1,10 +1,9 @@
 package converter
 
 import (
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func PartsModelToGrpcResponse(models []*model.Part) *inventoryV1.ListPartsResponse {

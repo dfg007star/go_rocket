@@ -48,7 +48,6 @@ func (r *repository) Create(ctx context.Context, userUuid string, parts []*model
 		order.Status.String(),
 		order.CreatedAt,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to create order: %w", err)
 	}

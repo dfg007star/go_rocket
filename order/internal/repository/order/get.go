@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/Masterminds/squirrel"
+	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
 	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
-
-	"github.com/dfg007star/go_rocket/order/internal/model"
 )
 
 func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, error) {
@@ -30,7 +30,6 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, e
 		Where(squirrel.Eq{"order_uuid": orderUuid}).
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to build query: %w", err)
 	}
@@ -48,7 +47,6 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, e
 		&dbOrder.CreatedAt,
 		&dbOrder.UpdatedAt,
 	)
-
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, model.ErrOrderNotFound
