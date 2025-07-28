@@ -110,7 +110,7 @@ func main() {
 	log.Println("🛑 Завершение работы сервера...")
 
 	// Создаем контекст с таймаутом для остановки сервера
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	err = server.Shutdown(ctx)
