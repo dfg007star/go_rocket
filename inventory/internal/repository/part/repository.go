@@ -2,8 +2,7 @@ package part
 
 import (
 	"context"
-	"log"
-	"os"
+	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	"sync"
 	"time"
 
@@ -22,12 +21,7 @@ type repository struct {
 }
 
 func NewRepository(clientMongo *mongo.Client) *repository {
-	dbName := os.Getenv("MONGO_INITDB_DATABASE")
-	if dbName == "" {
-		log.Fatal("MONGO_INITDB_DATABASE environment variable is not set")
-	}
-
-	db := clientMongo.Database(dbName)
+	db := clientMongo.Database(config.AppConfig().Mongo.DatabaseName())
 	data := db.Collection("parts")
 
 	indexModels := []mongo.IndexModel{

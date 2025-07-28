@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	"log"
 	"net"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
@@ -23,20 +23,17 @@ import (
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 )
 
-const grpcPort = 50051
+const configPath = "../deploy/compose/inventory/.env"
 
 func main() {
-	ctx := context.Background()
-
-	err := godotenv.Load(".env")
+	err := config.Load(configPath)
 	if err != nil {
-		log.Printf("failed to load .env file: %v\n", err)
-		return
+		panic(fmt.Errorf("error loading config: %w", err))
 	}
 
-	dbURI := os.Getenv("MONGO_URI")
+	ctx := context.Background()
 
-	clientMongo, err := mongo.Connect(ctx, options.Client().ApplyURI(dbURI))
+	clientMongo, err := mongo.Connect(ctx, options.Client().ApplyURI(config.AppConfig().Mongo.URI()))
 	if err != nil {
 		log.Printf("failed to connect to database: %v\n", err)
 		return
@@ -54,7 +51,7 @@ func main() {
 		return
 	}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
+	lis, err := net.Listen("tcp", config.AppConfig().InventoryGRPC.Address())
 	if err != nil {
 		log.Printf("failed to listen: %v\n", err)
 		return
@@ -140,7 +137,6 @@ func main() {
 	reflection.Register(s)
 
 	go func() {
-		log.Printf("🚀 gRPC server listening on %d\n", grpcPort)
 		err = s.Serve(lis)
 		if err != nil {
 			log.Printf("failed to serve: %v\n", err)

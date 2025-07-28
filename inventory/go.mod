@@ -4,6 +4,7 @@ go 1.24.4
 
 require (
 	github.com/brianvoe/gofakeit/v7 v7.3.0
+	github.com/caarlos0/env/v11 v11.3.1
 	github.com/dfg007star/go_rocket/shared v0.0.0-20250706162841-51d96bf7cfc4
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
