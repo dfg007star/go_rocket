@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"errors"
+	"github.com/dfg007star/go_rocket/order/internal/config"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,7 +14,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -28,16 +27,10 @@ import (
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 )
 
-const (
-	httpPort = "8080"
-	// Таймауты для HTTP-сервера
-	readHeaderTimeout    = 5 * time.Second
-	shutdownTimeout      = 10 * time.Second
-	grpcInventoryAddress = "localhost:50051"
-	grpcPaymentAddress   = "localhost:50052"
-)
+const configPath = "../deploy/compose/order/.env"
 
 func main() {
+	err := config.Load(configPath)
 	ctx := context.Background()
 
 	inventoryClient, _, err := newInventoryClient()
@@ -49,14 +42,7 @@ func main() {
 		panic(err)
 	}
 
-	err = godotenv.Load(".env")
-	if err != nil {
-		log.Printf("failed to load .env file: %v\n", err)
-		return
-	}
-
-	dbURI := os.Getenv("DB_URI")
-	con, err := pgx.Connect(ctx, dbURI)
+	con, err := pgx.Connect(ctx, config.AppConfig().Postgres.URI())
 	if err != nil {
 		log.Printf("failed to connect to database: %v\n", err)
 		return
@@ -100,13 +86,13 @@ func main() {
 	r.Mount("/", orderServer)
 
 	server := &http.Server{
-		Addr:              net.JoinHostPort("localhost", httpPort),
+		Addr:              config.AppConfig().OrderHTTP.Address(),
 		Handler:           r,
-		ReadHeaderTimeout: readHeaderTimeout,
+		ReadHeaderTimeout: config.AppConfig().OrderHTTP.ReadTimeout(),
 	}
 
 	go func() {
-		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", httpPort)
+		log.Printf("🚀 HTTP-сервер запущен на порту %s\n", config.AppConfig().OrderHTTP.Address())
 		err = server.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("❌ Ошибка запуска сервера: %v\n", err)
@@ -120,7 +106,7 @@ func main() {
 	log.Println("🛑 Завершение работы сервера...")
 
 	// Создаем контекст с таймаутом для остановки сервера
-	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	err = server.Shutdown(ctx)
@@ -133,7 +119,7 @@ func main() {
 
 func newInventoryClient() (inventoryV1.InventoryServiceClient, *grpc.ClientConn, error) {
 	conn, err := grpc.NewClient(
-		grpcInventoryAddress,
+		config.AppConfig().InventoryGRPC.Address(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -146,7 +132,7 @@ func newInventoryClient() (inventoryV1.InventoryServiceClient, *grpc.ClientConn,
 
 func newPaymentClient() (paymentV1.PaymentServiceClient, *grpc.ClientConn, error) {
 	conn, err := grpc.NewClient(
-		grpcPaymentAddress,
+		config.AppConfig().PaymentGRPC.Address(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {

@@ -2,7 +2,7 @@ package order
 
 import (
 	"fmt"
-	"os"
+	"github.com/dfg007star/go_rocket/order/internal/config"
 	"sync"
 
 	"github.com/jackc/pgx/v5"
@@ -20,8 +20,8 @@ type repository struct {
 }
 
 func NewRepository(clientPostgres *pgx.Conn) *repository {
-	migrationsDir := os.Getenv("MIGRATIONS_DIR")
-	migratorRunner := migrator.NewMigrator(stdlib.OpenDB(*clientPostgres.Config().Copy()), migrationsDir)
+	fmt.Println(config.AppConfig().Postgres.MigrationDirectory())
+	migratorRunner := migrator.NewMigrator(stdlib.OpenDB(*clientPostgres.Config().Copy()), config.AppConfig().Postgres.MigrationDirectory())
 
 	err := migratorRunner.Up()
 	if err != nil {
