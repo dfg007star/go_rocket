@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	"log"
 	"net"
 	"os"
@@ -17,6 +16,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	inventoryAPI "github.com/dfg007star/go_rocket/inventory/internal/api/inventory/v1"
+	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	inventoryRepository "github.com/dfg007star/go_rocket/inventory/internal/repository/part"
 	inventoryService "github.com/dfg007star/go_rocket/inventory/internal/service/part"

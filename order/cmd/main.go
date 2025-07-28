@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/dfg007star/go_rocket/order/internal/config"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +20,7 @@ import (
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
 	paymentServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/payment/v1"
+	"github.com/dfg007star/go_rocket/order/internal/config"
 	orderRepository "github.com/dfg007star/go_rocket/order/internal/repository/order"
 	orderService "github.com/dfg007star/go_rocket/order/internal/service/order"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
@@ -31,6 +32,9 @@ const configPath = "../deploy/compose/order/.env"
 
 func main() {
 	err := config.Load(configPath)
+	if err != nil {
+		panic(fmt.Errorf("failed to load config: %w", err))
+	}
 	ctx := context.Background()
 
 	inventoryClient, _, err := newInventoryClient()

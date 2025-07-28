@@ -2,7 +2,6 @@ package part
 
 import (
 	"context"
-	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	"sync"
 	"time"
 
@@ -10,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	def "github.com/dfg007star/go_rocket/inventory/internal/repository"
 )
 
