@@ -68,7 +68,6 @@ func main() {
 	temperature_data := "-30°C to 80°C"
 	sampleParts := []model.Part{
 		{
-			Uuid:          "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8",
 			Name:          "TurboJet X-200 Engine",
 			Description:   "High-performance turbofan engine for commercial aircraft",
 			Price:         4250.99,
@@ -93,7 +92,6 @@ func main() {
 			UpdatedAt: time.Date(2024, 1, 15, 0, 0, 0, 0, time.UTC),
 		},
 		{
-			Uuid:          "b2c3d4e5-f6g7-8901-h2i3-j4k5l6m7n8o9",
 			Name:          "AeroFlap Wing Component",
 			Description:   "Durable wing flap for mid-size aircraft",
 			Price:         1250.50,
