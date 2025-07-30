@@ -9,19 +9,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	def "github.com/dfg007star/go_rocket/inventory/internal/repository"
 )
 
-var _ def.PartRepository = (*repository)(nil)
+var _ def.InventoryRepository = (*repository)(nil)
 
 type repository struct {
 	mu   sync.RWMutex
 	data *mongo.Collection
 }
 
-func NewRepository(clientMongo *mongo.Client) *repository {
-	db := clientMongo.Database(config.AppConfig().Mongo.DatabaseName())
+func NewRepository(db *mongo.Database) *repository {
 	data := db.Collection("parts")
 
 	indexModels := []mongo.IndexModel{

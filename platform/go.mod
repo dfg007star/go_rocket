@@ -2,6 +2,10 @@ module github.com/dfg007star/go_rocket/platform
 
 go 1.24.4
 
+replace github.com/dfg007star/go_rocket/shared => ../shared
+
+replace github.com/dfg007star/go_rocket/platform => ../platform
+
 require (
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/docker/go-connections v0.5.0

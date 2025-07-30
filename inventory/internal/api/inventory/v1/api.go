@@ -11,7 +11,7 @@ type api struct {
 	inventoryService service.InventoryService
 }
 
-func NewApi(inventoryService service.InventoryService) *api {
+func NewAPI(inventoryService service.InventoryService) *api {
 	return &api{
 		inventoryService: inventoryService,
 	}
