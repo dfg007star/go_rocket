@@ -9,7 +9,6 @@ replace github.com/dfg007star/go_rocket/platform => ../platform
 require (
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/docker/go-connections v0.5.0
-	github.com/moby/moby/api v0.0.0-20250730144150-263a21705b09
 	github.com/pkg/errors v0.9.1
 	github.com/testcontainers/testcontainers-go v0.38.0
 	go.mongodb.org/mongo-driver v1.17.4
