@@ -12,6 +12,7 @@ import (
 	orderRepository "github.com/dfg007star/go_rocket/order/internal/repository/order"
 	"github.com/dfg007star/go_rocket/order/internal/service"
 	orderService "github.com/dfg007star/go_rocket/order/internal/service/order"
+	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
@@ -99,6 +100,10 @@ func (d *diContainer) PaymentClient(ctx context.Context) grpcClient.PaymentClien
 			panic(fmt.Errorf("failed to connect to payment grpc client: %w", err))
 		}
 
+		closer.AddNamed("Payment GRPC client", func(ctx context.Context) error {
+			return conn.Close()
+		})
+
 		client := paymentV1.NewPaymentServiceClient(conn)
 		d.paymentClient = paymentServiceClient.NewClient(client)
 	}
@@ -115,6 +120,9 @@ func (d *diContainer) InventoryClient(ctx context.Context) grpcClient.InventoryC
 		if err != nil {
 			panic(fmt.Errorf("failed to connect to inventory grpc client: %w", err))
 		}
+		closer.AddNamed("Inventory GRPC client", func(ctx context.Context) error {
+			return conn.Close()
+		})
 
 		client := inventoryV1.NewInventoryServiceClient(conn)
 		d.inventoryClient = inventoryServiceClient.NewClient(client)
