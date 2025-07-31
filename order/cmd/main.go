@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/dfg007star/go_rocket/order/internal/app"
+	"github.com/dfg007star/go_rocket/platform/pkg/closer"
+	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"os"
@@ -14,8 +18,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
@@ -24,8 +26,6 @@ import (
 	orderRepository "github.com/dfg007star/go_rocket/order/internal/repository/order"
 	orderService "github.com/dfg007star/go_rocket/order/internal/service/order"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
-	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
-	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 )
 
 const configPath = "../deploy/compose/order/.env"
@@ -35,7 +35,24 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("failed to load config: %w", err))
 	}
-	ctx := context.Background()
+
+	appCtx, appCancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer appCancel()
+	defer gracefulShutdown()
+
+	closer.Configure(syscall.SIGINT, syscall.SIGTERM)
+
+	a, err := app.New(appCtx)
+	if err != nil {
+		logger.Error(appCtx, "❌ Не удалось создать приложение", zap.Error(err))
+		return
+	}
+
+	err = a.Run(appCtx)
+	if err != nil {
+		logger.Error(appCtx, "❌ Ошибка при работе приложения", zap.Error(err))
+		return
+	}
 
 	inventoryClient, _, err := newInventoryClient()
 	if err != nil {
@@ -121,28 +138,37 @@ func main() {
 	log.Println("✅ Сервер остановлен")
 }
 
-func newInventoryClient() (inventoryV1.InventoryServiceClient, *grpc.ClientConn, error) {
-	conn, err := grpc.NewClient(
-		config.AppConfig().InventoryGRPC.Address(),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		return nil, nil, err
-	}
+func gracefulShutdown() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
-	client := inventoryV1.NewInventoryServiceClient(conn)
-	return client, conn, nil
+	if err := closer.CloseAll(ctx); err != nil {
+		logger.Error(ctx, "❌ Ошибка при завершении работы", zap.Error(err))
+	}
 }
 
-func newPaymentClient() (paymentV1.PaymentServiceClient, *grpc.ClientConn, error) {
-	conn, err := grpc.NewClient(
-		config.AppConfig().PaymentGRPC.Address(),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	client := paymentV1.NewPaymentServiceClient(conn)
-	return client, conn, nil
-}
+//func newInventoryClient() (inventoryV1.InventoryServiceClient, *grpc.ClientConn, error) {
+//	conn, err := grpc.NewClient(
+//		config.AppConfig().InventoryGRPC.Address(),
+//		grpc.WithTransportCredentials(insecure.NewCredentials()),
+//	)
+//	if err != nil {
+//		return nil, nil, err
+//	}
+//
+//	client := inventoryV1.NewInventoryServiceClient(conn)
+//	return client, conn, nil
+//}
+//
+//func newPaymentClient() (paymentV1.PaymentServiceClient, *grpc.ClientConn, error) {
+//	conn, err := grpc.NewClient(
+//		config.AppConfig().PaymentGRPC.Address(),
+//		grpc.WithTransportCredentials(insecure.NewCredentials()),
+//	)
+//	if err != nil {
+//		return nil, nil, err
+//	}
+//
+//	client := paymentV1.NewPaymentServiceClient(conn)
+//	return client, conn, nil
+//}
