@@ -12,9 +12,6 @@ import (
 )
 
 func (r *repository) Create(ctx context.Context, userUuid string, parts []*model.Part) (*model.Order, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
 	partUuids := make([]string, 0, len(parts))
 	totalPrice := 0.0
 

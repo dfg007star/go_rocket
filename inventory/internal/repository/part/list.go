@@ -13,9 +13,6 @@ import (
 )
 
 func (r *repository) List(ctx context.Context, f *model.PartsFilter) ([]*model.Part, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
 	filter := bson.M{}
 
 	if len(f.Uuids) > 0 {

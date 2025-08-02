@@ -2,8 +2,6 @@ package part
 
 import (
 	"context"
-	"sync"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,7 +12,6 @@ import (
 var _ def.InventoryRepository = (*repository)(nil)
 
 type repository struct {
-	mu   sync.RWMutex
 	data *mongo.Collection
 }
 

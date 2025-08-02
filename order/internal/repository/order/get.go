@@ -14,9 +14,6 @@ import (
 )
 
 func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
 	query, args, err := squirrel.Select(
 		"order_uuid",
 		"user_uuid",

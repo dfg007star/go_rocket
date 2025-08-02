@@ -13,9 +13,6 @@ import (
 )
 
 func (r *repository) Update(ctx context.Context, orderUpdate *model.OrderUpdate) (*model.Order, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
 	repoOrderUpdate := converter.OrderUpdateToRepoOrderUpdate(orderUpdate)
 
 	queryBuilder := sq.Update("orders").

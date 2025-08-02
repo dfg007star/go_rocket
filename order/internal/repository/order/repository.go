@@ -1,8 +1,6 @@
 package order
 
 import (
-	"sync"
-
 	"github.com/jackc/pgx/v5"
 
 	def "github.com/dfg007star/go_rocket/order/internal/repository"
@@ -11,7 +9,6 @@ import (
 var _ def.OrderRepository = (*repository)(nil)
 
 type repository struct {
-	mu   sync.RWMutex
 	data *pgx.Conn
 }
 
