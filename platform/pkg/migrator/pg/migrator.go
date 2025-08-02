@@ -2,8 +2,10 @@ package pg
 
 import (
 	"database/sql"
-	"github.com/dfg007star/go_rocket/platform/pkg/migrator"
+
 	"github.com/pressly/goose/v3"
+
+	"github.com/dfg007star/go_rocket/platform/pkg/migrator"
 )
 
 type PostgresMigrator struct {
@@ -17,7 +19,12 @@ func New(db *sql.DB, migrationsDir string) *PostgresMigrator {
 }
 
 func (m *PostgresMigrator) Up() error {
-	return goose.Up(m.GetDB(), m.GetMigrationsDir())
+	err := goose.Up(m.GetDB(), m.GetMigrationsDir())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *PostgresMigrator) Down() error {

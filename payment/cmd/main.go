@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/dfg007star/go_rocket/payment/internal/app"
-	"github.com/dfg007star/go_rocket/platform/pkg/closer"
-	"github.com/dfg007star/go_rocket/platform/pkg/logger"
-	"go.uber.org/zap"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"go.uber.org/zap"
+
+	"github.com/dfg007star/go_rocket/payment/internal/app"
 	"github.com/dfg007star/go_rocket/payment/internal/config"
+	"github.com/dfg007star/go_rocket/platform/pkg/closer"
+	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 )
 
 const configPath = "../deploy/compose/payment/.env"

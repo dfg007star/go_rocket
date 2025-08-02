@@ -3,6 +3,11 @@ package app
 import (
 	"context"
 	"fmt"
+
+	"github.com/jackc/pgx/v5"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	grpcClient "github.com/dfg007star/go_rocket/order/internal/client/grpc"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
@@ -16,9 +21,6 @@ import (
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
-	"github.com/jackc/pgx/v5"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type diContainer struct {
@@ -72,12 +74,9 @@ func (d *diContainer) PostgresClient(ctx context.Context) *pgx.Conn {
 			panic(fmt.Errorf("failed to connect to database: %w", err))
 		}
 
-		defer func() {
-			cerr := con.Close(ctx)
-			if cerr != nil {
-				panic(fmt.Errorf("failed to close connection: %w", cerr))
-			}
-		}()
+		closer.AddNamed("Postgres client", func(ctx context.Context) error {
+			return con.Close(ctx)
+		})
 
 		err = con.Ping(ctx)
 		if err != nil {

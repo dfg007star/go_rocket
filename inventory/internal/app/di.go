@@ -3,17 +3,23 @@ package app
 import (
 	"context"
 	"fmt"
+	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.uber.org/zap"
+
 	inventoryV1API "github.com/dfg007star/go_rocket/inventory/internal/api/inventory/v1"
 	"github.com/dfg007star/go_rocket/inventory/internal/config"
+	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository"
 	inventoryRepository "github.com/dfg007star/go_rocket/inventory/internal/repository/part"
 	"github.com/dfg007star/go_rocket/inventory/internal/service"
 	inventoryService "github.com/dfg007star/go_rocket/inventory/internal/service/part"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
+	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 type diContainer struct {
@@ -49,7 +55,33 @@ func (d *diContainer) InventoryService(ctx context.Context) service.InventorySer
 
 func (d *diContainer) InventoryRepository(ctx context.Context) repository.InventoryRepository {
 	if d.inventoryRepository == nil {
-		d.inventoryRepository = inventoryRepository.NewRepository(d.MongoDBHandle(ctx))
+		d.inventoryRepository = inventoryRepository.NewRepository(ctx, d.MongoDBHandle(ctx))
+		// create part for test purpose
+		part := model.Part{
+			Name:          "Turbo Engine",
+			Description:   "High-performance aircraft engine",
+			Price:         125000.99,
+			StockQuantity: 5,
+			Category:      model.ENGINE,
+			Dimensions: model.Dimensions{
+				Length: 2.5,
+				Width:  1.8,
+				Height: 1.2,
+				Weight: 350.5,
+			},
+			Manufacturer: model.Manufacturer{
+				Name:    "AeroTech",
+				Country: "USA",
+				Website: "www.aerotech.example",
+			},
+			Tags:      []string{"engine", "turbo", "aircraft"},
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+		_, err := d.inventoryRepository.Create(ctx, &part)
+		if err != nil {
+			logger.Error(ctx, "create inventory part error", zap.Error(err))
+		}
 	}
 
 	return d.inventoryRepository

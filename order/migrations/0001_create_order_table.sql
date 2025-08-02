@@ -13,7 +13,7 @@ CREATE TYPE order_status AS ENUM (
     'CANCELLED'
 );
 
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
                         id SERIAL PRIMARY KEY,
                         order_uuid VARCHAR(36) NOT NULL UNIQUE,
                         user_uuid VARCHAR(36) NOT NULL,

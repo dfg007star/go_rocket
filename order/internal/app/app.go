@@ -2,21 +2,23 @@ package app
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5/stdlib"
+
 	"github.com/dfg007star/go_rocket/order/internal/config"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	pgMigrator "github.com/dfg007star/go_rocket/platform/pkg/migrator/pg"
-	"github.com/jackc/pgx/v5/stdlib"
-	"net"
-	"net/http"
 )
 
 type App struct {
 	diContainer *diContainer
 	httpServer  *http.Server
-	listener    net.Listener
 }
 
 func New(ctx context.Context) (*App, error) {
@@ -39,7 +41,6 @@ func (a *App) initDeps(ctx context.Context) error {
 		a.initDI,
 		a.initLogger,
 		a.initCloser,
-		a.initListener,
 		a.initMigrator,
 		a.initHTTPServer,
 	}
@@ -71,28 +72,9 @@ func (a *App) initCloser(_ context.Context) error {
 	return nil
 }
 
-func (a *App) initListener(_ context.Context) error {
-	listener, err := net.Listen("tcp", config.AppConfig().InventoryGRPC.Address())
-	if err != nil {
-		return err
-	}
-	closer.AddNamed("TCP listener", func(ctx context.Context) error {
-		lerr := listener.Close()
-		if lerr != nil && !errors.Is(lerr, net.ErrClosed) {
-			return lerr
-		}
-
-		return nil
-	})
-
-	a.listener = listener
-
-	return nil
-}
-
-func (a *App) initMigrator(_ context.Context) error {
+func (a *App) initMigrator(ctx context.Context) error {
 	migrator := pgMigrator.New(
-		stdlib.OpenDB(*a.diContainer.postgresClient.Config().Copy()),
+		stdlib.OpenDB(*a.diContainer.PostgresClient(ctx).Config().Copy()),
 		config.AppConfig().Postgres.MigrationDirectory(),
 	)
 	err := migrator.Up()
@@ -103,6 +85,43 @@ func (a *App) initMigrator(_ context.Context) error {
 	return nil
 }
 
-func (a *App) initHTTPServer(_ context.Context) error {
+func (a *App) initHTTPServer(ctx context.Context) error {
+	// Инициализируем роутер Chi
+	r := chi.NewRouter()
 
+	// Добавляем middleware
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Timeout(10 * time.Second))
+
+	// Монтируем обработчики OpenAPI
+	r.Mount("/", a.diContainer.OrderV1API(ctx))
+
+	a.httpServer = &http.Server{
+		Addr:              config.AppConfig().OrderHTTP.Address(),
+		Handler:           r,
+		ReadHeaderTimeout: config.AppConfig().OrderHTTP.ReadTimeout(),
+	}
+
+	closer.AddNamed("HTTP server", func(ctx context.Context) error {
+		err := a.httpServer.Shutdown(ctx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return nil
+}
+
+func (a *App) runHTTPServer(ctx context.Context) error {
+	logger.Info(ctx, fmt.Sprintf("🚀 HTTP OrderService server listening on %s", config.AppConfig().OrderHTTP.Address()))
+
+	err := a.httpServer.ListenAndServe()
+	if err != nil {
+		logger.Error(ctx, "failed to start http server")
+		return err
+	}
+
+	return nil
 }

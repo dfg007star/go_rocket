@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"go.uber.org/zap"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"go.uber.org/zap"
 
 	"github.com/dfg007star/go_rocket/inventory/internal/app"
 	"github.com/dfg007star/go_rocket/inventory/internal/config"

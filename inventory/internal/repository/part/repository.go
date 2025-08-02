@@ -3,7 +3,6 @@ package part
 import (
 	"context"
 	"sync"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,7 +18,7 @@ type repository struct {
 	data *mongo.Collection
 }
 
-func NewRepository(db *mongo.Database) *repository {
+func NewRepository(ctx context.Context, db *mongo.Database) *repository {
 	data := db.Collection("parts")
 
 	indexModels := []mongo.IndexModel{
@@ -35,9 +34,6 @@ func NewRepository(db *mongo.Database) *repository {
 			},
 		},
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	_, err := data.Indexes().CreateMany(ctx, indexModels)
 	if err != nil {
