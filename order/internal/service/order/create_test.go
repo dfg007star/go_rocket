@@ -37,7 +37,7 @@ func (s *ServiceSuite) TestCreateOrderSuccess() {
 		tags[i] = gofakeit.Word()
 	}
 
-	part := model.Part{
+	part := &model.Part{
 		Uuid:          orderUuid,
 		Name:          name,
 		Description:   description,
@@ -50,7 +50,7 @@ func (s *ServiceSuite) TestCreateOrderSuccess() {
 		CreatedAt:     createdAt,
 	}
 
-	orderResp := model.Order{
+	orderResp := &model.Order{
 		OrderUuid:  orderUuid,
 		UserUuid:   userUuid,
 		PartUuids:  partUuids,
@@ -59,11 +59,11 @@ func (s *ServiceSuite) TestCreateOrderSuccess() {
 		CreatedAt:  createdAt,
 	}
 
-	filter := model.PartsFilter{
+	filter := &model.PartsFilter{
 		Uuids: partUuids,
 	}
 
-	listParts := []model.Part{part}
+	listParts := []*model.Part{part}
 
 	s.inventoryClient.On("ListParts", s.ctx, filter).Return(listParts, nil).Once()
 	s.orderRepository.On("Create", s.ctx, userUuid, listParts).Return(orderResp, nil).Once()
@@ -77,7 +77,7 @@ func (s *ServiceSuite) TestCreateOrderListPartsErr() {
 	userUuid := gofakeit.UUID()
 	partUuids := []string{gofakeit.UUID()}
 
-	filter := model.PartsFilter{
+	filter := &model.PartsFilter{
 		Uuids: partUuids,
 	}
 
@@ -116,7 +116,7 @@ func (s *ServiceSuite) TestCreateOrderErr() {
 		createdAt = time.Now()
 	)
 
-	part := model.Part{
+	part := &model.Part{
 		Uuid:          orderUuid,
 		Name:          name,
 		Description:   description,
@@ -128,7 +128,7 @@ func (s *ServiceSuite) TestCreateOrderErr() {
 		CreatedAt:     createdAt,
 	}
 
-	part2 := model.Part{
+	part2 := &model.Part{
 		Uuid:          orderUuid,
 		Name:          name,
 		Description:   description,
@@ -140,11 +140,11 @@ func (s *ServiceSuite) TestCreateOrderErr() {
 		CreatedAt:     createdAt,
 	}
 
-	filter := model.PartsFilter{
+	filter := &model.PartsFilter{
 		Uuids: partUuids,
 	}
 
-	listParts := []model.Part{part, part2}
+	listParts := []*model.Part{part, part2}
 	expectedErr := model.ErrNotAllPartsMatched
 
 	s.inventoryClient.On("ListParts", s.ctx, filter).Return(listParts, nil).Once()
@@ -180,7 +180,7 @@ func (s *ServiceSuite) TestCreateOrderRepoErr() {
 		createdAt = time.Now()
 	)
 
-	part := model.Part{
+	part := &model.Part{
 		Uuid:          orderUuid,
 		Name:          name,
 		Description:   description,
@@ -192,15 +192,15 @@ func (s *ServiceSuite) TestCreateOrderRepoErr() {
 		CreatedAt:     createdAt,
 	}
 
-	filter := model.PartsFilter{
+	filter := &model.PartsFilter{
 		Uuids: partUuids,
 	}
 
-	listParts := []model.Part{part}
+	listParts := []*model.Part{part}
 	expectedErr := gofakeit.Error()
 
 	s.inventoryClient.On("ListParts", s.ctx, filter).Return(listParts, nil).Once()
-	s.orderRepository.On("Create", s.ctx, userUuid, []model.Part{part}).Return(model.Order{}, expectedErr).Once()
+	s.orderRepository.On("Create", s.ctx, userUuid, []*model.Part{part}).Return(&model.Order{}, expectedErr).Once()
 	resp, err := s.service.Create(s.ctx, &model.OrderCreate{UserUuid: userUuid, PartUuids: partUuids})
 
 	s.Error(err)

@@ -14,9 +14,6 @@ import (
 )
 
 func (r *repository) Update(ctx context.Context, part *model.Part) (*model.Part, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	now := time.Now()
 	if part.Uuid == "" {
 		part.Uuid = uuid.New().String()

@@ -11,9 +11,6 @@ import (
 )
 
 func (r *repository) Get(ctx context.Context, uuid string) (*model.Part, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
 	var part repoModel.Part
 
 	err := r.data.FindOne(ctx, bson.M{"uuid": uuid}).Decode(&part)

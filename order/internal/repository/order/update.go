@@ -13,9 +13,6 @@ import (
 )
 
 func (r *repository) Update(ctx context.Context, orderUpdate *model.OrderUpdate) (*model.Order, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	repoOrderUpdate := converter.OrderUpdateToRepoOrderUpdate(orderUpdate)
 
 	queryBuilder := sq.Update("orders").
@@ -49,5 +46,10 @@ func (r *repository) Update(ctx context.Context, orderUpdate *model.OrderUpdate)
 		return nil, fmt.Errorf("failed to execute order update: %w", err)
 	}
 
-	return r.Get(ctx, orderUpdate.OrderUuid)
+	result, err := r.Get(ctx, orderUpdate.OrderUuid)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get order: %w", err)
+	}
+
+	return result, nil
 }

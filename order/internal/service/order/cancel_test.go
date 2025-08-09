@@ -10,7 +10,7 @@ func (s *ServiceSuite) TestCancelOrderSuccess() {
 	orderUuid := gofakeit.UUID()
 
 	paymentMethod := model.INVESTOR_MONEY
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     orderUuid,
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
@@ -21,7 +21,7 @@ func (s *ServiceSuite) TestCancelOrderSuccess() {
 	}
 
 	status := model.CANCELLED
-	orderUpdateInfo := model.OrderUpdate{
+	orderUpdateInfo := &model.OrderUpdate{
 		OrderUuid: orderUuid,
 		Status:    &status,
 	}
@@ -37,7 +37,7 @@ func (s *ServiceSuite) TestCancelOrderErr() {
 	expectedErr := model.ErrOrderAlreadyPaid
 
 	paymentMethod := model.INVESTOR_MONEY
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     orderUuid,
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
@@ -58,7 +58,7 @@ func (s *ServiceSuite) TestCancelOrderConflictErr() {
 	expectedErr := model.ErrOrderAlreadyCancelled
 
 	paymentMethod := model.INVESTOR_MONEY
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     orderUuid,
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
@@ -78,7 +78,7 @@ func (s *ServiceSuite) TestCancelOrderInternalErr() {
 	orderUUID := gofakeit.UUID()
 	expectedErr := model.ErrOrderInternalError
 
-	s.orderRepository.On("Get", s.ctx, orderUUID).Return(model.Order{}, expectedErr).Once()
+	s.orderRepository.On("Get", s.ctx, orderUUID).Return(&model.Order{}, expectedErr).Once()
 	err := s.service.Cancel(s.ctx, orderUUID)
 	s.Error(err)
 	s.Equal(expectedErr, err)
@@ -88,7 +88,7 @@ func (s *ServiceSuite) TestCancelOrderNotFoundErr() {
 	orderUUID := gofakeit.UUID()
 	expectedErr := model.ErrOrderNotFound
 
-	s.orderRepository.On("Get", s.ctx, orderUUID).Return(model.Order{}, expectedErr).Once()
+	s.orderRepository.On("Get", s.ctx, orderUUID).Return(&model.Order{}, expectedErr).Once()
 	err := s.service.Cancel(s.ctx, orderUUID)
 	s.Error(err)
 	s.Equal(expectedErr, err)
@@ -99,7 +99,7 @@ func (s *ServiceSuite) TestCancelOrderUpdateErr() {
 	expectedErr := model.ErrOrderNotFound
 
 	paymentMethod := model.SBP
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     orderUuid,
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
@@ -110,13 +110,13 @@ func (s *ServiceSuite) TestCancelOrderUpdateErr() {
 	}
 
 	status := model.CANCELLED
-	orderUpdate := model.OrderUpdate{
+	orderUpdate := &model.OrderUpdate{
 		OrderUuid: orderUuid,
 		Status:    &status,
 	}
 
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(order, nil).Once()
-	s.orderRepository.On("Update", s.ctx, orderUpdate).Return(model.Order{}, expectedErr).Once()
+	s.orderRepository.On("Update", s.ctx, orderUpdate).Return(&model.Order{}, expectedErr).Once()
 	err := s.service.Cancel(s.ctx, orderUuid)
 	s.Error(err)
 	s.Equal(expectedErr, err)

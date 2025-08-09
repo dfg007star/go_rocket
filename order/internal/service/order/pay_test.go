@@ -13,7 +13,7 @@ func (s *ServiceSuite) TestPayOrderSuccess() {
 	paymentMethod := model.SBP
 	transactionUuid := gofakeit.UUID()
 
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     orderUuid,
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
@@ -24,19 +24,19 @@ func (s *ServiceSuite) TestPayOrderSuccess() {
 	}
 
 	updatedStatus := model.PAID
-	orderInfo := model.OrderUpdate{
+	orderInfo := &model.OrderUpdate{
 		OrderUuid:       orderUuid,
 		TransactionUuid: &transactionUuid,
 		Status:          &updatedStatus,
 	}
 
-	updatedOrder := order
+	updatedOrder := *order
 	updatedOrder.Status = updatedStatus
 	updatedOrder.TransactionUuid = &transactionUuid
 
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(order, nil).Once()
-	s.paymentClient.On("PayOrder", s.ctx, paymentMethod, order.OrderUuid, order.UserUuid).Return(transactionUuid, nil).Once()
-	s.orderRepository.On("Update", s.ctx, orderInfo).Return(updatedOrder, nil).Once()
+	s.paymentClient.On("PayOrder", s.ctx, &paymentMethod, order.OrderUuid, order.UserUuid).Return(transactionUuid, nil).Once()
+	s.orderRepository.On("Update", s.ctx, orderInfo).Return(&updatedOrder, nil).Once()
 
 	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.NoError(err)
@@ -48,7 +48,7 @@ func (s *ServiceSuite) TestPayOrderErrGetOrder() {
 	paymentMethod := model.SBP
 	expectedErr := model.ErrOrderNotFound
 
-	s.orderRepository.On("Get", s.ctx, orderUuid).Return(model.Order{}, expectedErr).Once()
+	s.orderRepository.On("Get", s.ctx, orderUuid).Return(&model.Order{}, expectedErr).Once()
 
 	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.Error(err)
@@ -60,7 +60,7 @@ func (s *ServiceSuite) TestPayOrderErr() {
 	orderUuid := gofakeit.UUID()
 	paymentMethod := model.SBP
 
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     orderUuid,
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
@@ -71,7 +71,7 @@ func (s *ServiceSuite) TestPayOrderErr() {
 	}
 
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(order, nil).Once()
-	s.paymentClient.On("PayOrder", s.ctx, paymentMethod, order.OrderUuid, order.UserUuid).Return("", gofakeit.Error()).Once()
+	s.paymentClient.On("PayOrder", s.ctx, &paymentMethod, order.OrderUuid, order.UserUuid).Return("", gofakeit.Error()).Once()
 
 	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.Error(err)
@@ -83,7 +83,7 @@ func (s *ServiceSuite) TestPayOrderInternalErr() {
 	paymentMethod := model.CARD
 	expectedErr := errors.New("order UUID is required")
 
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     "",
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
@@ -94,7 +94,7 @@ func (s *ServiceSuite) TestPayOrderInternalErr() {
 	}
 
 	s.orderRepository.On("Get", s.ctx, orderUuid).Return(order, nil).Once()
-	s.paymentClient.On("PayOrder", s.ctx, paymentMethod, order.OrderUuid, order.UserUuid).Return("", expectedErr).Once()
+	s.paymentClient.On("PayOrder", s.ctx, &paymentMethod, order.OrderUuid, order.UserUuid).Return("", expectedErr).Once()
 
 	resp, err := s.service.Pay(s.ctx, orderUuid, &paymentMethod)
 	s.Error(err)
@@ -107,7 +107,7 @@ func (s *ServiceSuite) TestPayOrderConflictOrderStatusPaidErr() {
 	paymentMethod := model.SBP
 	expectedErr := model.ErrOrderAlreadyPaid
 
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     orderUuid,
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
@@ -130,7 +130,7 @@ func (s *ServiceSuite) TestPayOrderConflictOrderStatusCanceledErr() {
 	paymentMethod := model.SBP
 	expectedErr := model.ErrOrderAlreadyCancelled
 
-	order := model.Order{
+	order := &model.Order{
 		OrderUuid:     orderUuid,
 		UserUuid:      gofakeit.UUID(),
 		PartUuids:     []string{gofakeit.UUID()},
