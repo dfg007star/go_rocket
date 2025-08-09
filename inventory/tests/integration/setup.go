@@ -1,3 +1,5 @@
+//go:build integration
+
 package integration
 
 import (
@@ -19,7 +21,7 @@ import (
 
 const (
 	// Параметры для контейнеров
-	inventoryAppName    = "inventory-app"
+	inventoryAppName    = "inventory-service"
 	inventoryDockerfile = "deploy/docker/inventory/Dockerfile"
 
 	// Переменные окружения приложения
@@ -44,28 +46,32 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 	// Шаг 1: Создаём общую Docker-сеть
 	generatedNetwork, err := network.NewNetwork(ctx, projectName)
 	if err != nil {
-		logger.Fatal(ctx, "не удалось создать общую сеть", zap.Error(err))
+		logger.Fatal(ctx, "❌ Не удалось создать сеть для тестов",
+			zap.Error(err))
 	}
+
 	logger.Info(ctx, "✅ Сеть успешно создана")
 
 	// Получаем переменные окружения для MongoDB с проверкой на наличие
-	mongoUsername := getEnvWithLogging(ctx, testcontainers.MongoUsernameKey)
+	mongoUserName := getEnvWithLogging(ctx, testcontainers.MongoUsernameKey)
 	mongoPassword := getEnvWithLogging(ctx, testcontainers.MongoPasswordKey)
-	mongoImageName := getEnvWithLogging(ctx, testcontainers.MongoImageNameKey)
 	mongoDatabase := getEnvWithLogging(ctx, testcontainers.MongoDatabaseKey)
+	mongoImageName := getEnvWithLogging(ctx, testcontainers.MongoImageNameKey)
+	mongoAuthDB := getEnvWithLogging(ctx, testcontainers.MongoAuthDBKey)
+	mongoPort := getEnvWithLogging(ctx, testcontainers.MongoPortKey)
 
 	// Получаем порт gRPC для waitStrategy
 	grpcPort := getEnvWithLogging(ctx, grpcPortKey)
 
 	// Шаг 2: Запускаем контейнер с MongoDB
-	generatedMongo, err := mongo.NewContainer(ctx,
+	generatedMongo, err := mongo.NewContainer(
+		ctx,
 		mongo.WithNetworkName(generatedNetwork.Name()),
 		mongo.WithContainerName(testcontainers.MongoContainerName),
 		mongo.WithImageName(mongoImageName),
 		mongo.WithDatabase(mongoDatabase),
-		mongo.WithAuth(mongoUsername, mongoPassword),
-		mongo.WithLogger(logger.Logger()),
-	)
+		mongo.WithAuth(mongoUserName, mongoPassword),
+		mongo.WithLogger(logger.Logger()))
 	if err != nil {
 		cleanupTestEnvironment(ctx, &TestEnvironment{Network: generatedNetwork})
 		logger.Fatal(ctx, "не удалось запустить контейнер MongoDB", zap.Error(err))
@@ -77,23 +83,33 @@ func setupTestEnvironment(ctx context.Context) *TestEnvironment {
 
 	appEnv := map[string]string{
 		// Переопределяем хост MongoDB для подключения к контейнеру из testcontainers
-		testcontainers.MongoHostKey: generatedMongo.Config().ContainerName,
+		testcontainers.MongoHostKey:     generatedMongo.Config().ContainerName,
+		testcontainers.MongoPortKey:     mongoPort,
+		testcontainers.MongoDatabaseKey: mongoDatabase,
+		testcontainers.MongoUsernameKey: mongoUserName,
+		testcontainers.MongoPasswordKey: mongoPassword,
+		testcontainers.MongoAuthDBKey:   mongoAuthDB,
+		"LOGGER_LEVEL":                  "debug",
+		"LOGGER_AS_JSON":                "false",
+		"GRPC_HOST":                     "0.0.0.0",
+		"GRPC_PORT":                     grpcPort,
 	}
 
 	// Создаем настраиваемую стратегию ожидания с увеличенным таймаутом
 	waitStrategy := wait.ForListeningPort(nat.Port(grpcPort + "/tcp")).
 		WithStartupTimeout(startupTimeout)
 
-	appContainer, err := app.NewContainer(ctx,
+	appContainer, err := app.NewContainer(
+		ctx,
 		app.WithName(inventoryAppName),
 		app.WithPort(grpcPort),
+		app.WithExposedPorts([]string{grpcPort}),
 		app.WithDockerfile(projectRoot, inventoryDockerfile),
 		app.WithNetwork(generatedNetwork.Name()),
 		app.WithEnv(appEnv),
 		app.WithLogOutput(os.Stdout),
 		app.WithStartupWait(waitStrategy),
-		app.WithLogger(logger.Logger()),
-	)
+		app.WithLogger(logger.Logger()))
 	if err != nil {
 		cleanupTestEnvironment(ctx, &TestEnvironment{Network: generatedNetwork, Mongo: generatedMongo})
 		logger.Fatal(ctx, "не удалось запустить контейнер приложения", zap.Error(err))

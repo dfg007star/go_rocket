@@ -32,6 +32,7 @@ type Config struct {
 	DockerfileDir string
 	Dockerfile    string
 	Port          string
+	ExposedPorts  []string
 	Env           map[string]string
 	Networks      []string
 	LogOutput     io.Writer
@@ -56,6 +57,7 @@ func NewContainer(ctx context.Context, opts ...Option) (*Container, error) {
 		StartupWait:   wait.ForListeningPort(defaultAppPort + "/tcp").WithStartupTimeout(defaultStartupTimeout),
 		Env:           make(map[string]string),
 		Logger:        &logger.NoopLogger{},
+		ExposedPorts:  []string{defaultAppPort + "/tcp"},
 	}
 	for _, opt := range opts {
 		opt(cfg)
@@ -110,7 +112,14 @@ func (a *Container) Address() string {
 }
 
 func (a *Container) Terminate(ctx context.Context) error {
-	return a.container.Terminate(ctx)
+	err := a.container.Terminate(ctx)
+	if err != nil {
+		logger.Error(ctx, "Failed to terminate container", zap.Error(err))
+		return err
+	}
+
+	logger.Info(ctx, "App container terminated", zap.String("uri:", a.Address()))
+	return nil
 }
 
 func streamContainerLogs(ctx context.Context, container testcontainers.Container, out io.Writer) {

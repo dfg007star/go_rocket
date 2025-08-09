@@ -1,3 +1,5 @@
+//go:build integration
+
 package integration
 
 import (
@@ -48,15 +50,15 @@ var _ = Describe("InventoryService", func() {
 			})
 
 			Expect(err).ToNot(HaveOccurred())
-			Expect(resp.GetPart()).ToNot(BeEmpty())
-			Expect(resp.GetPart().Uuid).To(MatchRegexp(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`))
+			Expect(resp.GetPart()).ToNot(BeNil())
+			Expect(resp.GetPart().GetUuid()).To(MatchRegexp(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`))
 		})
 	})
 
 	Describe("ListParts All", func() {
 		It("должен успешно возвращать все запчасти", func() {
 			partsCount := 5
-			partsUuids := make([]string, partsCount)
+			partsUuids := make([]string, 0, partsCount)
 			for i := 0; i < partsCount; i++ {
 				partUuid, _ := env.InsertTestPart(ctx)
 				partsUuids = append(partsUuids, partUuid)

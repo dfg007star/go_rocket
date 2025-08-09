@@ -63,8 +63,12 @@ COPY --from=builder /app/app-inventory .
 # Копируем бинарь grpc-health-probe в /bin
 COPY --from=builder /app/grpc-health-probe /bin/grpc-health-probe
 
+COPY deploy/compose/inventory/.env .env
+
+RUN printenv
+
 # Экспонируем порт gRPC-сервиса Inventory
-EXPOSE 50051
+EXPOSE 50051/tcp
 
 # Устанавливаем команду запуска — запускаем наш бинарь
 ENTRYPOINT ["./app-inventory"]

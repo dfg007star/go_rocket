@@ -1,6 +1,11 @@
+//go:build integration
+
 package integration
 
 const (
-	projectName             = "go_rocket"
-	inventoryCollectionName = "parts_test"
+	// projectName - имя проекта для Docker-контейнеров и сети
+	projectName = "inventory-service"
+
+	// partsCollectionName - имя коллекции MongoDB для запчастей корабля
+	inventoryCollectionName = "parts"
 )

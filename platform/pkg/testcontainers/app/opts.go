@@ -27,6 +27,12 @@ func WithPort(port string) Option {
 	}
 }
 
+func WithExposedPorts(port []string) Option {
+	return func(c *Config) {
+		c.ExposedPorts = append(c.ExposedPorts, port...)
+	}
+}
+
 func WithNetwork(name string) Option {
 	return func(c *Config) {
 		c.Networks = append(c.Networks, name)
