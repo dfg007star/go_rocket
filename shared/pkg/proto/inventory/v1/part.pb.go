@@ -6,7 +6,7 @@
 
 // Package part.v1 отвечает за хранение и предоставление информации о деталях для сборки космических кораблей
 
-package part_v1
+package inventory_v1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -783,7 +783,7 @@ const file_inventory_v1_part_proto_rawDesc = "" +
 	"\rCATEGORY_WING\x10\x042\xa8\x01\n" +
 	"\x10InventoryService\x12F\n" +
 	"\aGetPart\x12\x1c.inventory.v1.GetPartRequest\x1a\x1d.inventory.v1.GetPartResponse\x12L\n" +
-	"\tListParts\x12\x1e.inventory.v1.ListPartsRequest\x1a\x1f.inventory.v1.ListPartsResponseBJZHgithub.com/dfg007star/go_rocket/inventory/pkg/proto/inventory/v1;part_v1b\x06proto3"
+	"\tListParts\x12\x1e.inventory.v1.ListPartsRequest\x1a\x1f.inventory.v1.ListPartsResponseBOZMgithub.com/dfg007star/go_rocket/inventory/pkg/proto/inventory/v1;inventory_v1b\x06proto3"
 
 var (
 	file_inventory_v1_part_proto_rawDescOnce sync.Once
