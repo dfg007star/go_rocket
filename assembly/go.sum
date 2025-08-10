@@ -1,0 +1,4 @@
+github.com/dfg007star/go_rocket/platform v0.0.0-20250809180549-1bcee9047694 h1:Ic6AOJA8jd59wdlYg34MWVgUtGNLT5F6fVv0uXFaCWg=
+github.com/dfg007star/go_rocket/platform v0.0.0-20250809180549-1bcee9047694/go.mod h1:8VLa7kupqmwd/HEsQCY7ARar6Q4MuEOAzNG67a6rlAc=
+github.com/dfg007star/go_rocket/shared v0.0.0-20250809180549-1bcee9047694 h1:fSln2jEO89MffrUzrsUZ7Q1eRFM9bHwkBB5cH0WEcic=
+github.com/dfg007star/go_rocket/shared v0.0.0-20250809180549-1bcee9047694/go.mod h1:VRyLTpyQNzQhIMtoFLr1Mxq4Zw66jNlEB1jM3Az5APc=

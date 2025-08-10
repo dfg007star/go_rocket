@@ -3,7 +3,7 @@ package kafka
 import (
 	"context"
 
-	"github.com/olezhek28/microservices-course-olezhek-solution/platform/pkg/kafka/consumer"
+	"github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 )
 
 type Consumer interface {
