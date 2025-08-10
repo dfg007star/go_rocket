@@ -7,7 +7,7 @@ import (
 
 type orderPaidConsumerEnvConfig struct {
 	TopicName string `env:"ORDER_PAID_TOPIC_NAME,required"`
-	GroupId   string `env:"ORDER_PAID_CONSUMER_PAID_ID,required"`
+	GroupId   string `env:"ORDER_PAID_CONSUMER_GROUP_ID,required"`
 }
 
 type orderPaidConsumerConfig struct {
@@ -27,7 +27,7 @@ func (o *orderPaidConsumerConfig) TopicName() string {
 	return o.raw.TopicName
 }
 
-func (o *orderPaidConsumerConfig) GroupId() string {
+func (o *orderPaidConsumerConfig) GroupID() string {
 	return o.raw.GroupId
 }
 

@@ -5,7 +5,6 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/dfg007star/go_rocket/platform/pkg/kafka"
 	"github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 )
 
@@ -14,8 +13,8 @@ type Logger interface {
 }
 
 func Logging(logger Logger) consumer.Middleware {
-	return func(next kafka.MessageHandler) kafka.MessageHandler {
-		return func(ctx context.Context, msg kafka.Message) error {
+	return func(next consumer.MessageHandler) consumer.MessageHandler {
+		return func(ctx context.Context, msg consumer.Message) error {
 			logger.Info(ctx, "Kafka msg received", zap.String("topic", msg.Topic))
 			return next(ctx, msg)
 		}

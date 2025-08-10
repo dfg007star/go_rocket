@@ -26,7 +26,7 @@ func NewService(orderPaidConsumer kafka.Consumer, orderPaidDecoder kafkaConverte
 }
 
 func (s *service) RunConsumer(ctx context.Context) error {
-	logger.Info(ctx, "Starting order ufoRecordedConsumer service")
+	logger.Info(ctx, "Starting Assembly service")
 
 	err := s.orderPaidConsumer.Consume(ctx, s.OrderPaidHandler)
 	if err != nil {

@@ -5,11 +5,11 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/dfg007star/go_rocket/platform/pkg/kafka"
+	"github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 )
 
-func (s *service) OrderPaidHandler(ctx context.Context, msg kafka.Message) error {
+func (s *service) OrderPaidHandler(ctx context.Context, msg consumer.Message) error {
 	event, err := s.orderPaidDecoder.Decode(msg.Value)
 	if err != nil {
 		logger.Error(ctx, "Failed to decode OrderPaid", zap.Error(err))
