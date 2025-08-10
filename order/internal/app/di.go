@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/IBM/sarama"
 	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -17,7 +18,11 @@ import (
 	orderRepository "github.com/dfg007star/go_rocket/order/internal/repository/order"
 	"github.com/dfg007star/go_rocket/order/internal/service"
 	orderService "github.com/dfg007star/go_rocket/order/internal/service/order"
+	orderProducer "github.com/dfg007star/go_rocket/order/internal/service/producer/order_producer"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
+	wrappedKafka "github.com/dfg007star/go_rocket/platform/pkg/kafka"
+	wrappedKafkaProducer "github.com/dfg007star/go_rocket/platform/pkg/kafka/producer"
+	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
@@ -31,6 +36,10 @@ type diContainer struct {
 	postgresClient  *pgx.Conn
 	paymentClient   grpcClient.PaymentClient
 	inventoryClient grpcClient.InventoryClient
+
+	orderProducerService   service.OrderProducerService
+	orderKafkaProducer     wrappedKafka.Producer
+	orderKafkaSyncProducer sarama.SyncProducer
 }
 
 func NewDiContainer() *diContainer {
@@ -128,4 +137,44 @@ func (d *diContainer) InventoryClient(ctx context.Context) grpcClient.InventoryC
 	}
 
 	return d.inventoryClient
+}
+
+// OrderProducerService Producer
+func (d *diContainer) OrderProducerService() service.OrderProducerService {
+	if d.orderProducerService == nil {
+		d.orderProducerService = orderProducer.NewService(d.OrderKafkaProducer())
+	}
+
+	return d.orderProducerService
+}
+
+func (d *diContainer) OrderKafkaProducer() wrappedKafka.Producer {
+	if d.orderKafkaProducer == nil {
+		d.orderKafkaProducer = wrappedKafkaProducer.NewProducer(
+			d.OrderKafkaSyncProducer(),
+			config.AppConfig().OrderPaidProducer.TopicName(),
+			logger.Logger(),
+		)
+	}
+
+	return d.orderKafkaProducer
+}
+
+func (d *diContainer) OrderKafkaSyncProducer() sarama.SyncProducer {
+	if d.orderKafkaSyncProducer == nil {
+		p, err := sarama.NewSyncProducer(
+			config.AppConfig().Kafka.Brokers(),
+			config.AppConfig().OrderPaidProducer.Config(),
+		)
+		if err != nil {
+			panic(fmt.Sprintf("failed to create sync producer: %s\n", err.Error()))
+		}
+		closer.AddNamed("Kafka sync producer", func(ctx context.Context) error {
+			return p.Close()
+		})
+
+		d.orderKafkaSyncProducer = p
+	}
+
+	return d.orderKafkaSyncProducer
 }

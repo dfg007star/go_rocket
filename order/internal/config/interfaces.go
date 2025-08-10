@@ -1,6 +1,10 @@
 package config
 
-import "time"
+import (
+	"time"
+
+	"github.com/IBM/sarama"
+)
 
 type LoggerConfig interface {
 	Level() string
@@ -23,4 +27,19 @@ type OrderHTTPConfig interface {
 type PostgresConfig interface {
 	URI() string
 	MigrationDirectory() string
+}
+
+type KafkaConfig interface {
+	Brokers() []string
+}
+
+type OrderAssembledConsumerConfig interface {
+	TopicName() string
+	GroupID() string
+	Config() *sarama.Config
+}
+
+type OrderPaidProducerConfig interface {
+	TopicName() string
+	Config() *sarama.Config
 }
