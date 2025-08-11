@@ -21,6 +21,7 @@ const (
 	PENDING_PAYMENT Status = iota
 	PAID
 	CANCELLED
+	COMPLETED
 )
 
 type Order struct {
@@ -57,6 +58,7 @@ func (s Status) String() string {
 		"PENDING_PAYMENT",
 		"PAID",
 		"CANCELLED",
+		"COMPLETED",
 	}[s]
 }
 
@@ -68,6 +70,8 @@ func StatusFromString(str string) Status {
 		return PAID
 	case "CANCELLED":
 		return CANCELLED
+	case "COMPLETED":
+		return COMPLETED
 	default:
 		return PENDING_PAYMENT
 	}

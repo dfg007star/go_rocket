@@ -148,6 +148,8 @@ func (s OrderDtoStatus) Validate() error {
 		return nil
 	case "CANCELLED":
 		return nil
+	case "COMPLETED":
+		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}

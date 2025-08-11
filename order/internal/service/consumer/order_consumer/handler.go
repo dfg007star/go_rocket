@@ -2,9 +2,11 @@ package order_consumer
 
 import (
 	"context"
+	"errors"
 
 	"go.uber.org/zap"
 
+	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 )
@@ -25,6 +27,28 @@ func (s *service) OrderAssembledHandler(ctx context.Context, msg consumer.Messag
 		zap.String("user_uuid", event.UserUuid),
 		zap.Int64("build_time_sec", event.BuildTimeSec),
 	)
+
+	order, err := s.orderRepository.Get(ctx, event.OrderUuid)
+	if err != nil {
+		logger.Error(ctx, "Failed to get order", zap.Error(err))
+		return err
+	}
+
+	if order.Status != model.PAID {
+		err := errors.New("order status is not PAID")
+		logger.Error(ctx, "Order status is not PAID", zap.Error(err))
+		return err
+	}
+
+	completedStatus := model.COMPLETED
+	_, err = s.orderRepository.Update(ctx, &model.OrderUpdate{
+		OrderUuid: event.OrderUuid,
+		Status:    &completedStatus,
+	})
+	if err != nil {
+		logger.Error(ctx, "Failed to update order", zap.Error(err))
+		return err
+	}
 
 	return nil
 }

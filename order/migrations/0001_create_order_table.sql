@@ -10,7 +10,8 @@ CREATE TYPE payment_method AS ENUM (
 CREATE TYPE order_status AS ENUM (
     'PENDING_PAYMENT',
     'PAID',
-    'CANCELLED'
+    'CANCELLED',
+    'COMPLETED'
 );
 
 CREATE TABLE IF NOT EXISTS orders (

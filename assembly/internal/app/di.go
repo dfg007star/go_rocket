@@ -79,7 +79,7 @@ func (d *diContainer) AssemblyKafkaSyncProducer() sarama.SyncProducer {
 // AssemblyConsumerService Consumer
 func (d *diContainer) AssemblyConsumerService() service.ConsumerService {
 	if d.assemblyConsumerService == nil {
-		d.assemblyConsumerService = orderConsumer.NewService(d.AssemblyKafkaConsumer(), d.AssemblyKafkaDecoder())
+		d.assemblyConsumerService = orderConsumer.NewService(d.AssemblyKafkaConsumer(), d.AssemblyKafkaDecoder(), d.AssemblyProducerService())
 	}
 
 	return d.assemblyConsumerService

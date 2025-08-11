@@ -25,3 +25,18 @@ func OrderUpdateToRepoOrderUpdate(order *model.OrderUpdate) *repoModel.OrderUpda
 		Status:          (*repoModel.Status)(order.Status),
 	}
 }
+
+func PaymentMethodFromString(str string) repoModel.PaymentMethod {
+	switch str {
+	case "CARD":
+		return repoModel.CARD
+	case "SBP":
+		return repoModel.SBP
+	case "CREDIT_CARD":
+		return repoModel.CREDIT_CARD
+	case "INVESTOR_MONEY":
+		return repoModel.INVESTOR_MONEY
+	default:
+		return repoModel.UNSPECIFIED
+	}
+}
