@@ -3,8 +3,9 @@ package config
 import (
 	"os"
 
-	"github.com/dfg007star/go_rocket/payment/internal/config/env"
 	"github.com/joho/godotenv"
+
+	"github.com/dfg007star/go_rocket/payment/internal/config/env"
 )
 
 var appConfig *config

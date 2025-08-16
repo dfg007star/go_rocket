@@ -6,15 +6,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dfg007star/go_rocket/order/internal/config"
-	"github.com/dfg007star/go_rocket/platform/pkg/closer"
-	"github.com/dfg007star/go_rocket/platform/pkg/logger"
-	pgMigrator "github.com/dfg007star/go_rocket/platform/pkg/migrator/pg"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+
+	"github.com/dfg007star/go_rocket/order/internal/config"
+	"github.com/dfg007star/go_rocket/platform/pkg/closer"
+	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	pgMigrator "github.com/dfg007star/go_rocket/platform/pkg/migrator/pg"
 )
 
 type App struct {

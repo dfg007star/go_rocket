@@ -5,6 +5,10 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
+	"github.com/jackc/pgx/v5"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	grpcClient "github.com/dfg007star/go_rocket/order/internal/client/grpc"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
@@ -27,9 +31,6 @@ import (
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
-	"github.com/jackc/pgx/v5"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type diContainer struct {

@@ -1,7 +1,6 @@
 package env
 
 import (
-	"github.com/IBM/sarama"
 	"github.com/caarlos0/env/v11"
 )
 
@@ -12,6 +11,7 @@ type orderAssembledConsumerEnvConfig struct {
 
 type orderAssembledConsumerConfig struct {
 	raw orderAssembledConsumerEnvConfig
+	consumerConfig
 }
 
 func NewOrderAssembledConsumerConfig() (*orderAssembledConsumerConfig, error) {
@@ -29,13 +29,4 @@ func (o *orderAssembledConsumerConfig) TopicName() string {
 
 func (o *orderAssembledConsumerConfig) GroupID() string {
 	return o.raw.GroupId
-}
-
-func (o *orderAssembledConsumerConfig) Config() *sarama.Config {
-	config := sarama.NewConfig()
-	config.Version = sarama.V4_0_0_0
-	config.Consumer.Group.Rebalance.GroupStrategies = []sarama.BalanceStrategy{sarama.NewBalanceStrategyRoundRobin()}
-	config.Consumer.Offsets.Initial = sarama.OffsetOldest
-
-	return config
 }

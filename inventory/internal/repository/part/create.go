@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository/converter"
-	"github.com/google/uuid"
 )
 
 func (r *repository) Create(ctx context.Context, part *model.Part) (*model.Part, error) {

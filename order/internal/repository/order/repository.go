@@ -1,8 +1,9 @@
 package order
 
 import (
-	def "github.com/dfg007star/go_rocket/order/internal/repository"
 	"github.com/jackc/pgx/v5"
+
+	def "github.com/dfg007star/go_rocket/order/internal/repository"
 )
 
 var _ def.OrderRepository = (*repository)(nil)

@@ -3,11 +3,12 @@ package app
 import (
 	"context"
 
+	"github.com/pkg/errors"
+	"go.uber.org/zap"
+
 	"github.com/dfg007star/go_rocket/assembly/internal/config"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
-	"github.com/pkg/errors"
-	"go.uber.org/zap"
 )
 
 type App struct {

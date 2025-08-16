@@ -4,11 +4,12 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
+	"go.uber.org/zap"
+
 	"github.com/dfg007star/go_rocket/assembly/internal/model"
 	"github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
-	"github.com/google/uuid"
-	"go.uber.org/zap"
 )
 
 func (s *service) OrderPaidHandler(ctx context.Context, msg consumer.Message) error {

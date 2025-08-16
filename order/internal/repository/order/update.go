@@ -6,9 +6,10 @@ import (
 	"fmt"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5"
+
 	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
-	"github.com/jackc/pgx/v5"
 )
 
 func (r *repository) Update(ctx context.Context, orderUpdate *model.OrderUpdate) (*model.Order, error) {

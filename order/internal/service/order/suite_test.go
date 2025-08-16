@@ -4,9 +4,11 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/suite"
+
 	client "github.com/dfg007star/go_rocket/order/internal/client/grpc/mocks"
 	"github.com/dfg007star/go_rocket/order/internal/repository/mocks"
-	"github.com/stretchr/testify/suite"
+	serviceMock "github.com/dfg007star/go_rocket/order/internal/service/mocks"
 )
 
 type ServiceSuite struct {
@@ -14,9 +16,10 @@ type ServiceSuite struct {
 
 	ctx context.Context
 
-	orderRepository *mocks.OrderRepository
-	inventoryClient *client.InventoryClient
-	paymentClient   *client.PaymentClient
+	orderRepository      *mocks.OrderRepository
+	inventoryClient      *client.InventoryClient
+	paymentClient        *client.PaymentClient
+	orderProducerService *serviceMock.OrderProducerService
 
 	service *service
 }
@@ -27,11 +30,13 @@ func (s *ServiceSuite) SetupTest() {
 	s.orderRepository = mocks.NewOrderRepository(s.T())
 	s.inventoryClient = client.NewInventoryClient(s.T())
 	s.paymentClient = client.NewPaymentClient(s.T())
+	s.orderProducerService = serviceMock.NewOrderProducerService(s.T())
 
 	s.service = NewOrderService(
 		s.orderRepository,
 		s.inventoryClient,
 		s.paymentClient,
+		s.orderProducerService,
 	)
 }
 

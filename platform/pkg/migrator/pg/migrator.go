@@ -3,8 +3,9 @@ package pg
 import (
 	"database/sql"
 
-	"github.com/dfg007star/go_rocket/platform/pkg/migrator"
 	"github.com/pressly/goose/v3"
+
+	"github.com/dfg007star/go_rocket/platform/pkg/migrator"
 )
 
 type PostgresMigrator struct {
