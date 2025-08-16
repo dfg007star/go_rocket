@@ -3,9 +3,8 @@ package order
 import (
 	"context"
 
-	"github.com/google/uuid"
-
 	"github.com/dfg007star/go_rocket/order/internal/model"
+	"github.com/google/uuid"
 )
 
 func (s *service) Pay(ctx context.Context, orderUuid string, method *model.PaymentMethod) (*model.Order, error) {

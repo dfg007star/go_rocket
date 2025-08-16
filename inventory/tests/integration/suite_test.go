@@ -10,12 +10,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	"github.com/joho/godotenv"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"go.uber.org/zap"
-
-	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 )
 
 const testsTimeout = 5 * time.Minute

@@ -2,7 +2,6 @@ package order_consumer
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -13,7 +12,7 @@ import (
 )
 
 func (s *service) OrderPaidHandler(ctx context.Context, msg consumer.Message) error {
-	event, err := s.orderPaidDecoder.Decode(msg.Value)
+	event, err := s.orderPaidDecoder.PaidDecode(msg.Value)
 	if err != nil {
 		logger.Error(ctx, "Failed to decode OrderPaid", zap.Error(err))
 		return err
@@ -30,15 +29,18 @@ func (s *service) OrderPaidHandler(ctx context.Context, msg consumer.Message) er
 		zap.String("payment_method", event.PaymentMethod),
 	)
 
-	assembledEvent := model.ShipAssembledEvent{
-		EventUuid:    uuid.New().String(),
-		OrderUuid:    event.OrderUuid,
-		UserUuid:     event.UserUuid,
-		BuildTimeSec: 10,
+	paidEvent := model.OrderPaidEvent{
+		EventUuid:       uuid.New().String(),
+		OrderUuid:       event.OrderUuid,
+		UserUuid:        event.UserUuid,
+		TransactionUuid: event.TransactionUuid,
+		PaymentMethod:   event.PaymentMethod,
 	}
 
-	// here telegram message
-	fmt.Println(assembledEvent)
+	err = s.telegramService.SendPaidNotification(ctx, paidEvent)
+	if err != nil {
+		logger.Error(ctx, "Failed to send paid notification", zap.Error(err))
+	}
 
 	return nil
 }

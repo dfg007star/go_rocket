@@ -2,7 +2,6 @@ package order_consumer
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -13,7 +12,7 @@ import (
 )
 
 func (s *service) OrderAssembledHandler(ctx context.Context, msg consumer.Message) error {
-	event, err := s.orderAssembledDecoder.Decode(msg.Value)
+	event, err := s.orderAssembledDecoder.AssembledDecode(msg.Value)
 	if err != nil {
 		logger.Error(ctx, "Failed to decode OrderAssembled", zap.Error(err))
 		return err
@@ -36,8 +35,10 @@ func (s *service) OrderAssembledHandler(ctx context.Context, msg consumer.Messag
 		BuildTimeSec: 10,
 	}
 
-	// here send telegram message with http client
-	fmt.Println(assembledEvent)
+	err = s.telegramService.SendAssembledNotification(ctx, assembledEvent)
+	if err != nil {
+		logger.Error(ctx, "Failed to send assemble notification", zap.Error(err))
+	}
 
 	return nil
 }

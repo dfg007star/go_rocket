@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
+	"github.com/go-telegram/bot"
+
 	httpClient "github.com/dfg007star/go_rocket/notification/internal/client/http"
 	telegramClient "github.com/dfg007star/go_rocket/notification/internal/client/http/telegram"
 	"github.com/dfg007star/go_rocket/notification/internal/config"
@@ -19,7 +21,6 @@ import (
 	wrappedKafkaConsumer "github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	kafkaMiddleware "github.com/dfg007star/go_rocket/platform/pkg/middleware/kafka"
-	"github.com/go-telegram/bot"
 )
 
 type diContainer struct {
@@ -63,7 +64,7 @@ func (d *diContainer) TelegramClient(ctx context.Context) httpClient.TelegramCli
 
 func (d *diContainer) TelegramBot(ctx context.Context) *bot.Bot {
 	if d.telegramBot == nil {
-		b, err := bot.New(config.TelegramBotConfig().Token())
+		b, err := bot.New(config.AppConfig().TelegramBot.Token())
 		if err != nil {
 			panic(fmt.Sprintf("failed to create telegram bot: %s\n", err.Error()))
 		}
@@ -75,9 +76,13 @@ func (d *diContainer) TelegramBot(ctx context.Context) *bot.Bot {
 }
 
 // OrderAssembledConsumerService Consumer
-func (d *diContainer) OrderAssembledConsumerService() service.OrderAssembledConsumerService {
+func (d *diContainer) OrderAssembledConsumerService(ctx context.Context) service.OrderAssembledConsumerService {
 	if d.orderAssembledConsumerService == nil {
-		d.orderAssembledConsumerService = orderAssembledConsumer.NewService(d.OrderAssembledKafkaConsumer(), d.OrderAssembledKafkaDecoder())
+		d.orderAssembledConsumerService = orderAssembledConsumer.NewService(
+			d.OrderAssembledKafkaConsumer(),
+			d.OrderAssembledKafkaDecoder(),
+			d.TelegramService(ctx),
+		)
 	}
 
 	return d.orderAssembledConsumerService
@@ -127,9 +132,13 @@ func (d *diContainer) OrderAssembledKafkaConsumerGroup() sarama.ConsumerGroup {
 }
 
 // OrderPaidConsumerService Consumer
-func (d *diContainer) OrderPaidConsumerService() service.OrderPaidConsumerService {
+func (d *diContainer) OrderPaidConsumerService(ctx context.Context) service.OrderPaidConsumerService {
 	if d.orderPaidConsumerService == nil {
-		d.orderPaidConsumerService = orderPaidConsumer.NewService(d.OrderPaidKafkaConsumer(), d.OrderPaidKafkaDecoder())
+		d.orderPaidConsumerService = orderPaidConsumer.NewService(
+			d.OrderPaidKafkaConsumer(),
+			d.OrderPaidKafkaDecoder(),
+			d.TelegramService(ctx),
+		)
 	}
 
 	return d.orderPaidConsumerService

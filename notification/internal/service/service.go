@@ -15,6 +15,6 @@ type OrderPaidConsumerService interface {
 }
 
 type TelegramService interface {
-	SendPaidNotification(ctx context.Context, uuid string, sighting model.OrderPaidEvent) error
-	SendAssembledNotification(ctx context.Context, uuid string, sighting model.ShipAssembledEvent) error
+	SendPaidNotification(ctx context.Context, event model.OrderPaidEvent) error
+	SendAssembledNotification(ctx context.Context, event model.ShipAssembledEvent) error
 }

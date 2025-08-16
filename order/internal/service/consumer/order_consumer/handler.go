@@ -4,11 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"go.uber.org/zap"
-
 	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	"go.uber.org/zap"
 )
 
 func (s *service) OrderAssembledHandler(ctx context.Context, msg consumer.Message) error {

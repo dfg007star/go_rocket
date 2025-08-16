@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
-
 	"github.com/dfg007star/go_rocket/assembly/internal/config"
 	kafkaConverter "github.com/dfg007star/go_rocket/assembly/internal/converter/kafka"
 	"github.com/dfg007star/go_rocket/assembly/internal/converter/kafka/decoder"

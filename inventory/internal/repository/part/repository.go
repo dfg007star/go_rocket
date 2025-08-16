@@ -3,11 +3,10 @@ package part
 import (
 	"context"
 
+	def "github.com/dfg007star/go_rocket/inventory/internal/repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	def "github.com/dfg007star/go_rocket/inventory/internal/repository"
 )
 
 var _ def.InventoryRepository = (*repository)(nil)

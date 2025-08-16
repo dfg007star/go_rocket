@@ -3,9 +3,8 @@ package config
 import (
 	"os"
 
-	"github.com/joho/godotenv"
-
 	"github.com/dfg007star/go_rocket/inventory/internal/config/env"
+	"github.com/joho/godotenv"
 )
 
 var appConfig *config

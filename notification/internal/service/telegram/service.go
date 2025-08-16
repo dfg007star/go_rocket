@@ -5,24 +5,32 @@ import (
 	"context"
 	"embed"
 	"text/template"
+	"time"
+
+	"go.uber.org/zap"
 
 	"github.com/dfg007star/go_rocket/notification/internal/client/http"
 	"github.com/dfg007star/go_rocket/notification/internal/model"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
-	"go.uber.org/zap"
 )
 
-const chatID = 234586218
+const chatID = 889369570
 
 //go:embed templates/assembled_notification.tmpl
 //go:embed templates/paid_notification.tmpl
 var templateFS embed.FS
+
+var (
+	paidTemplate      = template.Must(template.ParseFS(templateFS, "templates/paid_notification.tmpl"))
+	assembledTemplate = template.Must(template.ParseFS(templateFS, "templates/assembled_notification.tmpl"))
+)
 
 type OrderAssembledData struct {
 	EventUuid    string
 	OrderUuid    string
 	UserUuid     string
 	BuildTimeSec int64
+	CreatedAt    time.Time
 }
 
 type OrderPaidData struct {
@@ -30,10 +38,8 @@ type OrderPaidData struct {
 	UserUuid        string
 	PaymentMethod   string
 	TransactionUuid string
+	CreatedAt       time.Time
 }
-
-var paidTemplate = template.Must(template.ParseFS(templateFS, "templates/paid_notification.tmpl"))
-var assembledTemplate = template.Must(template.ParseFS(templateFS, "templates/assembled_notification.tmpl"))
 
 type service struct {
 	telegramClient http.TelegramClient
@@ -47,7 +53,7 @@ func NewService(telegramClient http.TelegramClient) *service {
 }
 
 // SendPaidNotification отправляет уведомление об оплате заказа
-func (s *service) SendPaidNotification(ctx context.Context, uuid string, order model.OrderPaidEvent) error {
+func (s *service) SendPaidNotification(ctx context.Context, order model.OrderPaidEvent) error {
 	message, err := s.buildPaidMessage(order)
 	if err != nil {
 		return err
@@ -63,12 +69,13 @@ func (s *service) SendPaidNotification(ctx context.Context, uuid string, order m
 }
 
 // buildPaidMessage создает сообщение об оплате заказа
-func (s *service) buildPaidMessage(order model.OrderPaidEvent) (string, error) {
+func (s *service) buildPaidMessage(event model.OrderPaidEvent) (string, error) {
 	data := OrderPaidData{
-		OrderUuid:       order.OrderUuid,
-		UserUuid:        order.UserUuid,
-		PaymentMethod:   order.PaymentMethod,
-		TransactionUuid: order.TransactionUuid,
+		OrderUuid:       event.OrderUuid,
+		UserUuid:        event.UserUuid,
+		PaymentMethod:   event.PaymentMethod,
+		TransactionUuid: event.TransactionUuid,
+		CreatedAt:       time.Now(),
 	}
 
 	var buf bytes.Buffer
@@ -81,7 +88,7 @@ func (s *service) buildPaidMessage(order model.OrderPaidEvent) (string, error) {
 }
 
 // SendAssembledNotification отправляет уведомление о сборке заказа
-func (s *service) SendAssembledNotification(ctx context.Context, uuid string, order model.ShipAssembledEvent) error {
+func (s *service) SendAssembledNotification(ctx context.Context, order model.ShipAssembledEvent) error {
 	message, err := s.buildAssembledMessage(order)
 	if err != nil {
 		return err
@@ -97,12 +104,13 @@ func (s *service) SendAssembledNotification(ctx context.Context, uuid string, or
 }
 
 // buildPaidMessage создает сообщение о сборке заказа
-func (s *service) buildAssembledMessage(order model.ShipAssembledEvent) (string, error) {
+func (s *service) buildAssembledMessage(event model.ShipAssembledEvent) (string, error) {
 	data := OrderAssembledData{
-		EventUuid:    order.EventUuid,
-		OrderUuid:    order.OrderUuid,
-		UserUuid:     order.UserUuid,
-		BuildTimeSec: order.BuildTimeSec,
+		EventUuid:    event.EventUuid,
+		OrderUuid:    event.OrderUuid,
+		UserUuid:     event.UserUuid,
+		BuildTimeSec: event.BuildTimeSec,
+		CreatedAt:    time.Now(),
 	}
 
 	var buf bytes.Buffer

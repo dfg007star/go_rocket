@@ -5,11 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"go.uber.org/zap"
-
 	inventoryV1API "github.com/dfg007star/go_rocket/inventory/internal/api/inventory/v1"
 	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
@@ -20,6 +15,10 @@ import (
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.uber.org/zap"
 )
 
 type diContainer struct {

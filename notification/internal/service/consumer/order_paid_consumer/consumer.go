@@ -16,21 +16,23 @@ var _ def.OrderPaidConsumerService = (*service)(nil)
 type service struct {
 	orderPaidConsumer kafka.Consumer
 	orderPaidDecoder  kafkaConverter.OrderPaidDecoder
+	telegramService   def.TelegramService
 }
 
-func NewService(orderPaidConsumer kafka.Consumer, orderPaidDecoder kafkaConverter.OrderPaidDecoder) *service {
+func NewService(orderPaidConsumer kafka.Consumer, orderPaidDecoder kafkaConverter.OrderPaidDecoder, telegramService def.TelegramService) *service {
 	return &service{
 		orderPaidConsumer: orderPaidConsumer,
 		orderPaidDecoder:  orderPaidDecoder,
+		telegramService:   telegramService,
 	}
 }
 
 func (s *service) RunConsumer(ctx context.Context) error {
-	logger.Info(ctx, "Starting Assembly service")
+	logger.Info(ctx, "Starting Paid service")
 
 	err := s.orderPaidConsumer.Consume(ctx, s.OrderPaidHandler)
 	if err != nil {
-		logger.Error(ctx, "Consume from ufo.recorded topic error", zap.Error(err))
+		logger.Error(ctx, "Consume from OrderPaid topic error", zap.Error(err))
 		return err
 	}
 

@@ -2,7 +2,6 @@ package order
 
 import (
 	"github.com/brianvoe/gofakeit/v7"
-
 	"github.com/dfg007star/go_rocket/order/internal/model"
 )
 

@@ -3,9 +3,8 @@ package kafka
 import (
 	"context"
 
-	"go.uber.org/zap"
-
 	"github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
+	"go.uber.org/zap"
 )
 
 type Logger interface {

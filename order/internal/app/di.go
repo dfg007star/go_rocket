@@ -5,19 +5,13 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
-	kafkaConverter "github.com/dfg007star/go_rocket/order/internal/converter/kafka"
-	"github.com/dfg007star/go_rocket/order/internal/converter/kafka/decoder"
-	wrappedKafkaConsumer "github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
-	kafkaMiddleware "github.com/dfg007star/go_rocket/platform/pkg/middleware/kafka"
-	"github.com/jackc/pgx/v5"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	grpcClient "github.com/dfg007star/go_rocket/order/internal/client/grpc"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
 	paymentServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/payment/v1"
 	"github.com/dfg007star/go_rocket/order/internal/config"
+	kafkaConverter "github.com/dfg007star/go_rocket/order/internal/converter/kafka"
+	"github.com/dfg007star/go_rocket/order/internal/converter/kafka/decoder"
 	"github.com/dfg007star/go_rocket/order/internal/repository"
 	orderRepository "github.com/dfg007star/go_rocket/order/internal/repository/order"
 	"github.com/dfg007star/go_rocket/order/internal/service"
@@ -26,11 +20,16 @@ import (
 	orderProducer "github.com/dfg007star/go_rocket/order/internal/service/producer/order_producer"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	wrappedKafka "github.com/dfg007star/go_rocket/platform/pkg/kafka"
+	wrappedKafkaConsumer "github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 	wrappedKafkaProducer "github.com/dfg007star/go_rocket/platform/pkg/kafka/producer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	kafkaMiddleware "github.com/dfg007star/go_rocket/platform/pkg/middleware/kafka"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
+	"github.com/jackc/pgx/v5"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type diContainer struct {

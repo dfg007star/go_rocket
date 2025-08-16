@@ -9,13 +9,13 @@ import (
 	eventsV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/events/v1"
 )
 
-type decoder struct{}
+type paidDecoder struct{}
 
-func NewOrderPaidDecoder() *decoder {
-	return &decoder{}
+func NewOrderPaidDecoder() *paidDecoder {
+	return &paidDecoder{}
 }
 
-func (d *decoder) Decode(data []byte) (model.OrderPaidEvent, error) {
+func (d *paidDecoder) PaidDecode(data []byte) (model.OrderPaidEvent, error) {
 	var pb eventsV1.OrderPaid
 	if err := proto.Unmarshal(data, &pb); err != nil {
 		return model.OrderPaidEvent{}, fmt.Errorf("failed to unmarshal protobuf: %w", err)

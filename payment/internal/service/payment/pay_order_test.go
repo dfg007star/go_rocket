@@ -2,10 +2,9 @@ package payment
 
 import (
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/stretchr/testify/require"
-
 	"github.com/dfg007star/go_rocket/payment/internal/model"
 	"github.com/dfg007star/go_rocket/payment/internal/repository/converter"
+	"github.com/stretchr/testify/require"
 )
 
 func (s *ServiceSuite) TestPayOrder() {

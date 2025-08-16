@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/uuid"
-
 	"github.com/dfg007star/go_rocket/order/internal/model"
 	"github.com/dfg007star/go_rocket/order/internal/repository/converter"
 	repoModel "github.com/dfg007star/go_rocket/order/internal/repository/model"
+	"github.com/google/uuid"
 )
 
 func (r *repository) Create(ctx context.Context, userUuid string, parts []*model.Part) (*model.Order, error) {

@@ -3,12 +3,11 @@ package order_consumer
 import (
 	"context"
 
-	"go.uber.org/zap"
-
 	kafkaConverter "github.com/dfg007star/go_rocket/assembly/internal/converter/kafka"
 	def "github.com/dfg007star/go_rocket/assembly/internal/service"
 	"github.com/dfg007star/go_rocket/platform/pkg/kafka"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	"go.uber.org/zap"
 )
 
 var _ def.ConsumerService = (*service)(nil)

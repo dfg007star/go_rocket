@@ -7,12 +7,11 @@ import (
 	"syscall"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/dfg007star/go_rocket/inventory/internal/app"
 	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	"go.uber.org/zap"
 )
 
 const configPath = "../deploy/compose/inventory/.env"
