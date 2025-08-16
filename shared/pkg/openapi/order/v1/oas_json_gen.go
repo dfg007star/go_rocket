@@ -1177,6 +1177,8 @@ func (s *OrderDtoStatus) Decode(d *jx.Decoder) error {
 		*s = OrderDtoStatusPAID
 	case OrderDtoStatusCANCELLED:
 		*s = OrderDtoStatusCANCELLED
+	case OrderDtoStatusCOMPLETED:
+		*s = OrderDtoStatusCOMPLETED
 	default:
 		*s = OrderDtoStatus(v)
 	}

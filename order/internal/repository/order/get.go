@@ -35,13 +35,14 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, e
 
 	var dbOrder repoModel.Order
 	var statusStr string
+	var paymentMethodStr sql.NullString
 	err = r.data.QueryRow(ctx, query, args...).Scan(
 		&dbOrder.OrderUuid,
 		&dbOrder.UserUuid,
 		&dbOrder.PartUuids,
 		&dbOrder.TotalPrice,
 		&dbOrder.TransactionUuid,
-		&dbOrder.PaymentMethod,
+		&paymentMethodStr,
 		&statusStr,
 		&dbOrder.CreatedAt,
 		&dbOrder.UpdatedAt,
@@ -54,6 +55,10 @@ func (r *repository) Get(ctx context.Context, orderUuid string) (*model.Order, e
 	}
 
 	dbOrder.Status = repoModel.StatusFromString(statusStr)
+	if paymentMethodStr.Valid {
+		pm := converter.PaymentMethodFromString(paymentMethodStr.String)
+		dbOrder.PaymentMethod = &pm
+	}
 
 	return converter.RepoModelToOrder(&dbOrder), nil
 }

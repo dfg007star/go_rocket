@@ -8,11 +8,10 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v7"
-	"go.mongodb.org/mongo-driver/bson"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	repoModel "github.com/dfg007star/go_rocket/inventory/internal/repository/model"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
+	"go.mongodb.org/mongo-driver/bson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (env *TestEnvironment) InsertTestPart(ctx context.Context) (string, error) {

@@ -6,7 +6,7 @@
 
 // Package part.v1 отвечает за хранение и предоставление информации о деталях для сборки космических кораблей
 
-package part_v1
+package inventory_v1
 
 import (
 	context "context"

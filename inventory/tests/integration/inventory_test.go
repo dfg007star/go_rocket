@@ -5,12 +5,11 @@ package integration
 import (
 	"context"
 
+	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-
-	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 )
 
 var _ = Describe("InventoryService", func() {

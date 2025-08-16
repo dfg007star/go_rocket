@@ -18,6 +18,7 @@ const (
 	PENDING_PAYMENT Status = iota
 	PAID
 	CANCELLED
+	COMPLETED
 )
 
 type Order struct {
@@ -46,4 +47,23 @@ type OrderUpdate struct {
 	TransactionUuid *string
 	PaymentMethod   *PaymentMethod
 	Status          *Status
+}
+
+func (pm PaymentMethod) String() string {
+	return [...]string{
+		"UNSPECIFIED",
+		"CARD",
+		"SBP",
+		"CREDIT_CARD",
+		"INVESTOR_MONEY",
+	}[pm]
+}
+
+func (s Status) String() string {
+	return [...]string{
+		"PENDING_PAYMENT",
+		"PAID",
+		"CANCELLED",
+		"COMPLETED",
+	}[s]
 }

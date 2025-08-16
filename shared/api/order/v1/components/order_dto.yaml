@@ -31,7 +31,7 @@ properties:
     example: "CARD"
   status:
     type: string
-    enum: ["PENDING_PAYMENT", "PAID", "CANCELLED"]
+    enum: ["PENDING_PAYMENT", "PAID", "CANCELLED", "COMPLETED"]
     example: "PAID"
   created_at:
     type: string

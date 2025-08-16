@@ -3,6 +3,8 @@ package order
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"github.com/dfg007star/go_rocket/order/internal/model"
 )
 
@@ -35,7 +37,25 @@ func (s *service) Pay(ctx context.Context, orderUuid string, method *model.Payme
 		OrderUuid:       order.OrderUuid,
 		TransactionUuid: &transactionUuid,
 		Status:          &paidStatus,
+		PaymentMethod:   paymentMethod,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	var paymentMethodStr string
+	if paymentMethod != nil {
+		paymentMethodStr = paymentMethod.String()
+	}
+
+	event := model.OrderPaidEvent{
+		EventUuid:       uuid.New().String(),
+		OrderUuid:       order.OrderUuid,
+		UserUuid:        order.UserUuid,
+		PaymentMethod:   paymentMethodStr,
+		TransactionUuid: transactionUuid,
+	}
+	err = s.orderProducerService.OrderPaid(ctx, event)
 	if err != nil {
 		return nil, err
 	}

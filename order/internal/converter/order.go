@@ -30,6 +30,8 @@ func convertStatus(status model.Status) orderV1.OrderDtoStatus {
 		return orderV1.OrderDtoStatusPAID
 	case 2:
 		return orderV1.OrderDtoStatusCANCELLED
+	case 3:
+		return orderV1.OrderDtoStatusCOMPLETED
 	default:
 		return ""
 	}
