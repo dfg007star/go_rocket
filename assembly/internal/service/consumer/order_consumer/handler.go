@@ -31,23 +31,31 @@ func (s *service) OrderPaidHandler(ctx context.Context, msg consumer.Message) er
 	)
 
 	go func() {
-		logger.Info(ctx, "starting assembly", zap.String("order_uuid", event.OrderUuid))
+		logger.Info(ctx, "Starting assembly", zap.String("order_uuid", event.OrderUuid))
 
-		time.Sleep(10 * time.Second)
+		select {
+		case <-time.After(10 * time.Second):
+			assembledEvent := model.ShipAssembledEvent{
+				EventUuid:    uuid.New().String(),
+				OrderUuid:    event.OrderUuid,
+				UserUuid:     event.UserUuid,
+				BuildTimeSec: 10,
+			}
 
-		assembledEvent := model.ShipAssembledEvent{
-			EventUuid:    uuid.New().String(),
-			OrderUuid:    event.OrderUuid,
-			UserUuid:     event.UserUuid,
-			BuildTimeSec: 10,
+			if err := s.orderProducer.ShipAssembled(ctx, assembledEvent); err != nil {
+				logger.Error(ctx, "failed to publish ShipAssembled", zap.Error(err))
+				return
+			}
+
+			logger.Info(ctx, "assembly finished", zap.String("order_uuid", event.OrderUuid))
+
+		case <-ctx.Done():
+			logger.Warn(ctx, "assembly canceled",
+				zap.String("order_uuid", event.OrderUuid),
+				zap.Error(ctx.Err()),
+			)
+			return
 		}
-
-		err := s.orderProducer.ShipAssembled(ctx, assembledEvent)
-		if err != nil {
-			logger.Error(ctx, "failed to publish ShipAssembled", zap.Error(err))
-		}
-
-		logger.Info(ctx, "assembly finished", zap.String("order_uuid", event.OrderUuid))
 	}()
 
 	return nil
