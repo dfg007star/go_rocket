@@ -1,12 +1,11 @@
-package repository
+package service
 
 import (
 	"context"
-
 	"github.com/dfg007star/go_rocket/iam/internal/model"
 )
 
-type UserRepository interface {
+type UserService interface {
 	Get(ctx context.Context, userUuid string) (*model.User, error)
 	Register(ctx context.Context, user *model.User) (string, error)
 }
