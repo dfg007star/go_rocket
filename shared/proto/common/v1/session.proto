@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package common.v1;
+
+option go_package = "github.com/dfg007star/go_rocket/shared/pkg/proto/common/v1;common_v1";
+
+// SessionUuid сессия пользователя
+message SessionUuid {
+  string session_uuid = 1;
+}
