@@ -1,11 +1,13 @@
 package env
 
 import (
+	"time"
+
 	"github.com/caarlos0/env/v11"
 )
 
 type sessionEnvConfig struct {
-	SessionTtl string `env:"SESSION_TTL,required"`
+	SessionTtl time.Duration `env:"SESSION_TTL,required"`
 }
 
 type sessionConfig struct {
@@ -21,6 +23,6 @@ func NewSessionConfig() (*sessionConfig, error) {
 	return &sessionConfig{raw: raw}, nil
 }
 
-func (cfg *sessionConfig) SessionTtl() string {
+func (cfg *sessionConfig) SessionTtl() time.Duration {
 	return cfg.raw.SessionTtl
 }
