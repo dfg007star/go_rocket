@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	grpcAuth "github.com/olezhek28/microservices-course-olezhek-solution/platform/pkg/middleware/grpc"
-	authV1 "github.com/olezhek28/microservices-course-olezhek-solution/shared/pkg/proto/auth/v1"
-	commonV1 "github.com/olezhek28/microservices-course-olezhek-solution/shared/pkg/proto/common/v1"
+	grpcAuth "github.com/dfg007star/go_rocket/platform/pkg/middleware/grpc"
+	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
+	commonV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/common/v1"
 )
 
 const SessionUUIDHeader = "X-Session-Uuid"
@@ -37,8 +37,8 @@ func (m *AuthMiddleware) Handle(next http.Handler) http.Handler {
 		}
 
 		// Валидируем сессию через IAM сервис
-		whoamiRes, err := m.iamClient.Whoami(r.Context(), &authV1.WhoamiRequest{
-			SessionUuid: sessionUUID,
+		whoamiRes, err := m.iamClient.WhoAmI(r.Context(), &authV1.WhoAmIRequest{
+			SessionUuid: &commonV1.SessionUuid{SessionUuid: sessionUUID},
 		})
 		if err != nil {
 			writeErrorResponse(w, http.StatusUnauthorized, "INVALID_SESSION", "Authentication failed")
@@ -49,7 +49,7 @@ func (m *AuthMiddleware) Handle(next http.Handler) http.Handler {
 		ctx := r.Context()
 		ctx = grpcAuth.AddSessionUUIDToContext(ctx, sessionUUID)
 		// Также добавляем пользователя в контекст
-		ctx = context.WithValue(ctx, grpcAuth.GetUserContextKey(), whoamiRes.User)
+		ctx = context.WithValue(ctx, grpcAuth.GetUserContextKey(), whoamiRes.UserInfo)
 
 		// Передаем управление следующему handler
 		next.ServeHTTP(w, r.WithContext(ctx))
@@ -57,7 +57,7 @@ func (m *AuthMiddleware) Handle(next http.Handler) http.Handler {
 }
 
 // GetUserFromContext извлекает пользователя из контекста
-func GetUserFromContext(ctx context.Context) (*commonV1.User, bool) {
+func GetUserFromContext(ctx context.Context) (*commonV1.UserInfo, bool) {
 	return grpcAuth.GetUserFromContext(ctx)
 }
 

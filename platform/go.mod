@@ -8,6 +8,7 @@ replace github.com/dfg007star/go_rocket/platform => ../platform
 
 require (
 	github.com/IBM/sarama v1.45.2
+	github.com/dfg007star/go_rocket/shared v0.0.0-00010101000000-000000000000
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/pkg/errors v0.9.1
@@ -86,7 +87,6 @@ require (
 	go.opentelemetry.io/otel v1.37.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.37.0 // indirect
 	go.opentelemetry.io/otel/metric v1.37.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.37.0 // indirect
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.7.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

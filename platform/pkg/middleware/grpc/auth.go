@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	authV1 "github.com/olezhek28/microservices-course-olezhek-solution/shared/pkg/proto/auth/v1"
-	commonV1 "github.com/olezhek28/microservices-course-olezhek-solution/shared/pkg/proto/common/v1"
+	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
+	commonV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/common/v1"
 )
 
 const (
@@ -79,22 +79,24 @@ func (i *AuthInterceptor) authenticate(ctx context.Context) (context.Context, er
 	}
 
 	// Валидируем сессию через IAM сервис
-	whoamiRes, err := i.iamClient.Whoami(ctx, &authV1.WhoamiRequest{
-		SessionUuid: sessionUUID,
+	whoamiRes, err := i.iamClient.WhoAmI(ctx, &authV1.WhoAmIRequest{
+		SessionUuid: &commonV1.SessionUuid{
+			SessionUuid: sessionUUID,
+		},
 	})
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, fmt.Sprintf("invalid session: %v", err))
 	}
 
 	// Добавляем пользователя и session UUID в контекст
-	authCtx := context.WithValue(ctx, userContextKey, whoamiRes.User)
+	authCtx := context.WithValue(ctx, userContextKey, whoamiRes.UserInfo)
 	authCtx = context.WithValue(authCtx, sessionUUIDContextKey, sessionUUID)
 	return authCtx, nil
 }
 
 // GetUserFromContext извлекает пользователя из контекста
-func GetUserFromContext(ctx context.Context) (*commonV1.User, bool) {
-	user, ok := ctx.Value(userContextKey).(*commonV1.User)
+func GetUserFromContext(ctx context.Context) (*commonV1.UserInfo, bool) {
+	user, ok := ctx.Value(userContextKey).(*commonV1.UserInfo)
 	return user, ok
 }
 
