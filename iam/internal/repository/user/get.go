@@ -13,7 +13,7 @@ import (
 	repoModel "github.com/dfg007star/go_rocket/iam/internal/repository/model"
 )
 
-func (r *repository) Get(ctx context.Context, userUuid *string) (*model.User, error) {
+func (r *repository) GetByUserUuid(ctx context.Context, userUuid *string) (*model.User, error) {
 	var repoUser repoModel.User
 	var notificationMethodsJSON []byte
 
@@ -29,6 +29,46 @@ func (r *repository) Get(ctx context.Context, userUuid *string) (*model.User, er
 		FROM users 
 		WHERE user_uuid = $1`,
 		userUuid,
+	).Scan(
+		&repoUser.UserUuid,
+		&repoUser.Login,
+		&repoUser.Email,
+		&repoUser.Password,
+		&notificationMethodsJSON,
+		&repoUser.CreatedAt,
+		&repoUser.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, fmt.Errorf("user not found: %w", err)
+		}
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	if err := json.Unmarshal(notificationMethodsJSON, &repoUser.NotificationMethods); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal notification methods: %w", err)
+	}
+
+	return converter.RepoModelToUser(&repoUser), nil
+}
+
+func (r *repository) GetByUserLogin(ctx context.Context, login *string) (*model.User, error) {
+	var repoUser repoModel.User
+	var notificationMethodsJSON []byte
+
+	err := r.data.QueryRow(ctx, `
+		SELECT 
+			user_uuid, 
+			login, 
+			email, 
+			password, 
+			notification_methods,
+			created_at,
+			updated_at
+		FROM users 
+		WHERE login = $1`,
+		login,
 	).Scan(
 		&repoUser.UserUuid,
 		&repoUser.Login,

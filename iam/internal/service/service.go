@@ -9,3 +9,8 @@ type UserService interface {
 	Get(ctx context.Context, userUuid *string) (*model.User, error)
 	Register(ctx context.Context, user *model.User) (*string, error)
 }
+
+type AuthService interface {
+	Login(ctx context.Context, login *string, password *string) (*model.User, error)
+	WhoAmI(ctx context.Context, user *model.User) (*string, error)
+}

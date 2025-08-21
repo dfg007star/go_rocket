@@ -7,7 +7,7 @@ import (
 )
 
 func (s *service) Get(ctx context.Context, userUuid *string) (*model.User, error) {
-	user, err := s.userRepository.Get(ctx, userUuid)
+	user, err := s.userRepository.GetByUserUuid(ctx, userUuid)
 	if err != nil {
 		return nil, model.ErrUserNotFound
 	}
