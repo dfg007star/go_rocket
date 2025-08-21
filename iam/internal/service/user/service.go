@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/dfg007star/go_rocket/iam/internal/repository/user"
+	"github.com/dfg007star/go_rocket/iam/internal/repository"
 	def "github.com/dfg007star/go_rocket/iam/internal/service"
 )
 

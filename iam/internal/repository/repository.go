@@ -7,6 +7,6 @@ import (
 )
 
 type UserRepository interface {
-	Get(ctx context.Context, userUuid string) (*model.User, error)
-	Register(ctx context.Context, user *model.User) (string, error)
+	Get(ctx context.Context, userUuid *string) (*model.User, error)
+	Register(ctx context.Context, user *model.User) (*string, error)
 }
