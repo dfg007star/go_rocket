@@ -24,12 +24,13 @@ const (
 
 // RegisterRequest содержит данные для регистрации нового пользователя
 type RegisterRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Login         string                 `protobuf:"bytes,1,opt,name=login,proto3" json:"login,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState   `protogen:"open.v1"`
+	Login               string                   `protobuf:"bytes,1,opt,name=login,proto3" json:"login,omitempty"`
+	Password            string                   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Email               string                   `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	NotificationMethods []*v1.NotificationMethod `protobuf:"bytes,4,rep,name=notification_methods,json=notificationMethods,proto3" json:"notification_methods,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *RegisterRequest) Reset() {
@@ -81,6 +82,13 @@ func (x *RegisterRequest) GetEmail() string {
 		return x.Email
 	}
 	return ""
+}
+
+func (x *RegisterRequest) GetNotificationMethods() []*v1.NotificationMethod {
+	if x != nil {
+		return x.NotificationMethods
+	}
+	return nil
 }
 
 // RegisterResponse возвращает Uuid зарегистрированного пользователя
@@ -230,11 +238,12 @@ var File_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_user_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x12user/v1/user.proto\x12\auser.v1\x1a\x14common/v1/user.proto\"Y\n" +
+	"\x12user/v1/user.proto\x12\auser.v1\x1a\x14common/v1/user.proto\"\xab\x01\n" +
 	"\x0fRegisterRequest\x12\x14\n" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\"/\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12P\n" +
+	"\x14notification_methods\x18\x04 \x03(\v2\x1d.common.v1.NotificationMethodR\x13notificationMethods\"/\n" +
 	"\x10RegisterResponse\x12\x1b\n" +
 	"\tuser_uuid\x18\x01 \x01(\tR\buserUuid\"-\n" +
 	"\x0eGetUserRequest\x12\x1b\n" +
@@ -264,21 +273,22 @@ var file_user_v1_user_proto_goTypes = []any{
 	(*RegisterResponse)(nil),      // 1: user.v1.RegisterResponse
 	(*GetUserRequest)(nil),        // 2: user.v1.GetUserRequest
 	(*GetUserResponse)(nil),       // 3: user.v1.GetUserResponse
-	(*v1.UserInfo)(nil),           // 4: common.v1.UserInfo
-	(*v1.NotificationMethod)(nil), // 5: common.v1.NotificationMethod
+	(*v1.NotificationMethod)(nil), // 4: common.v1.NotificationMethod
+	(*v1.UserInfo)(nil),           // 5: common.v1.UserInfo
 }
 var file_user_v1_user_proto_depIdxs = []int32{
-	4, // 0: user.v1.GetUserResponse.user_info:type_name -> common.v1.UserInfo
-	5, // 1: user.v1.GetUserResponse.notification_methods:type_name -> common.v1.NotificationMethod
-	0, // 2: user.v1.UserService.Register:input_type -> user.v1.RegisterRequest
-	2, // 3: user.v1.UserService.GetUser:input_type -> user.v1.GetUserRequest
-	1, // 4: user.v1.UserService.Register:output_type -> user.v1.RegisterResponse
-	3, // 5: user.v1.UserService.GetUser:output_type -> user.v1.GetUserResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	4, // 0: user.v1.RegisterRequest.notification_methods:type_name -> common.v1.NotificationMethod
+	5, // 1: user.v1.GetUserResponse.user_info:type_name -> common.v1.UserInfo
+	4, // 2: user.v1.GetUserResponse.notification_methods:type_name -> common.v1.NotificationMethod
+	0, // 3: user.v1.UserService.Register:input_type -> user.v1.RegisterRequest
+	2, // 4: user.v1.UserService.GetUser:input_type -> user.v1.GetUserRequest
+	1, // 5: user.v1.UserService.Register:output_type -> user.v1.RegisterResponse
+	3, // 6: user.v1.UserService.GetUser:output_type -> user.v1.GetUserResponse
+	5, // [5:7] is the sub-list for method output_type
+	3, // [3:5] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_user_v1_user_proto_init() }

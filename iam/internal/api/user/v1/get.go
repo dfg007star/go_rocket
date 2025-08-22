@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 
+	"github.com/dfg007star/go_rocket/iam/internal/converter"
 	userV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/user/v1"
 )
 
@@ -13,5 +14,5 @@ func (a *api) GetUser(ctx context.Context, req *userV1.GetUserRequest) (*userV1.
 		return nil, err
 	}
 
-	return *userV1.GetUserResponse{}
+	return converter.UserToGetUserResponse(user), nil
 }

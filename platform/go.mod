@@ -11,6 +11,7 @@ require (
 	github.com/dfg007star/go_rocket/shared v0.0.0-00010101000000-000000000000
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/docker/go-connections v0.5.0
+	github.com/gomodule/redigo v1.9.2
 	github.com/pkg/errors v0.9.1
 	github.com/pressly/goose/v3 v3.24.3
 	github.com/testcontainers/testcontainers-go v0.38.0
