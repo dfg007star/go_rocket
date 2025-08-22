@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/dfg007star/go_rocket/iam/internal/model"
 )
 
@@ -12,5 +13,5 @@ type UserService interface {
 
 type AuthService interface {
 	Login(ctx context.Context, login *string, password *string) (*model.User, error)
-	WhoAmI(ctx context.Context, user *model.User) (*string, error)
+	WhoAmI(ctx context.Context, sessionUuid *string) (*model.User, error)
 }

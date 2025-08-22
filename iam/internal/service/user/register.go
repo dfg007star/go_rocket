@@ -7,7 +7,7 @@ import (
 )
 
 func (s *service) Register(ctx context.Context, user *model.User) (*string, error) {
-	userUuid, err := s.userRepository.Register(ctx, user)
+	userUuid, err := s.userRepository.Create(ctx, user)
 	if err != nil {
 		return nil, err
 	}
