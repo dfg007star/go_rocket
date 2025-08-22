@@ -14,7 +14,7 @@ type User struct {
 	Login               string
 	Email               string
 	Password            string
-	NotificationMethods []NotificationMethod
+	NotificationMethods []*NotificationMethod
 	CreatedAt           time.Time
 	UpdatedAt           *time.Time
 }

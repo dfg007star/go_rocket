@@ -9,9 +9,9 @@ import (
 )
 
 func RepoModelToUser(user *repoModel.User) *model.User {
-	notificationMethods := make([]model.NotificationMethod, 0, len(user.NotificationMethods))
+	notificationMethods := make([]*model.NotificationMethod, 0, len(user.NotificationMethods))
 	for _, method := range user.NotificationMethods {
-		notificationMethods = append(notificationMethods, model.NotificationMethod{
+		notificationMethods = append(notificationMethods, &model.NotificationMethod{
 			ProviderName: method.ProviderName,
 			Target:       method.Target,
 		})
@@ -29,9 +29,9 @@ func RepoModelToUser(user *repoModel.User) *model.User {
 }
 
 func UserToRepoModel(user *model.User) *repoModel.User {
-	notificationMethods := make([]repoModel.NotificationMethod, 0, len(user.NotificationMethods))
+	notificationMethods := make([]*repoModel.NotificationMethod, 0, len(user.NotificationMethods))
 	for _, method := range user.NotificationMethods {
-		notificationMethods = append(notificationMethods, repoModel.NotificationMethod{
+		notificationMethods = append(notificationMethods, &repoModel.NotificationMethod{
 			ProviderName: method.ProviderName,
 			Target:       method.Target,
 		})
@@ -72,7 +72,7 @@ func UserToRedisView(user *model.User) (*repoModel.UserRedisView, error) {
 }
 
 func RedisViewToUser(redisView *repoModel.UserRedisView) (*model.User, error) {
-	var methods []model.NotificationMethod
+	var methods []*model.NotificationMethod
 	if redisView.NotificationMethods != "" {
 		err := json.Unmarshal([]byte(redisView.NotificationMethods), &methods)
 		if err != nil {

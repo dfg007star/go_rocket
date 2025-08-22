@@ -5,21 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/dfg007star/go_rocket/iam/internal/model"
 	"github.com/dfg007star/go_rocket/iam/internal/repository/converter"
 )
 
 func (r *repository) Create(ctx context.Context, user *model.User) (*string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, fmt.Errorf("failed to hash password: %w", err)
-	}
-
-	user.Password = string(hashedPassword)
 	repoUser := converter.UserToRepoModel(user)
-
 	notificationMethodsJSON, err := json.Marshal(repoUser.NotificationMethods)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal notification methods: %w", err)

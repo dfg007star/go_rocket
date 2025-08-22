@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *service) Login(ctx context.Context, login *string, password *string) (*model.User, error) {
+func (s *service) Login(ctx context.Context, login *string, password *string) (*string, error) {
 	user, err := s.userRepository.GetByUserLogin(ctx, login)
 	if err != nil {
 		return nil, model.ErrUserNotFound
@@ -26,5 +26,5 @@ func (s *service) Login(ctx context.Context, login *string, password *string) (*
 		return nil, model.ErrSessionCreate
 	}
 
-	return user, nil
+	return &sessionUuid, nil
 }

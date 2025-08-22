@@ -10,7 +10,10 @@ import (
 type UserRepository interface {
 	GetByUserUuid(ctx context.Context, userUuid *string) (*model.User, error)
 	GetByUserLogin(ctx context.Context, login *string) (*model.User, error)
+	GetByUserEmail(ctx context.Context, email *string) (*model.User, error)
 	Create(ctx context.Context, user *model.User) (*string, error)
+	CheckLoginExists(ctx context.Context, login *string) (bool, error)
+	CheckEmailExists(ctx context.Context, email *string) (bool, error)
 }
 
 type SessionRepository interface {
