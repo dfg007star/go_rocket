@@ -38,7 +38,6 @@ func (r *repository) GetByUserUuid(ctx context.Context, userUuid *string) (*mode
 		&repoUser.CreatedAt,
 		&repoUser.UpdatedAt,
 	)
-
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, fmt.Errorf("user not found: %w", err)
@@ -78,7 +77,6 @@ func (r *repository) GetByUserLogin(ctx context.Context, login *string) (*model.
 		&repoUser.CreatedAt,
 		&repoUser.UpdatedAt,
 	)
-
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, fmt.Errorf("user not found: %w", err)
@@ -118,7 +116,6 @@ func (r *repository) GetByUserEmail(ctx context.Context, email *string) (*model.
 		&repoUser.CreatedAt,
 		&repoUser.UpdatedAt,
 	)
-
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, fmt.Errorf("user not found: %w", err)

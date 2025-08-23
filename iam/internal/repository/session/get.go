@@ -3,12 +3,12 @@ package session
 import (
 	"context"
 
-	repoConverter "github.com/dfg007star/go_rocket/iam/internal/repository/converter"
-	repoModel "github.com/dfg007star/go_rocket/iam/internal/repository/model"
 	redigo "github.com/gomodule/redigo/redis"
 	"github.com/pkg/errors"
 
 	"github.com/dfg007star/go_rocket/iam/internal/model"
+	repoConverter "github.com/dfg007star/go_rocket/iam/internal/repository/converter"
+	repoModel "github.com/dfg007star/go_rocket/iam/internal/repository/model"
 )
 
 func (r *repository) Get(ctx context.Context, session *model.Session) (*model.User, error) {

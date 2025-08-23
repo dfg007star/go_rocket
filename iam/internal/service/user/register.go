@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dfg007star/go_rocket/iam/internal/model"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/dfg007star/go_rocket/iam/internal/model"
 )
 
 func (s *service) Register(ctx context.Context, user *model.User) (*string, error) {

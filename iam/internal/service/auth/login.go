@@ -3,13 +3,14 @@ package auth
 import (
 	"context"
 
-	"github.com/dfg007star/go_rocket/iam/internal/config"
-	"github.com/dfg007star/go_rocket/iam/internal/model"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/dfg007star/go_rocket/iam/internal/config"
+	"github.com/dfg007star/go_rocket/iam/internal/model"
 )
 
-func (s *service) Login(ctx context.Context, login *string, password *string) (*string, error) {
+func (s *service) Login(ctx context.Context, login, password *string) (*string, error) {
 	user, err := s.userRepository.GetByUserLogin(ctx, login)
 	if err != nil {
 		return nil, model.ErrUserNotFound

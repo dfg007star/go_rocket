@@ -15,7 +15,6 @@ func (r *repository) CheckLoginExists(ctx context.Context, login *string) (bool,
 		)`,
 		login,
 	).Scan(&exists)
-
 	if err != nil {
 		return false, fmt.Errorf("failed to check login existence: %w", err)
 	}
@@ -33,7 +32,6 @@ func (r *repository) CheckEmailExists(ctx context.Context, email *string) (bool,
 		)`,
 		email,
 	).Scan(&exists)
-
 	if err != nil {
 		return false, fmt.Errorf("failed to check email existence: %w", err)
 	}

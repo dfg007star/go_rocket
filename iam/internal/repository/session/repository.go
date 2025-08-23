@@ -15,16 +15,22 @@ type repository struct {
 	cache cache.RedisClient
 }
 
-func NewRepository(cache cache.RedisClient) *repository {
+func NewSessionRepository(cache cache.RedisClient) *repository {
 	return &repository{
 		cache: cache,
 	}
 }
 
 func (r *repository) getUserSessionCacheKey(sessionUuid *string) string {
+	if sessionUuid == nil {
+		return cacheKeyUserSessionPrefix + "invalid"
+	}
 	return fmt.Sprintf("%s%s", cacheKeyUserSessionPrefix, *sessionUuid)
 }
 
 func (r *repository) getUserSetCacheKey(userUuid *string) string {
+	if userUuid == nil {
+		return cacheKeyUserSessionPrefix + "invalid"
+	}
 	return fmt.Sprintf("%s%s", cacheKeyUserSetPrefix, *userUuid)
 }

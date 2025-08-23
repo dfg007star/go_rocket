@@ -12,7 +12,7 @@ type repository struct {
 	data *pgx.Conn
 }
 
-func NewRepository(clientPostgres *pgx.Conn) *repository {
+func NewUserRepository(clientPostgres *pgx.Conn) *repository {
 	return &repository{
 		data: clientPostgres,
 	}

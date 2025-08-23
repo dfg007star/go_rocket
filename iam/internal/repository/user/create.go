@@ -23,8 +23,8 @@ func (r *repository) Create(ctx context.Context, user *model.User) (*string, err
 			email, 
 			password, 
 			notification_methods,
-			created_at,
-		) VALUES ($1, $2, $3, $4, $5, $6, $7)
+			created_at
+		) VALUES ($1, $2, $3, $4, $5)
     RETURNING user_uuid`,
 		repoUser.Login,
 		repoUser.Email,
