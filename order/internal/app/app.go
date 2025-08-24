@@ -15,6 +15,7 @@ import (
 	"github.com/dfg007star/go_rocket/order/internal/config"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	middlewareHTTP "github.com/dfg007star/go_rocket/platform/pkg/middleware/http"
 	pgMigrator "github.com/dfg007star/go_rocket/platform/pkg/migrator/pg"
 )
 
@@ -127,6 +128,8 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	// Добавляем middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	sessionUuidMiddleware := middlewareHTTP.NewAuthMiddleware(a.diContainer.IamClient(ctx))
+	r.Use(sessionUuidMiddleware.Handle)
 	r.Use(middleware.Timeout(10 * time.Second))
 
 	// Монтируем обработчики OpenAPI

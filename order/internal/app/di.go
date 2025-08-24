@@ -11,6 +11,7 @@ import (
 
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	grpcClient "github.com/dfg007star/go_rocket/order/internal/client/grpc"
+	iamServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/iam/v1"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
 	paymentServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/payment/v1"
 	"github.com/dfg007star/go_rocket/order/internal/config"
@@ -29,6 +30,7 @@ import (
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	kafkaMiddleware "github.com/dfg007star/go_rocket/platform/pkg/middleware/kafka"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
+	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 )
@@ -41,6 +43,7 @@ type diContainer struct {
 	postgresClient  *pgx.Conn
 	paymentClient   grpcClient.PaymentClient
 	inventoryClient grpcClient.InventoryClient
+	iamClient       grpcClient.IAMClient
 
 	orderProducerService   service.OrderProducerService
 	orderKafkaProducer     wrappedKafka.Producer
@@ -147,6 +150,26 @@ func (d *diContainer) InventoryClient(ctx context.Context) grpcClient.InventoryC
 	}
 
 	return d.inventoryClient
+}
+
+func (d *diContainer) IamClient(ctx context.Context) grpcClient.IAMClient {
+	if d.iamClient == nil {
+		conn, err := grpc.NewClient(
+			config.AppConfig().IamGRPC.Address(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			panic(fmt.Errorf("failed to connect to iam grpc client: %w", err))
+		}
+		closer.AddNamed("IAM GRPC client", func(ctx context.Context) error {
+			return conn.Close()
+		})
+
+		client := authV1.NewAuthServiceClient(conn)
+		d.iamClient = iamServiceClient.NewClient(client)
+	}
+
+	return d.iamClient
 }
 
 // OrderProducerService Producer

@@ -14,6 +14,7 @@ type config struct {
 	Logger                 LoggerConfig
 	InventoryGRPC          InventoryGRPCConfig
 	PaymentGRPC            PaymentGRPCConfig
+	IamGRPC                IamGRPCConfig
 	OrderHTTP              OrderHTTPConfig
 	Postgres               PostgresConfig
 	Kafka                  KafkaConfig
@@ -38,6 +39,11 @@ func Load(path ...string) error {
 	}
 
 	paymentGRPCCfg, err := env.NewPaymentGRPCConfig()
+	if err != nil {
+		return err
+	}
+
+	IamGRPCCfg, err := env.NewIamGRPCConfig()
 	if err != nil {
 		return err
 	}
@@ -71,6 +77,7 @@ func Load(path ...string) error {
 		Logger:                 loggerCfg,
 		InventoryGRPC:          inventoryGRPCCfg,
 		PaymentGRPC:            paymentGRPCCfg,
+		IamGRPC:                IamGRPCCfg,
 		OrderHTTP:              orderHTTPCfg,
 		Postgres:               PostgresCfg,
 		Kafka:                  kafkaConfig,

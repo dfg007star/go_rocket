@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "common/v1/session.proto";
+import "common/v1/user.proto";
+
+option go_package = "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1;auth_v1";
+
+service AuthService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc WhoAmI(WhoAmIRequest) returns (WhoAmIResponse);
+}
+
+// LoginRequest запрос сессии пользователя
+message LoginRequest {
+  string login = 1;
+  string password = 2;
+}
+
+// LoginResponse получение сессии пользователя
+message LoginResponse {
+  common.v1.SessionUuid session_uuid = 1;
+}
+
+// WhoAmIRequest запрос информации по пользователю из сессии
+message WhoAmIRequest {
+  common.v1.SessionUuid session_uuid = 1;
+}
+
+// WhoAmIResponse получение информации пользователя из сессии
+message WhoAmIResponse {
+  common.v1.UserInfo user_info = 1;
+}

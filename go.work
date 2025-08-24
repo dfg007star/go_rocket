@@ -8,4 +8,5 @@ use (
 	./platform
 	./shared
 	./notification
+	iam
 )

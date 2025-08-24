@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "common/v1/user.proto";
+
+option go_package = "github.com/dfg007star/go_rocket/shared/pkg/proto/user/v1;user_v1";
+
+service UserService {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+}
+
+// RegisterRequest содержит данные для регистрации нового пользователя
+message RegisterRequest {
+  string login = 1;
+  string password = 2;
+  string email = 3;
+  repeated common.v1.NotificationMethod notification_methods = 4;
+}
+
+// RegisterResponse возвращает Uuid зарегистрированного пользователя
+message RegisterResponse {
+  string user_uuid = 1;
+}
+
+// GetUserRequest содержит Uuid пользователя для получения информации
+message GetUserRequest {
+  string user_uuid = 1;
+}
+
+// GetUserResponse содержит полную информацию о пользователе
+message GetUserResponse {
+  common.v1.UserInfo user_info = 1;
+  repeated common.v1.NotificationMethod notification_methods = 2;
+}
