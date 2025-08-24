@@ -43,8 +43,7 @@ type diContainer struct {
 	postgresClient  *pgx.Conn
 	paymentClient   grpcClient.PaymentClient
 	inventoryClient grpcClient.InventoryClient
-
-	iamClient grpcClient.IAMClient
+	iamClient       grpcClient.IAMClient
 
 	orderProducerService   service.OrderProducerService
 	orderKafkaProducer     wrappedKafka.Producer

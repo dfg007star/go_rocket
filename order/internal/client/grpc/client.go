@@ -17,6 +17,5 @@ type PaymentClient interface {
 }
 
 type IAMClient interface {
-	//authV1.AuthServiceClient
 	WhoAmI(ctx context.Context, req *authV1.WhoAmIRequest) (*authV1.WhoAmIResponse, error)
 }
