@@ -125,10 +125,10 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	// Инициализируем роутер Chi
 	r := chi.NewRouter()
 
-	sessionUuidMiddleware := middlewareHTTP.NewAuthMiddleware(a.diContainer.IamClient(ctx))
 	// Добавляем middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	sessionUuidMiddleware := middlewareHTTP.NewAuthMiddleware(a.diContainer.IamClient(ctx))
 	r.Use(sessionUuidMiddleware.Handle)
 	r.Use(middleware.Timeout(10 * time.Second))
 

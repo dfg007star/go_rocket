@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
-	middlewareHTTP "github.com/dfg007star/go_rocket/platform/pkg/middleware/http"
 	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc"
@@ -77,7 +76,7 @@ func (d *diContainer) OrderV1API(ctx context.Context) *orderV1.Server {
 
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
-		d.orderService = orderService.NewOrderService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.IamClient(ctx), d.OrderProducerService())
+		d.orderService = orderService.NewOrderService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.OrderProducerService())
 	}
 
 	return d.orderService
