@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	middlewareHTTP "github.com/dfg007star/go_rocket/platform/pkg/middleware/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/stdlib"
@@ -16,6 +15,7 @@ import (
 	"github.com/dfg007star/go_rocket/order/internal/config"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	middlewareHTTP "github.com/dfg007star/go_rocket/platform/pkg/middleware/http"
 	pgMigrator "github.com/dfg007star/go_rocket/platform/pkg/migrator/pg"
 )
 

@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
-	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -31,6 +30,7 @@ import (
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	kafkaMiddleware "github.com/dfg007star/go_rocket/platform/pkg/middleware/kafka"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
+	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 )

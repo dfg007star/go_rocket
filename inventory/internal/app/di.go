@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	grpcClient "github.com/dfg007star/go_rocket/inventory/internal/client/grpc"
-	iamServiceClient "github.com/dfg007star/go_rocket/inventory/internal/client/grpc/iam/v1"
-	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -16,6 +13,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	inventoryV1API "github.com/dfg007star/go_rocket/inventory/internal/api/inventory/v1"
+	grpcClient "github.com/dfg007star/go_rocket/inventory/internal/client/grpc"
+	iamServiceClient "github.com/dfg007star/go_rocket/inventory/internal/client/grpc/iam/v1"
 	"github.com/dfg007star/go_rocket/inventory/internal/config"
 	"github.com/dfg007star/go_rocket/inventory/internal/model"
 	"github.com/dfg007star/go_rocket/inventory/internal/repository"
@@ -24,6 +23,7 @@ import (
 	inventoryService "github.com/dfg007star/go_rocket/inventory/internal/service/part"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
 )
 
