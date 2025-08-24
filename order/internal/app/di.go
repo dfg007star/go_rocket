@@ -5,12 +5,15 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
+	middlewareHTTP "github.com/dfg007star/go_rocket/platform/pkg/middleware/http"
+	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	orderAPI "github.com/dfg007star/go_rocket/order/internal/api/order/v1"
 	grpcClient "github.com/dfg007star/go_rocket/order/internal/client/grpc"
+	iamServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/iam/v1"
 	inventoryServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/inventory/v1"
 	paymentServiceClient "github.com/dfg007star/go_rocket/order/internal/client/grpc/payment/v1"
 	"github.com/dfg007star/go_rocket/order/internal/config"
@@ -42,6 +45,8 @@ type diContainer struct {
 	paymentClient   grpcClient.PaymentClient
 	inventoryClient grpcClient.InventoryClient
 
+	iamClient grpcClient.IAMClient
+
 	orderProducerService   service.OrderProducerService
 	orderKafkaProducer     wrappedKafka.Producer
 	orderKafkaSyncProducer sarama.SyncProducer
@@ -72,7 +77,7 @@ func (d *diContainer) OrderV1API(ctx context.Context) *orderV1.Server {
 
 func (d *diContainer) OrderService(ctx context.Context) service.OrderService {
 	if d.orderService == nil {
-		d.orderService = orderService.NewOrderService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.OrderProducerService())
+		d.orderService = orderService.NewOrderService(d.OrderRepository(ctx), d.InventoryClient(ctx), d.PaymentClient(ctx), d.IamClient(ctx), d.OrderProducerService())
 	}
 
 	return d.orderService
@@ -147,6 +152,26 @@ func (d *diContainer) InventoryClient(ctx context.Context) grpcClient.InventoryC
 	}
 
 	return d.inventoryClient
+}
+
+func (d *diContainer) IamClient(ctx context.Context) grpcClient.IAMClient {
+	if d.iamClient == nil {
+		conn, err := grpc.NewClient(
+			config.AppConfig().IamGRPC.Address(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err != nil {
+			panic(fmt.Errorf("failed to connect to iam grpc client: %w", err))
+		}
+		closer.AddNamed("IAM GRPC client", func(ctx context.Context) error {
+			return conn.Close()
+		})
+
+		client := authV1.NewAuthServiceClient(conn)
+		d.iamClient = iamServiceClient.NewClient(client)
+	}
+
+	return d.iamClient
 }
 
 // OrderProducerService Producer

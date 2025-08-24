@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	middlewareHTTP "github.com/dfg007star/go_rocket/platform/pkg/middleware/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/stdlib"
@@ -124,9 +125,11 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	// Инициализируем роутер Chi
 	r := chi.NewRouter()
 
+	sessionUuidMiddleware := middlewareHTTP.NewAuthMiddleware(a.diContainer.IamClient(ctx))
 	// Добавляем middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(sessionUuidMiddleware.Handle)
 	r.Use(middleware.Timeout(10 * time.Second))
 
 	// Монтируем обработчики OpenAPI

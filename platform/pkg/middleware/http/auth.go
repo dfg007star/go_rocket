@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	grpcClients "github.com/dfg007star/go_rocket/order/internal/client/grpc"
 	grpcAuth "github.com/dfg007star/go_rocket/platform/pkg/middleware/grpc"
 	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	commonV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/common/v1"
@@ -11,16 +12,16 @@ import (
 
 const SessionUUIDHeader = "X-Session-Uuid"
 
-// IAMClient это алиас для сгенерированного gRPC клиента
-type IAMClient = authV1.AuthServiceClient
+//// IAMClient это алиас для сгенерированного gRPC клиента
+//type IAMClient = authV1.AuthServiceClient
 
 // AuthMiddleware middleware для аутентификации HTTP запросов
 type AuthMiddleware struct {
-	iamClient IAMClient
+	iamClient grpcClients.IAMClient
 }
 
 // NewAuthMiddleware создает новый middleware аутентификации
-func NewAuthMiddleware(iamClient IAMClient) *AuthMiddleware {
+func NewAuthMiddleware(iamClient grpcClients.IAMClient) *AuthMiddleware {
 	return &AuthMiddleware{
 		iamClient: iamClient,
 	}

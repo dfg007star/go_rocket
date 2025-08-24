@@ -14,3 +14,5 @@ type InventoryClient interface {
 type PaymentClient interface {
 	PayOrder(ctx context.Context, paymentMethod *model.PaymentMethod, userUuid, orderUuid string) (string, error)
 }
+
+type IAMClient interface{}

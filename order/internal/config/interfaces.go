@@ -19,6 +19,10 @@ type PaymentGRPCConfig interface {
 	Address() string
 }
 
+type IamGRPCConfig interface {
+	Address() string
+}
+
 type OrderHTTPConfig interface {
 	Address() string
 	ReadTimeout() time.Duration
