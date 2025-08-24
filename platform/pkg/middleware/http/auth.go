@@ -11,7 +11,7 @@ import (
 
 const SessionUUIDHeader = "X-Session-Uuid"
 
-// IAMClient определяет интерфейс для клиента IAM.
+// IAMClient определяет интерфейс для клиента IAM
 type IAMClient interface {
 	WhoAmI(ctx context.Context, in *authV1.WhoAmIRequest) (*authV1.WhoAmIResponse, error)
 }

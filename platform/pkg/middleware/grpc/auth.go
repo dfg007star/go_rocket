@@ -27,8 +27,10 @@ const (
 	sessionUUIDContextKey contextKey = "session-uuid"
 )
 
-// IAMClient это алиас для сгенерированного gRPC клиента
-type IAMClient = authV1.AuthServiceClient
+// IAMClient определяет интерфейс для клиента IAM
+type IAMClient interface {
+	WhoAmI(ctx context.Context, in *authV1.WhoAmIRequest) (*authV1.WhoAmIResponse, error)
+}
 
 // AuthInterceptor interceptor для аутентификации gRPC запросов
 type AuthInterceptor struct {
