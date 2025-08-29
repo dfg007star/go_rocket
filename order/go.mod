@@ -7,8 +7,8 @@ require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/brianvoe/gofakeit/v7 v7.3.0
 	github.com/caarlos0/env/v11 v11.3.1
-	github.com/dfg007star/go_rocket/platform v0.0.0-20250814181019-d61f059ea9ac
-	github.com/dfg007star/go_rocket/shared v0.0.0-20250814181019-d61f059ea9ac
+	github.com/dfg007star/go_rocket/platform v0.0.0-20250824153812-dcd4b3b90419
+	github.com/dfg007star/go_rocket/shared v0.0.0-20250824153812-dcd4b3b90419
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.5

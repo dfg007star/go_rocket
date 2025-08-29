@@ -6,6 +6,12 @@ import (
 	"strings"
 	"sync"
 
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
+	otelLog "go.opentelemetry.io/otel/log"
+	otelLogSdk "go.opentelemetry.io/otel/sdk/log"
+	"go.opentelemetry.io/otel/sdk/resource"
+	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -29,19 +35,20 @@ type logger struct {
 	zapLogger *zap.Logger
 }
 
+type LoggerConf struct {
+	LevelStr           string
+	AsJSON             bool
+	EnableOTLP         bool
+	OTLPEndpoint       string
+	ServiceName        string
+	ServiceEnvironment string
+}
+
 // Init инициализирует глобальный логгер.
-func Init(levelStr string, asJSON bool) error {
+func Init(levelStr string, asJSON, enableOTLP bool) error {
 	initOnce.Do(func() {
 		dynamicLevel = zap.NewAtomicLevelAt(parseLevel(levelStr))
-
-		encoderCfg := buildProductionEncoderConfig()
-
-		var encoder zapcore.Encoder
-		if asJSON {
-			encoder = zapcore.NewJSONEncoder(encoderCfg)
-		} else {
-			encoder = zapcore.NewConsoleEncoder(encoderCfg)
-		}
+		cores := buildCores(asJSON, enableOTLP)
 
 		core := zapcore.NewCore(
 			encoder,
@@ -57,6 +64,92 @@ func Init(levelStr string, asJSON bool) error {
 	})
 
 	return nil
+}
+
+// buildCores создает слайс cores для zapcore.Tee.
+// Всегда включает stdout core, опционально добавляет OTLP core.
+func buildCores(asJSON bool, enableOTLP bool) []zapcore.Core {
+	cores := []zapcore.Core{
+		createStdoutCore(asJSON),
+	}
+
+	if enableOTLP {
+		if otlpCore := createOTLPCore(); otlpCore != nil {
+			cores = append(cores, otlpCore)
+		}
+	}
+
+	return cores
+}
+
+// createOTLPCore создает core для отправки в OpenTelemetry коллектор.
+// При ошибке подключения возвращает nil (graceful degradation).
+func createOTLPCore() *SimpleOTLPCore {
+	// TODO: config!! otlpEndpoint!! grpc
+	otlpLogger, err := createOTLPLogger(otlpEndpoint)
+	if err != nil {
+		// Логирование ошибки невозможно, так как логгер еще не инициализирован
+		return nil
+	}
+
+	// Прямо передаём OTLP-логгер в core. Буферизацию делает OTLP SDK (BatchProcessor).
+	return NewSimpleOTLPCore(otlpLogger, level)
+}
+
+// createOTLPLogger создает OTLP логгер с настроенным экспортером и ресурсами.
+// Использует BatchProcessor для эффективной отправки логов.
+func createOTLPLogger(endpoint string) (otelLog.Logger, error) {
+	ctx := context.Background()
+
+	exporter, err := createOTLPExporter(ctx, endpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	rs, err := createResource(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	provider := otelLogSdk.NewLoggerProvider(
+		otelLogSdk.WithResource(rs),
+		otelLogSdk.WithProcessor(otelLogSdk.NewBatchProcessor(exporter)),
+	)
+	otelProvider = provider // сохраняем для shutdown
+
+	return provider.Logger("app"), nil
+}
+
+// createOTLPExporter создает gRPC экспортер для OTLP коллектора
+func createOTLPExporter(ctx context.Context, endpoint string) (*otlploggrpc.Exporter, error) {
+	return otlploggrpc.New(ctx,
+		otlploggrpc.WithEndpoint(endpoint),
+		otlploggrpc.WithInsecure(), // для разработки, в продакшене следует использовать TLS
+	)
+}
+
+// createResource создает метаданные сервиса для телеметрии
+func createResource(ctx context.Context) (*resource.Resource, error) {
+	return resource.New(ctx,
+		resource.WithAttributes(
+			semconv.ServiceName(serviceName),
+			attribute.String("deployment.environment", serviceEnvironment),
+		),
+	)
+}
+
+// createStdoutCore создает core для записи в stdout/stderr.
+// Поддерживает JSON и консольный формат вывода.
+func createStdoutCore(asJSON bool) zapcore.Core {
+	config := buildProductionEncoderConfig()
+	var encoder zapcore.Encoder
+	if asJSON {
+		encoder = zapcore.NewJSONEncoder(config)
+	} else {
+		encoder = zapcore.NewConsoleEncoder(config)
+	}
+
+	return zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), dynamicLevel)
 }
 
 func buildProductionEncoderConfig() zapcore.EncoderConfig {

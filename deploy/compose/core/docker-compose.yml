@@ -21,7 +21,7 @@ services: # Раздел, в котором описываются все кон
     volumes:
       # МОНТИРОВАНИЕ КОНФИГУРАЦИИ: подключаем локальный файл в контейнер
       # Изменения в otel-collector-config.yaml требуют перезапуска контейнера
-      - ../otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ../../otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml
 
     ports:
       # ПОРТ 8888: метрики самого коллектора (Prometheus формат)
@@ -53,7 +53,7 @@ services: # Раздел, в котором описываются все кон
   elasticsearch:
     # Официальный образ Elasticsearch версии 9.0.4
     # Это стабильная версия с поддержкой ECS (Elastic Common Schema)
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.4
+    image: elasticsearch:9.0.5
 
     # Имя контейнера для удобства обращения из других контейнеров
     container_name: elasticsearch
@@ -107,7 +107,7 @@ services: # Раздел, в котором описываются все кон
   kibana:
     # Официальный образ Kibana той же версии, что и Elasticsearch
     # Важно: версии Kibana и Elasticsearch должны совпадать!
-    image: docker.elastic.co/kibana/kibana:9.0.4
+    image: kibana:9.0.5
 
     container_name: kibana
 
@@ -348,6 +348,7 @@ services: # Раздел, в котором описываются все кон
       # Подключаем контейнер к общей сети, в которой живут все сервисы микросервисной архитектуры
 
 volumes: # Раздел с определением томов
+  es_data:
   kafka_data: # Именованный том для хранения данных Kafka
   # Docker сам управляет этим хранилищем, данные сохраняются между перезапусками контейнеров.
 
