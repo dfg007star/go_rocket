@@ -15,6 +15,7 @@ import (
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/grpc/health"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	loggerConfig "github.com/dfg007star/go_rocket/platform/pkg/logger"
 	pgMigrator "github.com/dfg007star/go_rocket/platform/pkg/migrator/pg"
 	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	userV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/user/v1"
@@ -67,10 +68,16 @@ func (a *App) initDI(_ context.Context) error {
 }
 
 func (a *App) initLogger(_ context.Context) error {
-	return logger.Init(
-		config.AppConfig().Logger.Level(),
-		config.AppConfig().Logger.AsJson(),
-	)
+	conf := &loggerConfig.LoggerConf{
+		LevelStr:           config.AppConfig().Logger.Level(),
+		AsJSON:             config.AppConfig().Logger.AsJson(),
+		EnableOTLP:         config.AppConfig().Logger.EnableOTLP(),
+		OTLPEndpoint:       config.AppConfig().Logger.OTLPEndpoint(),
+		ServiceName:        config.AppConfig().Logger.ServiceName(),
+		ServiceEnvironment: config.AppConfig().Logger.ServiceEnvironment(),
+	}
+
+	return logger.Init(conf)
 }
 
 func (a *App) initCloser(_ context.Context) error {
