@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 
+	assemblyMetrics "github.com/dfg007star/go_rocket/assembly/internal/metrics"
 	"github.com/dfg007star/go_rocket/assembly/internal/model"
 	"github.com/dfg007star/go_rocket/platform/pkg/kafka/consumer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
@@ -31,6 +32,12 @@ func (s *service) OrderPaidHandler(ctx context.Context, msg consumer.Message) er
 	)
 
 	go func() {
+		start := time.Now()
+		defer func() {
+			duration := time.Since(start)
+			assemblyMetrics.AssemblyDuration.Record(ctx, duration.Seconds())
+		}()
+
 		logger.Info(ctx, "Starting assembly", zap.String("order_uuid", event.OrderUuid))
 
 		select {

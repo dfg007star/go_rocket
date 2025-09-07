@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 
+	orderMetrics "github.com/dfg007star/go_rocket/order/internal/metrics"
 	"github.com/google/uuid"
 
 	"github.com/dfg007star/go_rocket/order/internal/model"
@@ -59,6 +60,9 @@ func (s *service) Pay(ctx context.Context, orderUuid string, method *model.Payme
 	if err != nil {
 		return nil, err
 	}
+
+	// Бизнес-метрика: суммарная выручка
+	orderMetrics.OrdersRevenueTotal.Add(ctx, float64(order.TotalPrice))
 
 	return updatedOrder, nil
 }

@@ -7,9 +7,11 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/dfg007star/go_rocket/assembly/internal/config"
+	assemblyMetrics "github.com/dfg007star/go_rocket/assembly/internal/metrics"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	loggerConfig "github.com/dfg007star/go_rocket/platform/pkg/logger"
+	"github.com/dfg007star/go_rocket/platform/pkg/metrics"
 )
 
 type App struct {
@@ -62,6 +64,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDI,
 		a.initLogger,
+		a.initMetrics,
 		a.initCloser,
 	}
 
@@ -91,6 +94,28 @@ func (a *App) initLogger(_ context.Context) error {
 	}
 
 	return logger.Init(conf)
+}
+
+func (a *App) initMetrics(ctx context.Context) error {
+	closer.AddNamed("Metrics Assembly", func(ctx context.Context) error {
+		err := metrics.Shutdown(ctx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	err := metrics.InitProvider(ctx, config.AppConfig().Metrics)
+	if err != nil {
+		return err
+	}
+
+	err = assemblyMetrics.InitMetrics()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *App) initCloser(_ context.Context) error {

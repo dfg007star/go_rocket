@@ -1,6 +1,10 @@
 package config
 
-import "github.com/IBM/sarama"
+import (
+	"time"
+
+	"github.com/IBM/sarama"
+)
 
 type LoggerConfig interface {
 	Level() string
@@ -9,6 +13,11 @@ type LoggerConfig interface {
 	OTLPEndpoint() string
 	ServiceName() string
 	ServiceEnvironment() string
+}
+
+type MetricsConfig interface {
+	CollectorEndpoint() string
+	CollectorInterval() time.Duration
 }
 
 type KafkaConfig interface {

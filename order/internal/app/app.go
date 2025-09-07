@@ -13,11 +13,11 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/dfg007star/go_rocket/order/internal/config"
+	orderMetrics "github.com/dfg007star/go_rocket/order/internal/metrics"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	loggerConfig "github.com/dfg007star/go_rocket/platform/pkg/logger"
 	"github.com/dfg007star/go_rocket/platform/pkg/metrics"
-	metricsConfig "github.com/dfg007star/go_rocket/platform/pkg/metrics"
 	middlewareHTTP "github.com/dfg007star/go_rocket/platform/pkg/middleware/http"
 	pgMigrator "github.com/dfg007star/go_rocket/platform/pkg/migrator/pg"
 )
@@ -101,7 +101,7 @@ func (a *App) initDI(_ context.Context) error {
 }
 
 func (a *App) initMetrics(ctx context.Context) error {
-	closer.AddNamed("HTTP server", func(ctx context.Context) error {
+	closer.AddNamed("Metrics Order", func(ctx context.Context) error {
 		err := metrics.Shutdown(ctx)
 		if err != nil {
 			return err
@@ -109,7 +109,17 @@ func (a *App) initMetrics(ctx context.Context) error {
 		return nil
 	})
 
-	return metrics.InitProvider(ctx, config.AppConfig().Metrics)
+	err := metrics.InitProvider(ctx, config.AppConfig().Metrics)
+	if err != nil {
+		return err
+	}
+
+	err = orderMetrics.InitMetrics()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *App) initLogger(_ context.Context) error {
