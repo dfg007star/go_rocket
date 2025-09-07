@@ -16,6 +16,8 @@ import (
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	loggerConfig "github.com/dfg007star/go_rocket/platform/pkg/logger"
+	"github.com/dfg007star/go_rocket/platform/pkg/metrics"
+	metricsConfig "github.com/dfg007star/go_rocket/platform/pkg/metrics"
 	middlewareHTTP "github.com/dfg007star/go_rocket/platform/pkg/middleware/http"
 	pgMigrator "github.com/dfg007star/go_rocket/platform/pkg/migrator/pg"
 )
@@ -76,6 +78,7 @@ func (a *App) Run(ctx context.Context) error {
 func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDI,
+		a.initMetrics,
 		a.initLogger,
 		a.initCloser,
 		a.initMigrator,
@@ -95,6 +98,18 @@ func (a *App) initDeps(ctx context.Context) error {
 func (a *App) initDI(_ context.Context) error {
 	a.diContainer = NewDiContainer()
 	return nil
+}
+
+func (a *App) initMetrics(ctx context.Context) error {
+	closer.AddNamed("HTTP server", func(ctx context.Context) error {
+		err := metrics.Shutdown(ctx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return metrics.InitProvider(ctx, config.AppConfig().Metrics)
 }
 
 func (a *App) initLogger(_ context.Context) error {

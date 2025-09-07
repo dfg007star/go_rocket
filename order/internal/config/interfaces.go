@@ -15,6 +15,11 @@ type LoggerConfig interface {
 	ServiceEnvironment() string
 }
 
+type MetricsConfig interface {
+	CollectorEndpoint() string
+	CollectorInterval() time.Duration
+}
+
 type InventoryGRPCConfig interface {
 	Address() string
 }
