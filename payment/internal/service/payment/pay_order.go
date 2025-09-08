@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
+
 	"github.com/dfg007star/go_rocket/payment/internal/model"
 	"github.com/dfg007star/go_rocket/payment/internal/repository/converter"
 	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 func (s *service) PayOrder(ctx context.Context, payment model.Payment) (string, error) {

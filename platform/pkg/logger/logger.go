@@ -47,11 +47,11 @@ type LoggerConf struct {
 }
 
 // Init инициализирует глобальный логгер.
-func Init(config *LoggerConf) error {
+func Init(ctx context.Context, config *LoggerConf) error {
 	var zapLogger *zap.Logger
 	initOnce.Do(func() {
 		dynamicLevel = zap.NewAtomicLevelAt(parseLevel(config.LevelStr))
-		cores := buildCores(config)
+		cores := buildCores(ctx, config)
 		zapLogger = zap.New(zapcore.NewTee(cores...), zap.AddCaller(), zap.AddCallerSkip(1))
 	})
 	if zapLogger == nil {
@@ -65,13 +65,13 @@ func Init(config *LoggerConf) error {
 
 // buildCores создает слайс cores для zapcore.Tee.
 // Всегда включает stdout core, опционально добавляет OTLP core.
-func buildCores(config *LoggerConf) []zapcore.Core {
+func buildCores(ctx context.Context, config *LoggerConf) []zapcore.Core {
 	cores := []zapcore.Core{
 		createStdoutCore(config.AsJSON),
 	}
 
 	if config.EnableOTLP {
-		if otlpCore := createOTLPCore(config); otlpCore != nil {
+		if otlpCore := createOTLPCore(ctx, config); otlpCore != nil {
 			cores = append(cores, otlpCore)
 		}
 	}
@@ -81,9 +81,8 @@ func buildCores(config *LoggerConf) []zapcore.Core {
 
 // createOTLPCore создает core для отправки в OpenTelemetry коллектор.
 // При ошибке подключения возвращает nil (graceful degradation).
-func createOTLPCore(config *LoggerConf) *SimpleOTLPCore {
-	// TODO: config!! otlpEndpoint!! grpc
-	otlpLogger, err := createOTLPLogger(config)
+func createOTLPCore(ctx context.Context, config *LoggerConf) *SimpleOTLPCore {
+	otlpLogger, err := createOTLPLogger(ctx, config)
 	if err != nil {
 		// Логирование ошибки невозможно, так как логгер еще не инициализирован
 		return nil
@@ -95,9 +94,7 @@ func createOTLPCore(config *LoggerConf) *SimpleOTLPCore {
 
 // createOTLPLogger создает OTLP логгер с настроенным экспортером и ресурсами.
 // Использует BatchProcessor для эффективной отправки логов.
-func createOTLPLogger(config *LoggerConf) (otelLog.Logger, error) {
-	ctx := context.Background()
-
+func createOTLPLogger(ctx context.Context, config *LoggerConf) (otelLog.Logger, error) {
 	exporter, err := createOTLPExporter(ctx, config.OTLPEndpoint)
 	if err != nil {
 		return nil, err
@@ -114,7 +111,7 @@ func createOTLPLogger(config *LoggerConf) (otelLog.Logger, error) {
 	)
 	otelProvider = provider // сохраняем для shutdown
 
-	return provider.Logger("app"), nil
+	return otelProvider.Logger("app"), nil
 }
 
 // createOTLPExporter создает gRPC экспортер для OTLP коллектора

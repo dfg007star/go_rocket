@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -15,7 +14,7 @@ import (
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/grpc/health"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
-	loggerConfig "github.com/dfg007star/go_rocket/platform/pkg/logger"
+	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 )
 
@@ -65,8 +64,8 @@ func (a *App) initDI(_ context.Context) error {
 	return nil
 }
 
-func (a *App) initLogger(_ context.Context) error {
-	conf := &loggerConfig.LoggerConf{
+func (a *App) initLogger(ctx context.Context) error {
+	conf := &logger.LoggerConf{
 		LevelStr:           config.AppConfig().Logger.Level(),
 		AsJSON:             config.AppConfig().Logger.AsJson(),
 		EnableOTLP:         config.AppConfig().Logger.EnableOTLP(),
@@ -75,7 +74,7 @@ func (a *App) initLogger(_ context.Context) error {
 		ServiceEnvironment: config.AppConfig().Logger.ServiceEnvironment(),
 	}
 
-	return logger.Init(conf)
+	return logger.Init(ctx, conf)
 }
 
 func (a *App) initCloser(_ context.Context) error {

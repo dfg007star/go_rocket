@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
-	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -30,6 +29,7 @@ import (
 	wrappedKafkaProducer "github.com/dfg007star/go_rocket/platform/pkg/kafka/producer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	kafkaMiddleware "github.com/dfg007star/go_rocket/platform/pkg/middleware/kafka"
+	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"

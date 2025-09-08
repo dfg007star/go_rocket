@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	orderMetrics "github.com/dfg007star/go_rocket/order/internal/metrics"
-	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
+	orderMetrics "github.com/dfg007star/go_rocket/order/internal/metrics"
 	"github.com/dfg007star/go_rocket/order/internal/model"
+	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 )
 
 func (s *service) Pay(ctx context.Context, orderUuid string, method *model.PaymentMethod) (*model.Order, error) {

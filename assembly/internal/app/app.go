@@ -10,7 +10,6 @@ import (
 	assemblyMetrics "github.com/dfg007star/go_rocket/assembly/internal/metrics"
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
-	loggerConfig "github.com/dfg007star/go_rocket/platform/pkg/logger"
 	"github.com/dfg007star/go_rocket/platform/pkg/metrics"
 )
 
@@ -83,8 +82,8 @@ func (a *App) initDI(_ context.Context) error {
 	return nil
 }
 
-func (a *App) initLogger(_ context.Context) error {
-	conf := &loggerConfig.LoggerConf{
+func (a *App) initLogger(ctx context.Context) error {
+	conf := &logger.LoggerConf{
 		LevelStr:           config.AppConfig().Logger.Level(),
 		AsJSON:             config.AppConfig().Logger.AsJson(),
 		EnableOTLP:         config.AppConfig().Logger.EnableOTLP(),
@@ -93,7 +92,7 @@ func (a *App) initLogger(_ context.Context) error {
 		ServiceEnvironment: config.AppConfig().Logger.ServiceEnvironment(),
 	}
 
-	return logger.Init(conf)
+	return logger.Init(ctx, conf)
 }
 
 func (a *App) initMetrics(ctx context.Context) error {

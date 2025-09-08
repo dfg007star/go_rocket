@@ -111,13 +111,11 @@ var meter = otel.Meter(serviceName)
 //    - Примеры: температура CPU, использование памяти, размер кэша
 //    - Для простых случаев используйте UpDownCounter как gauge
 
-var (
-	// AssemblyDuration - HISTOGRAM для измерения времени выполнения сборки
-	// Тип: Float64Histogram (распределение значений)
-	// Использование: отслеживание времени сборки заказа
-	// Автоматически создает метрики: _count, _sum, _bucket для percentile
-	AssemblyDuration metric.Float64Histogram
-)
+// AssemblyDuration - HISTOGRAM для измерения времени выполнения сборки
+// Тип: Float64Histogram (распределение значений)
+// Использование: отслеживание времени сборки заказа
+// Автоматически создает метрики: _count, _sum, _bucket для percentile
+var AssemblyDuration metric.Float64Histogram
 
 // InitMetrics инициализирует все метрики Order сервиса
 // Должна быть вызвана один раз при старте приложения после инициализации OpenTelemetry провайдера
