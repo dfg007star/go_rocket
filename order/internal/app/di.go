@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/IBM/sarama"
+	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -116,6 +117,7 @@ func (d *diContainer) PaymentClient(ctx context.Context) grpcClient.PaymentClien
 		conn, err := grpc.NewClient(
 			config.AppConfig().PaymentGRPC.Address(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(tracing.UnaryClientInterceptor(config.AppConfig().Tracing.ServiceName())),
 		)
 		if err != nil {
 			panic(fmt.Errorf("failed to connect to payment grpc client: %w", err))
