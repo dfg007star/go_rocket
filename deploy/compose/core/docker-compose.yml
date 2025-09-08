@@ -382,7 +382,8 @@ services: # Раздел, в котором описываются все кон
       # Подключаем контейнер к общей сети микросервисов
 
   grafana: # Сервис Grafana для визуализации метрик
-    image: grafana/grafana:12.0.0 # Используем официальный образ Grafana последней стабильной версии
+    # image: grafana/grafana:12.0.0 # Используем официальный образ Grafana последней стабильной версии
+    image: grafana/grafana:9.5.15 # Используем официальный образ Grafana последней стабильной версии
     container_name: grafana # Явное имя контейнера
     ports:
       - "${GRAFANA_PORT}:3000" # Пробрасываем порт Grafana на хост-машину
@@ -390,6 +391,7 @@ services: # Раздел, в котором описываются все кон
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin} # Имя пользователя администратора
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin} # Пароль администратора
       - GF_USERS_ALLOW_SIGN_UP=false # Запрещаем регистрацию новых пользователей
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=*
     volumes:
       - grafana_data:/var/lib/grafana # Подключаем volume для хранения данных Grafana
       - ./grafana/provisioning:/etc/grafana/provisioning # Монтируем директорию с настройками для автоматического провижининга
