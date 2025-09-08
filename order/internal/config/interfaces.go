@@ -20,6 +20,13 @@ type MetricsConfig interface {
 	CollectorInterval() time.Duration
 }
 
+type TracingConfig interface {
+	CollectorEndpoint() string
+	ServiceName() string
+	Environment() string
+	ServiceVersion() string
+}
+
 type InventoryGRPCConfig interface {
 	Address() string
 }

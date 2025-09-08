@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/stdlib"
@@ -79,6 +80,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDI,
 		a.initMetrics,
+		a.initTracing,
 		a.initLogger,
 		a.initCloser,
 		a.initMigrator,
@@ -122,6 +124,17 @@ func (a *App) initMetrics(ctx context.Context) error {
 	return nil
 }
 
+func (a *App) initTracing(ctx context.Context) error {
+	err := tracing.InitTracer(ctx, config.AppConfig().Tracing)
+	if err != nil {
+		return err
+	}
+
+	closer.AddNamed("tracer", tracing.ShutdownTracer)
+
+	return nil
+}
+
 func (a *App) initLogger(_ context.Context) error {
 	conf := &loggerConfig.LoggerConf{
 		LevelStr:           config.AppConfig().Logger.Level(),
@@ -160,6 +173,7 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	// Добавляем middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(tracing.HTTPHandlerMiddleware(config.AppConfig().Tracing.ServiceName()))
 	sessionUuidMiddleware := middlewareHTTP.NewAuthMiddleware(a.diContainer.IamClient(ctx))
 	r.Use(sessionUuidMiddleware.Handle)
 	r.Use(middleware.Timeout(10 * time.Second))

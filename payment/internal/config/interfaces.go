@@ -9,6 +9,13 @@ type LoggerConfig interface {
 	ServiceEnvironment() string
 }
 
+type TracingConfig interface {
+	CollectorEndpoint() string
+	ServiceName() string
+	Environment() string
+	ServiceVersion() string
+}
+
 type PaymentGRPCConfig interface {
 	Address() string
 }

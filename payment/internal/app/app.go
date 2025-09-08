@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -43,6 +44,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDI,
 		a.initLogger,
+		a.initTracing,
 		a.initCloser,
 		a.initListener,
 		a.initGRPCServer,
@@ -81,6 +83,17 @@ func (a *App) initCloser(_ context.Context) error {
 	return nil
 }
 
+func (a *App) initTracing(ctx context.Context) error {
+	err := tracing.InitTracer(ctx, config.AppConfig().Tracing)
+	if err != nil {
+		return err
+	}
+
+	closer.AddNamed("tracer", tracing.ShutdownTracer)
+
+	return nil
+}
+
 func (a *App) initListener(_ context.Context) error {
 	listener, err := net.Listen("tcp", config.AppConfig().PaymentGRPC.Address())
 	if err != nil {
@@ -101,7 +114,10 @@ func (a *App) initListener(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(tracing.UnaryServerInterceptor(config.AppConfig().Tracing.ServiceName())),
+	)
 	closer.AddNamed("gRPC server", func(ctx context.Context) error {
 		a.grpcServer.GracefulStop()
 		return nil
