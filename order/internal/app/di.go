@@ -29,6 +29,7 @@ import (
 	wrappedKafkaProducer "github.com/dfg007star/go_rocket/platform/pkg/kafka/producer"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
 	kafkaMiddleware "github.com/dfg007star/go_rocket/platform/pkg/middleware/kafka"
+	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	orderV1 "github.com/dfg007star/go_rocket/shared/pkg/openapi/order/v1"
 	authV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/auth/v1"
 	inventoryV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/inventory/v1"
@@ -116,6 +117,7 @@ func (d *diContainer) PaymentClient(ctx context.Context) grpcClient.PaymentClien
 		conn, err := grpc.NewClient(
 			config.AppConfig().PaymentGRPC.Address(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(tracing.UnaryClientInterceptor(config.AppConfig().Tracing.ServiceName())),
 		)
 		if err != nil {
 			panic(fmt.Errorf("failed to connect to payment grpc client: %w", err))

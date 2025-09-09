@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 
+	orderMetrics "github.com/dfg007star/go_rocket/order/internal/metrics"
 	"github.com/dfg007star/go_rocket/order/internal/model"
 )
 
@@ -19,6 +20,9 @@ func (s *service) Create(ctx context.Context, orderCreate *model.OrderCreate) (*
 	if cerr != nil {
 		return nil, cerr
 	}
+
+	// Бизнес-метрика: кол-во созданных заказов
+	orderMetrics.OrdersTotal.Add(ctx, 1)
 
 	return order, nil
 }

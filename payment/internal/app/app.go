@@ -14,6 +14,7 @@ import (
 	"github.com/dfg007star/go_rocket/platform/pkg/closer"
 	"github.com/dfg007star/go_rocket/platform/pkg/grpc/health"
 	"github.com/dfg007star/go_rocket/platform/pkg/logger"
+	"github.com/dfg007star/go_rocket/platform/pkg/tracing"
 	paymentV1 "github.com/dfg007star/go_rocket/shared/pkg/proto/payment/v1"
 )
 
@@ -42,6 +43,7 @@ func (a *App) initDeps(ctx context.Context) error {
 	inits := []func(context.Context) error{
 		a.initDI,
 		a.initLogger,
+		a.initTracing,
 		a.initCloser,
 		a.initListener,
 		a.initGRPCServer,
@@ -62,15 +64,32 @@ func (a *App) initDI(_ context.Context) error {
 	return nil
 }
 
-func (a *App) initLogger(_ context.Context) error {
-	return logger.Init(
-		config.AppConfig().Logger.Level(),
-		config.AppConfig().Logger.AsJson(),
-	)
+func (a *App) initLogger(ctx context.Context) error {
+	conf := &logger.LoggerConf{
+		LevelStr:           config.AppConfig().Logger.Level(),
+		AsJSON:             config.AppConfig().Logger.AsJson(),
+		EnableOTLP:         config.AppConfig().Logger.EnableOTLP(),
+		OTLPEndpoint:       config.AppConfig().Logger.OTLPEndpoint(),
+		ServiceName:        config.AppConfig().Logger.ServiceName(),
+		ServiceEnvironment: config.AppConfig().Logger.ServiceEnvironment(),
+	}
+
+	return logger.Init(ctx, conf)
 }
 
 func (a *App) initCloser(_ context.Context) error {
 	closer.SetLogger(logger.Logger())
+	return nil
+}
+
+func (a *App) initTracing(ctx context.Context) error {
+	err := tracing.InitTracer(ctx, config.AppConfig().Tracing)
+	if err != nil {
+		return err
+	}
+
+	closer.AddNamed("tracer", tracing.ShutdownTracer)
+
 	return nil
 }
 
@@ -94,7 +113,10 @@ func (a *App) initListener(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
-	a.grpcServer = grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
+	a.grpcServer = grpc.NewServer(
+		grpc.Creds(insecure.NewCredentials()),
+		grpc.UnaryInterceptor(tracing.UnaryServerInterceptor(config.AppConfig().Tracing.ServiceName())),
+	)
 	closer.AddNamed("gRPC server", func(ctx context.Context) error {
 		a.grpcServer.GracefulStop()
 		return nil
