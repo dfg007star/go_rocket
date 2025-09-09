@@ -180,6 +180,22 @@ tasks:
     cmds:
       - '{{.BUF}} generate'
 
+  proto:update-deps:
+    deps: [ install-buf ]
+    desc: Обновляет зависимости protobuf из удаленных репозиториев (googleapis и т.д.)
+    dir: proto
+    cmds:
+      - |
+        echo "🔄 Обновляем зависимости buf..."
+        {{.BUF}} dep update
+
+  proto:build:all:
+    desc: Сборка всех proto с http аннотациями для Envoy
+    deps: [ install-buf, proto:install-plugins ]
+    dir: proto
+    cmds:
+      - '{{.BUF}} build --as-file-descriptor-set --output "../pkg/proto/inventory/v1/inventory_descriptor.pb"'
+
   proto:lint:
     deps: [ install-buf, proto:install-plugins ]
     desc: Проверка .proto-файлов на соответствие стилю
