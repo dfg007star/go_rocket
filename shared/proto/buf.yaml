@@ -2,7 +2,7 @@ version: v2
 
 # Зависимости для поддержки google/api annotations
 deps:
-  - buf.build/googleapis/googleapis
+  - buf.build/googleapis/googleapis:main
 
 lint:
   use:

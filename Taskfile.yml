@@ -6,7 +6,7 @@ vars:
   GOLANGCI_LINT_VERSION: 'v2.1.5'
   GCI_VERSION: 'v0.13.6'
   GOFUMPT_VERSION: 'v0.8.0'
-  BUF_VERSION: '1.53.0'
+  BUF_VERSION: '1.57.0'
   PROTOC_GEN_GO_VERSION: 'v1.36.6'
   PROTOC_GEN_GO_GRPC_VERSION: 'v1.5.1'
   OGEN_VERSION: 'v1.12.0'
@@ -171,6 +171,18 @@ tasks:
           echo '📦 Installing protoc-gen-go-grpc...'
           GOBIN={{.BIN_DIR}} go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@{{.PROTOC_GEN_GO_GRPC_VERSION}}
         }
+        [ -f {{.PROTOC_GEN_GRPC_GATEWAY}} ] || {
+          echo '📦 Installing protoc-gen-grpc-gateway...'
+          GOBIN={{.BIN_DIR}} go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@{{.PROTOC_GEN_GRPC_GATEWAY_VERSION}}
+        }
+        [ -f {{.PROTOC_GEN_VALIDATE}} ] || {
+          echo '📦 Installing protoc-gen-validate...'
+          GOBIN={{.BIN_DIR}} go install github.com/envoyproxy/protoc-gen-validate@{{.PROTOC_GEN_VALIDATE_VERSION}}
+        }
+        [ -f {{.PROTOC_GEN_OPENAPIV2}} ] || {
+          echo '📦 Installing protoc-gen-openapiv2...'
+          GOBIN={{.BIN_DIR}} go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@{{.PROTOC_GEN_OPENAPIV2_VERSION}}
+        }
 
 
   proto:gen:
@@ -180,19 +192,19 @@ tasks:
     cmds:
       - '{{.BUF}} generate'
 
-  proto:update-deps:
+  proto:update-deps-shared:
     deps: [ install-buf ]
     desc: Обновляет зависимости protobuf из удаленных репозиториев (googleapis и т.д.)
-    dir: proto
+    dir: shared/proto
     cmds:
       - |
         echo "🔄 Обновляем зависимости buf..."
-        {{.BUF}} dep update
+        {{.BUF}} mod update
 
   proto:build:all:
     desc: Сборка всех proto с http аннотациями для Envoy
     deps: [ install-buf, proto:install-plugins ]
-    dir: proto
+    dir: shared/proto
     cmds:
       - '{{.BUF}} build --as-file-descriptor-set --output "../pkg/proto/inventory/v1/inventory_descriptor.pb"'
 
